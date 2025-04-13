@@ -8,7 +8,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import { UserRoundCog, Newspaper } from "lucide-react";
+import { UserRoundCog, Newspaper, Car, IdCard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -41,6 +41,28 @@ const Sidebar = () => {
             >
               <Newspaper />
               Invoices
+            </Link>
+          </CommandItem>
+          <CommandItem className="p-0">
+            <Link
+              href="/auth/repairs"
+              className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
+                pathname === "/auth/repairs" ? "font-bold" : "hover:bg-gray-200"
+              }`}
+            >
+              <Car />
+              Repairs
+            </Link>
+          </CommandItem>
+          <CommandItem className="p-0">
+            <Link
+              href="/auth/clients"
+              className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
+                pathname === "/auth/clients" ? "font-bold" : "hover:bg-gray-200"
+              }`}
+            >
+              <IdCard />
+              Clients
             </Link>
           </CommandItem>
         </CommandGroup>

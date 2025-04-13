@@ -1,11 +1,23 @@
-import prisma from "@/lib/db";
 import React from "react";
 
-const UsersPage = async () => {
-  const users = await prisma.user.findMany();
+import { getUsers } from "@/lib/users";
+import UsersTable from "@/components/UsersTable";
 
-  console.log(users, "users");
-  return <div>UsersPage</div>;
+const UsersPage = async () => {
+  let users;
+
+  try {
+    users = await getUsers();
+  } catch (error) {
+    console.error("Failed to load users:", error);
+    return (
+      <p className="text-red-500">
+        Failed to fetch users. Please try again later.
+      </p>
+    );
+  }
+
+  return <UsersTable users={users} />;
 };
 
 export default UsersPage;

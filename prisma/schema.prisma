@@ -4,6 +4,16 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum InvoiceStatus {
+  EDITABLE
+  LOCKED
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -23,7 +33,116 @@ model User {
   updatedAt  DateTime @updatedAt            
 }
 
-enum Role {
-  USER
-  ADMIN
+
+
+// model Invoice {
+//   id         Int      @id @default(autoincrement())
+//   number     String   @unique
+//   date       DateTime @default(now())
+//   total      Float
+//   supplierId Int
+//   supplier   Supplier @relation(fields: [supplierId], references: [id])
+//   clientId   Int? 
+//   client     Client?  @relation(fields: [clientId], references: [id])
+//   clientName  String? 
+//   clientPhone String? 
+//   items      InvoiceItem[]
+//   createdAt  DateTime @default(now())
+//   updatedAt  DateTime @updatedAt
+// }
+
+
+//
+model Invoice {
+  id         Int     @id @default(autoincrement())
+  number     String?   @unique
+  date       DateTime @default(now())
+  total      Float
+  supplierId Int
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+
+  clientId   Int? 
+  client     Client?  @relation(fields: [clientId], references: [id])
+
+ 
+  clientName    String?
+  clientRegNr   String?
+  clientAddress String?
+  clientEmail   String?
+  clientPhone   String?
+  clientBank    String?
+  clientBankCode String?
+  clientAccount String?
+
+  carBrand     String @default("")
+  carModel     String @default("")
+  carPlate     String @default("")
+  status       InvoiceStatus @default(EDITABLE)
+  
+  items      InvoiceItem[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
+
+//
+
+model InvoiceItem {
+  id         Int      @id @default(autoincrement())
+  invoiceId  Int
+  invoice    Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  name       String   
+  unit       String   
+  quantity   Int      
+  price      Float    
+  total      Float    
+}
+
+model Supplier { 
+  id       Int    @id @default(autoincrement())
+  name     String 
+  regNr    String 
+  bank     String 
+  code     String? 
+  account  String 
+  phone    String? 
+  invoices Invoice[]
+}
+
+model Client { 
+  id       Int     @id @default(autoincrement())
+  name     String  
+  regNr    String? 
+  address  String?
+  bank     String?
+  bankCode String? 
+  account  String? 
+  phone    String? 
+  email    String? 
+  isDeleted  Boolean @default(false)
+  repairs  Repair[]  
+  invoices Invoice[] 
+}
+
+model Repair {
+  id         Int      @id @default(autoincrement())
+  date       DateTime @default(now())
+  clientId   Int?    
+  client     Client?  @relation(fields: [clientId], references: [id])
+  clientName  String? 
+  clientPhone String? 
+  items      RepairItem[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt @default(now()) 
+}
+
+model RepairItem { 
+  id       Int     @id @default(autoincrement())
+  repairId Int
+  repair   Repair  @relation(fields: [repairId], references: [id])
+  name     String
+  unit     String
+  quantity Int 
+  price    Float
+}
+
+
