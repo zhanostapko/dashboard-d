@@ -1,17 +1,10 @@
 import EditInvoiceButton from "@/components/EditInvoiceButton";
 import GeneratePDFButton from "@/components/GeneratePDFButton";
-import InvoicePDFTemplate from "@/components/InvoicePDFTemplate";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { getInvoice } from "@/lib/invoices";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { format } from "date-fns";
-
-type Props = {};
 
 const InvoiceDetailPage = async ({
   params,
@@ -31,7 +24,7 @@ const InvoiceDetailPage = async ({
           <div>
             <h2 className="text-2xl font-bold mb-1">Create Invoice</h2>
             <EditInvoiceButton invoice={invoice} />
-            <GeneratePDFButton invoice={invoice} />
+            <GeneratePDFButton />
             <p className="text-lg text-muted-foreground">
               Invoice Number {invoice.number}
             </p>

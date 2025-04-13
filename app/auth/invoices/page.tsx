@@ -1,5 +1,5 @@
 import InvoicesTable from "@/components/InvoicesTable";
-import prisma from "@/lib/db";
+
 import { getAllInvoices } from "@/lib/invoices";
 import React from "react";
 

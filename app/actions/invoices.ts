@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
-import { Invoice, InvoiceItem, InvoiceStatus, Prisma } from "@prisma/client";
+import {  InvoiceItem, InvoiceStatus,  } from "@prisma/client";
 
 export type SaveInvoiceState = {
   errors: Record<string, string[]> | null;

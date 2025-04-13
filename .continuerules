@@ -1,0 +1,123 @@
+React & Next.js Conventions
+
+Do not stop until you have fully implemented this function (with the option to add a completion report).
+
+Start by writing three (or five) paragraphs of reasoning that analyze what the error might be, without drawing hasty conclusions, and then synthesize a new unique solution for this problem (preferably incorporating indications of different roles).
+
+Use functional components and React Hooks (e.g., useState, useEffect, useMemo), not class components.
+
+Follow the structure and patterns of Next.js 15: root directories, file-based routing, server and client components if necessary.
+
+Do not explain how to set up Next.js — provide ready-made code, solutions, and examples.
+
+TypeScript & Typing
+Always specify types for props, state, and return values (e.g., Props).
+
+Use interfaces or types for complex structures; do not forget about Partial, Pick, Omit, etc.
+
+When working with external libraries (e.g., Google Maps), use officially/community-supported types (@types/...).
+
+Tailwind CSS + SchadCN
+Use Tailwind for basic styling, avoid custom CSS unless it’s critical.
+
+For more complex UI elements (e.g., dialogs, dropdowns), use components and utilities from SchadCN.
+Use SchadCN if it is possible
+
+Remember to use class-variance-authority, clsx, and tailwind-merge for forming dynamic class names.
+
+Forms and Validation (React Hook Form + Zod)
+Use react-hook-form together with @hookform/resolvers and zod for schema-level validation.
+
+In code examples, show the Zod schema declaration and a form using useForm().
+
+Keep form fields simple whenever possible; avoid overly complex use cases.
+
+Structure and Architecture
+Maintain a clean, modular structure: split code into understandable folders (components/, hooks/, utils/, services/).
+
+Break down large components into smaller ones if they become too complex (SOLID, Single Responsibility).
+
+Any duplicated logic should be moved into utilities (/utils) or custom hooks (/hooks).
+
+Additional Tools and Practices
+Use Lodash carefully; don’t pull in unnecessary methods, and remember to “cherry-pick” imports (import only what you need).
+
+Use icons from lucide-react; try to use them appropriately without duplication.
+
+Security: do not store secrets (API keys, passwords) in code, only in .env.
+
+Code Examples
+Provide solution examples in the following format:
+
+````tsx //;
+
+export const MyComponent= () => { return ( <div className="p-4"> <p>Hello World!</p> </div> ); }; ```
+
+
+Exclude everything unnecessary (configs, setup) by default; only show the minimum needed to understand how the solution works.
+
+Offer concise variants or provide multiple alternative solutions if relevant.
+
+Avoid lengthy explanations of the development environment — just show what the code looks like and where to place it.
+
+If there are multiple ways to solve something (e.g., using different hooks or libraries), briefly mention them all, but detail the optimal one.
+
+Additional Tips
+Focus on readability and reusability (DRY, KISS principles).
+
+Comment your code only when it really needs clarification.
+
+For Git commits, follow a commit style such as Semantic Commit (feat, fix, refactor, etc.).
+
+Project structure:
+======================
+
+├── app
+|  ├── actions
+|  ├── api
+|  ├── auth
+|  ├── favicon.ico
+|  ├── globals.css
+|  ├── layout.tsx
+|  └── login
+├── components
+|  ├── CreateInvoicesForm
+|  ├── CreateUserForm.tsx
+|  ├── InvoicesTable.tsx
+|  ├── LogoutButton.tsx
+|  ├── ModalWrapper.tsx
+|  ├── Navbar.tsx
+|  ├── Providers.tsx
+|  ├── Sidebar.tsx
+|  ├── ui
+|  └── UsersTable.tsx
+├── components.json
+├── eslint.config.mjs
+├── lib
+|  ├── authConfig.ts
+|  ├── db.ts
+|  ├── invoices.ts
+|  ├── users.ts
+|  └── utils.ts
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── prisma
+|  ├── dev.db
+|  ├── migrations
+|  └── schema.prisma
+├── public
+|  ├── file.svg
+|  ├── globe.svg
+|  ├── next.svg
+|  ├── vercel.svg
+|  └── window.svg
+├── README.md
+└── tsconfig.json
+======================
+
+Use project structure if exist.
+````

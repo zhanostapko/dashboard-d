@@ -37,8 +37,6 @@ export default function CreateInvoiceForm({ invoice, onClose }: Props) {
   };
   const total = calculateInvoiceTotal();
 
-  console.log(state, "state in create invoice form");
-
   useEffect(() => {
     if (state.success) onClose();
   }, [state.success, onClose]);
