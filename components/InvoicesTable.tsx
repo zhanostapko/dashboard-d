@@ -13,9 +13,7 @@ import ModalWrapper from "@/components/ModalWrapper";
 import { Button } from "@/components/ui/button";
 // Suppose you have a CreateInvoiceForm similar to your CreateUserForm
 import CreateInvoiceForm from "@/components/CreateInvoicesForm/CreateInvoiceForm";
-import { Invoice } from "@prisma/client";
 import { InvoicePreview } from "@/lib/invoices";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type Props = {
