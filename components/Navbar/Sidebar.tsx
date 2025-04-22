@@ -43,7 +43,7 @@ const Sidebar = () => {
               Invoices
             </Link>
           </CommandItem>
-          <CommandItem className="p-0">
+          {/* <CommandItem className="p-0">
             <Link
               href="/auth/repairs"
               className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
@@ -53,8 +53,8 @@ const Sidebar = () => {
               <Car />
               Repairs
             </Link>
-          </CommandItem>
-          <CommandItem className="p-0">
+          </CommandItem> */}
+          {/* <CommandItem className="p-0">
             <Link
               href="/auth/clients"
               className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
@@ -64,7 +64,7 @@ const Sidebar = () => {
               <IdCard />
               Clients
             </Link>
-          </CommandItem>
+          </CommandItem> */}
         </CommandGroup>
         <CommandSeparator />
       </CommandList>

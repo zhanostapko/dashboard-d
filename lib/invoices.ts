@@ -9,14 +9,12 @@ import prisma from "./db";
 
 export const invoiceNumberGenerate = async () => {
   const now = new Date();
-  const prefix = `${now.getFullYear()}${(now.getMonth() + 1)
-    .toString()
-    .padStart(2, "0")}-`;
+  const postfix = `-${now.getFullYear()}`;
 
   const lastInvoice = await prisma.invoice.findFirst({
     where: {
       number: {
-        startsWith: prefix,
+        endsWith: postfix,
       },
     },
     select: {
@@ -30,13 +28,13 @@ export const invoiceNumberGenerate = async () => {
   let newNumber = 1;
 
   if (lastInvoice?.number) {
-    const lastNumber = parseInt(lastInvoice.number.replace(prefix, ""));
+    const lastNumber = parseInt(lastInvoice.number.replace(postfix, ""));
     if (!isNaN(lastNumber)) {
       newNumber = lastNumber + 1;
     }
   }
 
-  const newInvoiceNumber = `${prefix}${newNumber}`;
+  const newInvoiceNumber = `${newNumber}${postfix}`;
 
   return newInvoiceNumber;
 };
@@ -58,6 +56,6 @@ export const getAllInvoices = async (): Promise<InvoicePreview[]> => {
 export const getInvoice = async (id: number) => {
   return await prisma.invoice.findUnique({
     where: { id },
-    include: { items: true },
+    include: { items: true, supplier: true },
   });
 };

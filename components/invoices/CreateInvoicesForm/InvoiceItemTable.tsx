@@ -1,6 +1,5 @@
 "use client";
 
-import { FormEvent, useState } from "react";
 import InvoiceItemRow from "./InvoiceItemRow";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,13 +11,18 @@ import {
 } from "@/components/ui/table";
 import InvoiceItemInput from "./InvoiceItemInput";
 import { InvoiceItem } from "@prisma/client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { invoiceItemSchema } from "@/lib/schemas/schemas";
+import { z } from "zod";
 
 type Props = {
   handleAdd: (item: InvoiceItem) => void;
   handleRemove: (id: number) => void;
   items: InvoiceItem[];
-  errors?: string | string[];
 };
+
+export type InvoiceItemInputValues = z.infer<typeof invoiceItemSchema>;
 
 const initialInput = {
   id: 1,
@@ -33,61 +37,32 @@ export default function InvoiceItemTable({
   handleAdd,
   handleRemove,
   items,
-  errors,
 }: Props) {
-  const [inputItem, setInputItem] =
-    useState<Partial<InvoiceItem>>(initialInput);
-
-  const onInputChange = (updatedItem: Partial<InvoiceItem>) => {
-    setInputItem((prev) => {
-      const newItem = { ...prev, ...updatedItem };
-
-      return {
-        ...newItem,
-        total: (newItem.price || 0) * (newItem.quantity || 0),
-      };
-    });
-  };
+  const localForm = useForm<InvoiceItemInputValues>({
+    resolver: zodResolver(invoiceItemSchema),
+    defaultValues: initialInput,
+  });
 
   const onInputClear = () => {
-    setInputItem(initialInput);
+    localForm.reset();
   };
 
-  // const handleUpdate = (updatedItem) => {
-  //   setItems((prev) =>
-  //     prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-  //   );
-  // };
+  const handleAddItem = localForm.handleSubmit((data) => {
+    const total = data.quantity * data.price;
 
-  const innerFormSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    handleAddItem();
-  };
-
-  const handleAddItem = () => {
-    const input = document.querySelector(
-      "input[name='name']"
-    ) as HTMLInputElement;
-    if (input && !input.checkValidity()) {
-      input.reportValidity();
-      return;
-    }
     handleAdd({
       id: Date.now(),
-      name: inputItem?.name || "",
-      unit: inputItem?.unit || "",
-      quantity: Number(inputItem?.quantity ?? 1),
-      price: Number(inputItem?.price ?? 0),
-      total: Number(inputItem?.total ?? 0),
-      invoiceId: inputItem.invoiceId ?? 0,
+      ...data,
+      total,
+      invoiceId: 0,
     });
 
-    setInputItem(initialInput);
-  };
+    localForm.reset();
+  });
 
   return (
     <div className="p-4">
-      <div onSubmit={innerFormSubmit}>
+      <div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -107,11 +82,7 @@ export default function InvoiceItemTable({
                 onRemove={() => handleRemove(item.id)}
               />
             ))}
-            <InvoiceItemInput
-              item={inputItem}
-              onChange={onInputChange}
-              onClear={onInputClear}
-            />
+            <InvoiceItemInput localForm={localForm} onClear={onInputClear} />
           </TableBody>
         </Table>
         <div className="flex justify-end">
@@ -119,16 +90,10 @@ export default function InvoiceItemTable({
             onClick={handleAddItem}
             className=" item-right mt-4"
             type="submit"
-            form="nested-form"
           >
             ➕ Add Item
           </Button>
         </div>
-        {errors && (
-          <p className=" inline-block border border-red-500 text-red-500 text-sm mt-1 p-2">
-            {errors}
-          </p>
-        )}
       </div>
     </div>
   );

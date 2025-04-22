@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import ModalWrapper from "@/components/ModalWrapper";
+import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
 import CreateUserForm from "@/components/CreateUserForm";
 import { User } from "@prisma/client";

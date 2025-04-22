@@ -1,11 +1,11 @@
 import { z } from "zod";
 
-const invoiceItemSchema = z.object({
+export const invoiceItemSchema = z.object({
   name: z.string().min(1, "Name is required"),
   unit: z.string().min(1, "Unit is required"),
   quantity: z.number().min(1, "Quantity must be at least 1"),
-  price: z.number().min(0, "Price must be positive"),
-  total: z.number().min(0, "Total must be positive"),
+  price: z.number().min(1, "Price must be positive"),
+  total: z.number().min(1, "Total must be positive"),
 });
 
 export const invoiceSchema = z.object({

@@ -1,0 +1,8 @@
+1) Create PDF layout with data
+2) Paid status logic
+3) loading state for all
+4) error in form 
+5) Empty data
+6) Delete
+7) Make refactoring and clean code
+8) Make data to object or json

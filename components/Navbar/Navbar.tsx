@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import LogoutButton from "./LogoutButton";
+import LogoutButton from "@/components/Navbar/LogoutButton";
 
 const Navbar = () => {
   return (

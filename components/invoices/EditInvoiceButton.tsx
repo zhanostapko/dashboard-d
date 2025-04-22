@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import ModalWrapper from "./ModalWrapper";
+import ModalWrapper from "../General/ModalWrapper";
 import CreateInvoiceForm from "./CreateInvoicesForm/CreateInvoiceForm";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Invoice, InvoiceItem } from "@prisma/client";
 
 type Props = {
@@ -19,7 +19,11 @@ const EditInvoiceButton = ({ invoice }: Props) => {
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       modalContent={
-        <CreateInvoiceForm invoice={invoice} onClose={() => setIsOpen(false)} />
+        <CreateInvoiceForm
+          editMode
+          invoice={invoice}
+          onClose={() => setIsOpen(false)}
+        />
       }
     >
       <Button

@@ -1,10 +1,11 @@
-import EditInvoiceButton from "@/components/EditInvoiceButton";
-import GeneratePDFButton from "@/components/GeneratePDFButton";
+import EditInvoiceButton from "@/components/invoices/EditInvoiceButton";
+import GeneratePDFButton from "@/components/invoices/GeneratePDFButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { getInvoice } from "@/lib/invoices";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 const InvoiceDetailPage = async ({
   params,
@@ -13,21 +14,26 @@ const InvoiceDetailPage = async ({
 }) => {
   const invoice = await getInvoice(Number(params.invoiceId));
 
-  console.log(invoice, "invoice test");
-
   if (!invoice) return <div>Invoice not found</div>;
+
+  console.log(invoice, "invoice");
 
   return (
     <Card className="max-w-4xl mx-auto p-6">
       <CardContent className="space-y-6">
         <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-2xl font-bold mb-1">Create Invoice</h2>
-            <EditInvoiceButton invoice={invoice} />
-            <GeneratePDFButton />
-            <p className="text-lg text-muted-foreground">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-2xl font-bold mb-1">
               Invoice Number {invoice.number}
-            </p>
+            </h2>
+            <div className="flex gap-2">
+              <EditInvoiceButton invoice={invoice} />
+              <GeneratePDFButton invoice={invoice} />
+              <Button variant="outline">Paid</Button>
+            </div>
+            {/* <p className="text-lg text-muted-foreground">
+              Invoice Number {invoice.number}
+            </p> */}
           </div>
 
           <div className="flex flex-col">
@@ -168,6 +174,10 @@ const InvoiceDetailPage = async ({
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div className="flex justify-end">
+          <h2 className="font-bold text-2xl py-2">{`Total: ${invoice.total}`}</h2>
         </div>
       </CardContent>
     </Card>

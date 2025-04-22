@@ -1,4 +1,4 @@
-import InvoicesTable from "@/components/InvoicesTable";
+import InvoicesTable from "@/components/invoices/InvoicesTable";
 
 import { getAllInvoices } from "@/lib/invoices";
 import React from "react";

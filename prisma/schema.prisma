@@ -10,8 +10,8 @@ enum Role {
 }
 
 enum InvoiceStatus {
-  EDITABLE
-  LOCKED
+  Paid
+  Unpaid
 }
 
 generator client {
@@ -77,7 +77,7 @@ model Invoice {
   carBrand     String @default("")
   carModel     String @default("")
   carPlate     String @default("")
-  status       InvoiceStatus @default(EDITABLE)
+  status       InvoiceStatus @default(Unpaid)
   
   items      InvoiceItem[]
   createdAt  DateTime @default(now())
