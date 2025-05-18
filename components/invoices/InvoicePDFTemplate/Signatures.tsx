@@ -35,18 +35,18 @@ const styles = StyleSheet.create({
 
 export default function Signatures() {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} wrap={false}>
       {/* Issuer */}
       <View style={styles.block}>
         <Text style={styles.label}>Izsniedza:</Text>
 
         <View style={styles.lineGroup}>
-          <Text style={styles.line}>Dmitrijs Sedjuks</Text>
+          <Text style={styles.line}> </Text>
           <Text style={styles.smallText}>vārds, uzvārds</Text>
         </View>
 
         <View style={styles.lineGroup}>
-          <Text style={styles.line}>06.01.2023</Text>
+          <Text style={styles.line}> </Text>
           <Text style={styles.smallText}>datums</Text>
         </View>
 

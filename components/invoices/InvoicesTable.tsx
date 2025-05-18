@@ -22,16 +22,24 @@ type Props = {
 
 const InvoicesTable = ({ data }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [loadingInvoiceId, setLoadingInvoiceId] = useState<number | null>(null);
   const router = useRouter();
 
-  const deleteInvoice = async (invoiceId: number) => {
-    const res = await fetch(`/api/invoices?invoiceId=${invoiceId}`, {
-      method: "DELETE",
+  const statusChangeHandler = async (
+    event: React.MouseEvent<HTMLButtonElement>,
+    invoiceId: number
+  ) => {
+    event?.stopPropagation();
+    setLoadingInvoiceId(invoiceId);
+    const res = await fetch(`/api/invoices`, {
+      method: "PUT",
+      body: JSON.stringify({ invoiceId }),
     });
 
     if (!res.ok) {
       throw new Error("Failed to delete invoice");
     }
+    setLoadingInvoiceId(null);
   };
 
   return (
@@ -40,16 +48,15 @@ const InvoicesTable = ({ data }: Props) => {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         modalContent={<CreateInvoiceForm onClose={() => setIsOpen(false)} />}
+      ></ModalWrapper>
+      <Button
+        onClick={() => {
+          setIsOpen(true);
+        }}
+        className="mb-4"
       >
-        <Button
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          className="mb-4"
-        >
-          + Add Invoice
-        </Button>
-      </ModalWrapper>
+        + Add Invoice
+      </Button>
 
       <Table>
         <TableCaption>List of invoices.</TableCaption>
@@ -66,6 +73,11 @@ const InvoicesTable = ({ data }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
+          {data?.length === 0 && (
+            <TableRow className="text-center">
+              <TableCell colSpan={8}>No invoices found</TableCell>
+            </TableRow>
+          )}
           {data?.map((invoice, index) => (
             <TableRow
               className="cursor-pointer"
@@ -87,14 +99,14 @@ const InvoicesTable = ({ data }: Props) => {
               <TableCell>{invoice.total}</TableCell>
               <TableCell className="flex gap-4 justify-end">
                 <Button
-                  onClick={() => {
-                    deleteInvoice(invoice.id);
-                  }}
+                  disabled={
+                    invoice.status === "Paid" || loadingInvoiceId === invoice.id
+                  }
+                  onClick={(event) => statusChangeHandler(event, invoice.id)}
+                  variant="outline"
                 >
-                  Delete
+                  {loadingInvoiceId === invoice.id ? "Sending..." : "Paid"}
                 </Button>
-                {/* You could also have a “View” button if you want a details page */}
-                {/* <Button>View</Button> */}
               </TableCell>
             </TableRow>
           ))}

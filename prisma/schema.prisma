@@ -14,6 +14,11 @@ enum InvoiceStatus {
   Unpaid
 }
 
+enum PaymentType  {
+  Cash
+  NonCash
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -58,11 +63,13 @@ model Invoice {
   number     String?   @unique
   date       DateTime @default(now())
   total      Float
+  paymentType PaymentType @default(NonCash)
   supplierId Int
   supplier   Supplier @relation(fields: [supplierId], references: [id])
 
   clientId   Int? 
   client     Client?  @relation(fields: [clientId], references: [id])
+
 
  
   clientName    String?
@@ -77,6 +84,8 @@ model Invoice {
   carBrand     String @default("")
   carModel     String @default("")
   carPlate     String @default("")
+  carMileage   String @default("")
+
   status       InvoiceStatus @default(Unpaid)
   
   items      InvoiceItem[]

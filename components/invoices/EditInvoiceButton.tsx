@@ -15,26 +15,29 @@ const EditInvoiceButton = ({ invoice }: Props) => {
   console.log(invoice, "invoice in edit button");
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <ModalWrapper
-      isOpen={isOpen}
-      setIsOpen={setIsOpen}
-      modalContent={
-        <CreateInvoiceForm
-          editMode
-          invoice={invoice}
-          onClose={() => setIsOpen(false)}
-        />
-      }
-    >
+    <>
       <Button
+        disabled={invoice.status === "Paid"}
         onClick={() => {
+          if (invoice.status === "Paid") return;
           setIsOpen(true);
         }}
         className="mb-4"
       >
         Edit
       </Button>
-    </ModalWrapper>
+      <ModalWrapper
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        modalContent={
+          <CreateInvoiceForm
+            editMode
+            invoice={invoice}
+            onClose={() => setIsOpen(false)}
+          />
+        }
+      ></ModalWrapper>
+    </>
   );
 };
 

@@ -1,9 +1,9 @@
 "use client";
 import { useActionState, useEffect, useState } from "react";
 import { saveUserAction } from "@/app/actions/users";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Label } from "../../ui/label";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
 import {
   Select,
   SelectContent,

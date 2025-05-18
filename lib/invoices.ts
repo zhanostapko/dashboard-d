@@ -9,7 +9,9 @@ import prisma from "./db";
 
 export const invoiceNumberGenerate = async () => {
   const now = new Date();
-  const postfix = `-${now.getFullYear()}`;
+  const month = now.getMonth() + 1;
+  const formattedMonth = month < 10 ? `0${month}` : month;
+  const postfix = `-${formattedMonth}${now.getFullYear()}`;
 
   const lastInvoice = await prisma.invoice.findFirst({
     where: {
@@ -53,7 +55,7 @@ export const getAllInvoices = async (): Promise<InvoicePreview[]> => {
   });
 };
 
-export const getInvoice = async (id: number) => {
+export const getInvoiceDetails = async (id: number) => {
   return await prisma.invoice.findUnique({
     where: { id },
     include: { items: true, supplier: true },

@@ -4,7 +4,6 @@
 
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
-// import { InvoiceItem, InvoiceStatus } from "@prisma/client";
 import { invoiceSchema } from "@/lib/schemas/schemas";
 import { z } from "zod";
 
@@ -83,7 +82,6 @@ export async function saveInvoiceAction(
       revalidatePath("/invoices");
     }
 
-    // revalidatePath("/invoices");
     return { errors: null, success: true, formData: null };
   } catch (err) {
     console.error("Server error:", err);
@@ -96,76 +94,4 @@ export async function saveInvoiceAction(
       },
     };
   }
-  // const id = sanitizedFormData["id"] ? Number(sanitizedFormData["id"]) : null;
-  // const baseData = {
-  //   number: sanitizedFormData["number"]?.toString() || null,
-  //   date: new Date(sanitizedFormData["date"] ? sanitizedFormData["date"] : ""),
-  //   total: parseFloat(sanitizedFormData["total"]?.toString() || "0"),
-  //   supplier: {
-  //     connect: { id: Number(sanitizedFormData["supplierId"]) || 1 },
-  //   },
-  //   client: sanitizedFormData["clientId"]
-  //     ? { connect: { id: Number(sanitizedFormData["clientId"]) } }
-  //     : undefined,
-  //   clientName: sanitizedFormData["clientName"]?.toString() || null,
-  //   clientRegNr: sanitizedFormData["clientRegNr"]?.toString() || null,
-  //   clientAddress: sanitizedFormData["clientAddress"]?.toString() || null,
-  //   clientEmail: sanitizedFormData["clientEmail"]?.toString() || null,
-  //   clientPhone: sanitizedFormData["clientPhone"]?.toString() || null,
-  //   clientBank: sanitizedFormData["clientBank"]?.toString() || null,
-  //   clientBankCode: sanitizedFormData["clientBankCode"]?.toString() || null,
-  //   clientAccount: sanitizedFormData["clientAccount"]?.toString() || null,
-  //   carBrand: sanitizedFormData["carBrand"]?.toString() || "",
-  //   carModel: sanitizedFormData["carModel"]?.toString() || "",
-  //   carPlate: sanitizedFormData["carPlate"]?.toString() || "",
-  //   status:
-  //     (sanitizedFormData["status"] as InvoiceStatus) === "LOCKED"
-  //       ? InvoiceStatus.LOCKED
-  //       : InvoiceStatus.EDITABLE,
-  // };
-  // try {
-  //   if (id) {
-  //     await prisma.invoice.update({
-  //       where: { id },
-  //       data: {
-  //         ...baseData,
-  //         items: {
-  //           deleteMany: {},
-  //           create: itemsData.map((item) => ({
-  //             name: item.name,
-  //             unit: item.unit,
-  //             quantity: item.quantity,
-  //             price: item.price,
-  //             total: item.total,
-  //           })),
-  //         },
-  //       },
-  //     });
-  //   } else {
-  //     await prisma.invoice.create({
-  //       data: {
-  //         ...baseData,
-  //         items: {
-  //           create: itemsData.map((item) => ({
-  //             name: item.name,
-  //             unit: item.unit,
-  //             quantity: item.quantity,
-  //             price: item.price,
-  //             total: item.total,
-  //           })),
-  //         },
-  //       },
-  //     });
-  //   }
-  //   revalidatePath("/invoices");
-  //   return { errors: null, success: true, formData: {} };
-  // } catch (error) {
-  // return {
-  //   errors: {
-  //     general: [`Database error occurred. ${(error as Error).message}`],
-  //   },
-  //   success: false,
-  //   formData: sanitizedFormData,
-  // };
-  // }
 }

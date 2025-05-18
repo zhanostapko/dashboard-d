@@ -28,6 +28,14 @@ import {
   saveInvoiceAction,
   SaveInvoiceState,
 } from "@/app/actions/invoices";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Error from "@/components/Error";
 
 type Props = {
   onClose: () => void;
@@ -44,7 +52,10 @@ const initialState: SaveInvoiceState = {
 };
 
 const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
-  const [state, formAction] = useActionState(saveInvoiceAction, initialState);
+  const [state, formAction, isSubmitting] = useActionState(
+    saveInvoiceAction,
+    initialState
+  );
   const [invoiceNumber, setInvoiceNumber] = useState(invoice?.number || "");
   const [total, setTotal] = useState(invoice?.total || 0);
   const [items, setItems] = useState<InvoiceItem[]>(invoice?.items || []);
@@ -91,6 +102,8 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
       carBrand: invoice?.carBrand || "",
       carModel: invoice?.carModel || "",
       carPlate: invoice?.carPlate || "",
+      carMileage: invoice?.carMileage || "",
+      paymentType: invoice?.paymentType || "NonCash",
       items: invoice?.items || [],
     },
   });
@@ -237,6 +250,30 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="paymentType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment type</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select payment type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Cash">Cash</SelectItem>
+                        <SelectItem value="NonCash">Non cash</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="flex gap-4 mt-4">
@@ -326,6 +363,19 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="carMileage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Mileage</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <FormField
@@ -362,8 +412,14 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             )}
           />
 
-          <Button type="submit" className="w-full bg-green-500 text-white">
-            {editMode ? "Save" : "Create"}
+          {state.errors && <Error />}
+
+          <Button
+            disabled={isSubmitting}
+            type="submit"
+            className="w-full bg-green-500 text-white"
+          >
+            {isSubmitting ? "Sending..." : editMode ? "Save" : "Create"}
           </Button>
         </form>
       </Form>

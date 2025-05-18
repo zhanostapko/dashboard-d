@@ -1,6 +1,11 @@
+import { InvoiceItem } from "@prisma/client";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
 
-const ItemsTable = () => {
+type Props = {
+  items: InvoiceItem[];
+  total: number;
+};
+const ItemsTable = ({ items, total }: Props) => {
   return (
     <View style={styles.table}>
       {/* Header */}
@@ -15,23 +20,19 @@ const ItemsTable = () => {
       </View>
 
       {/* Rows */}
-      {[
-        ["Transportlīdzekļa remonts", "gb.", "1", "302,7", "302,70"],
-        ["Riepu maiņa un balansēšana", "gb.", "4", "7,5", "30,00"],
-        ["Servisa palīgmateriāli", "gb.", "1", "2,3", "2,30"],
-      ].map((row, i) => (
+      {items.map((row, i) => (
         <View style={styles.row} key={i}>
-          <Text style={[styles.cell, styles.col1]}>{row[0]}</Text>
-          <Text style={[styles.cell, styles.col2]}>{row[1]}</Text>
-          <Text style={[styles.cell, styles.col3]}>{row[2]}</Text>
-          <Text style={[styles.cell, styles.col4]}>{row[3]}</Text>
-          <Text style={[styles.lastCell, styles.col5]}>{row[4]}</Text>
+          <Text style={[styles.cell, styles.col1]}>{row.name}</Text>
+          <Text style={[styles.cell, styles.col2]}>{row.unit}</Text>
+          <Text style={[styles.cell, styles.col3]}>{row.quantity}</Text>
+          <Text style={[styles.cell, styles.col4]}>{row.price}</Text>
+          <Text style={[styles.cell, styles.col5]}>{row.total}</Text>
         </View>
       ))}
 
       {/* Total */}
       <View style={styles.totalRow}>
-        <Text style={styles.totalText}>Kopā: 335,00</Text>
+        <Text style={styles.totalText}>Kopā: {`${total} EUR `}</Text>
       </View>
     </View>
   );
@@ -45,6 +46,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     borderWidth: 1,
     borderColor: "#000",
+    marginTop: 10,
   },
   headerRow: {
     flexDirection: "row",

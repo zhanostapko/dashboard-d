@@ -1,5 +1,5 @@
 "use client";
-import { Invoice } from "@prisma/client";
+
 import {
   Document,
   Page,
@@ -10,9 +10,10 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import pdfLogo from "@/public/pdfLogo.png";
-import InvoiceSignatures from "./Signatures";
 import Signatures from "./Signatures";
 import ItemsTable from "./ItemsTable";
+import { InvoiceWithDetails } from "@/types/invoice";
+import { format } from "date-fns";
 
 Font.register({
   family: "Roboto",
@@ -22,7 +23,7 @@ Font.register({
 const styles = StyleSheet.create({
   page: {
     fontSize: 10,
-    padding: 20,
+    padding: 40,
     fontFamily: "Roboto",
   },
   header: {
@@ -75,12 +76,31 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
-  invoice: Invoice;
+  invoice: InvoiceWithDetails;
 };
 
 export default function InvoicePDFTemplate({ invoice }: Props) {
-  console.log(invoice, "in PDF");
-  const { number, date } = invoice;
+  const {
+    number,
+    date,
+    supplier,
+    clientName,
+    clientAccount,
+    clientBank,
+    clientRegNr,
+    clientPhone,
+    clientBankCode,
+    clientAddress,
+    clientEmail,
+    carBrand,
+    carModel,
+    carPlate,
+    carMileage,
+    paymentType,
+    items,
+    total,
+  } = invoice;
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -93,81 +113,89 @@ export default function InvoicePDFTemplate({ invoice }: Props) {
         <View style={styles.container}>
           <View style={styles.headerRow}>
             <Text>Pavadzīmes Nr.: {number}</Text>
-            <Text>Datums: 02.04.2025</Text>
+            <Text>Datums: {`${format(new Date(date), "dd.MM.yyyy")}`}</Text>
           </View>
 
           <View style={styles.row}>
             <Text style={styles.label}>Pakalpojuma sniedzējs:</Text>
-            <Text style={styles.value}>SIA SAI</Text>
+            <Text style={styles.value}>{supplier.name}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Reģ.Nr.:</Text>
-            <Text style={styles.value}>00000000000</Text>
+            <Text style={styles.value}>{supplier.regNr}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Banka:</Text>
-            <Text style={styles.value}>A/S ________</Text>
+            <Text style={styles.value}>{supplier.bank}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Kods:</Text>
-            <Text style={styles.value}>________</Text>
+            <Text style={styles.value}>{supplier.code}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Konts:</Text>
-            <Text style={styles.value}>LV______ __________________</Text>
+            <Text style={styles.value}>{supplier.account}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Tālrunis:</Text>
-            <Text style={styles.value}>XXXXXXX ; XXXXXXX</Text>
+            <Text style={styles.value}>{supplier.phone}</Text>
           </View>
         </View>
         <View style={styles.container}>
           <View style={styles.row}>
             <Text style={styles.label}>Pakalpojuma maksātājs:</Text>
-            <Text style={styles.value}>SIA SAI</Text>
+            <Text style={styles.value}>{clientName}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Reģ.Nr.:</Text>
-            <Text style={styles.value}>00000000000</Text>
+            <Text style={styles.value}>{clientRegNr}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Juridiskā adrese:</Text>
-            <Text style={styles.value}>00000000000</Text>
+            <Text style={styles.value}>{clientAddress}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Banka:</Text>
-            <Text style={styles.value}>A/S ________</Text>
+            <Text style={styles.value}>{clientBank}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Kods:</Text>
-            <Text style={styles.value}>________</Text>
+            <Text style={styles.value}>{clientBankCode}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Konts:</Text>
-            <Text style={styles.value}>LV______ __________________</Text>
+            <Text style={styles.value}>{clientAccount}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Tālrunis:</Text>
-            <Text style={styles.value}>XXXXXXX ; XXXXXXX</Text>
+            <Text style={styles.value}>{clientPhone}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>E-pasts:</Text>
+            <Text style={styles.value}>{clientEmail}</Text>
           </View>
         </View>
 
         <View style={styles.container}>
           <View style={styles.row}>
-            <Text style={styles.label}>Transportlīdzekļa reģ. Nr.</Text>
-            <Text style={styles.value}>VW BEETLE (JK-913)</Text>
+            <Text style={styles.label}>Transportlīdzekļs</Text>
+            <Text
+              style={styles.value}
+            >{`${carBrand} ${carModel} (${carPlate})`}</Text>
           </View>
           <View style={styles.row}>
             <Text style={styles.label}>Nobraukums</Text>
-            <Text style={styles.value}>12345544343</Text>
+            <Text style={styles.value}>{carMileage}</Text>
           </View>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Apmaksas veids:</Text>
-          <Text style={styles.value}>Parskaitījums</Text>
+          <Text style={styles.value}>
+            {paymentType === "NonCash" ? "Pārskaitījums" : "Skaidra nauda"}
+          </Text>
         </View>
 
-        <ItemsTable />
+        <ItemsTable items={items} total={total} />
         <Signatures />
       </Page>
     </Document>

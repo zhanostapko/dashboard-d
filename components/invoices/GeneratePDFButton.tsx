@@ -2,10 +2,10 @@
 import { pdf } from "@react-pdf/renderer";
 import { Button } from "@/components/ui/button";
 import InvoicePDFTemplate from "./InvoicePDFTemplate/InvoicePDFTemplate";
-import { Invoice } from "@prisma/client";
+import { InvoiceWithDetails } from "@/types/invoice";
 
 type Props = {
-  invoice: Invoice;
+  invoice: InvoiceWithDetails;
 };
 
 export default function GeneratePDFButton({ invoice }: Props) {

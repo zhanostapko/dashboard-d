@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/table";
 import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
-import CreateUserForm from "@/components/CreateUserForm";
+import CreateUserForm from "@/components/users/CreateUserForm/CreateUserForm";
 import { User } from "@prisma/client";
+import data from "@/data/labels.json";
 
 type Props = {
   users: User[];
@@ -22,6 +23,17 @@ type Props = {
 const UsersTable = ({ users }: Props) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+
+  const {
+    nr,
+    firstName,
+    lastName,
+    email,
+    role,
+    actions,
+    deleteUserBtn,
+    editUserBtn,
+  } = data.ru.user;
 
   const deleteUser = async (userId: number) => {
     const res = await fetch(`/api/users?userId=${userId}`, {
@@ -44,27 +56,25 @@ const UsersTable = ({ users }: Props) => {
             onClose={() => setIsOpen(false)}
           />
         }
+      ></ModalWrapper>
+      <Button
+        onClick={() => {
+          setSelectedUser(null);
+          setIsOpen(true);
+        }}
+        className="mb-4"
       >
-        <Button
-          onClick={() => {
-            setSelectedUser(null);
-            setIsOpen(true);
-          }}
-          className="mb-4"
-        >
-          + Add User
-        </Button>
-      </ModalWrapper>
+        + {data.ru.user.createUser}
+      </Button>
       <Table>
-        <TableCaption>A list of your users.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Nr</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Surname</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="w-[100px]">{nr}</TableHead>
+            <TableHead>{email}</TableHead>
+            <TableHead>{role}</TableHead>
+            <TableHead>{firstName}</TableHead>
+            <TableHead>{lastName}</TableHead>
+            <TableHead className="text-right">{actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -82,9 +92,11 @@ const UsersTable = ({ users }: Props) => {
                     setIsOpen(true);
                   }}
                 >
-                  Edit
+                  {editUserBtn}
                 </Button>
-                <Button onClick={() => deleteUser(user.id)}>Delete</Button>
+                <Button onClick={() => deleteUser(user.id)}>
+                  {deleteUserBtn}
+                </Button>
               </TableCell>
             </TableRow>
           ))}

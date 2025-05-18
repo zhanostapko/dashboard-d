@@ -28,6 +28,7 @@ export const invoiceSchema = z.object({
   carModel: z.string().min(1, "Car model is required"),
   carPlate: z.string().min(1, "Car plate is required"),
   items: z.array(invoiceItemSchema).min(1, "At least one item is required"),
-
+  carMileage: z.string().optional(),
+  paymentType: z.enum(["Cash", "NonCash"]),
   total: z.number().min(1, "Total must be grater than 0"),
 });

@@ -1,16 +1,17 @@
 "use client";
 
 import React from "react";
+
+import { UserRoundCog, Newspaper } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command";
-import { UserRoundCog, Newspaper, Car, IdCard } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+} from "../ui/command";
 
 const Sidebar = () => {
   const pathname = usePathname();
