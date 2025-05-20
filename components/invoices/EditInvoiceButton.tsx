@@ -4,6 +4,9 @@ import ModalWrapper from "../General/ModalWrapper";
 import CreateInvoiceForm from "./CreateInvoicesForm/CreateInvoiceForm";
 import { Button } from "../ui/button";
 import { Invoice, InvoiceItem } from "@prisma/client";
+import data from "@/data/labels.json";
+
+const editLabel = data.ru.invoices.invoiceForm.editInvoiceButton;
 
 type Props = {
   invoice: Invoice & {
@@ -24,7 +27,7 @@ const EditInvoiceButton = ({ invoice }: Props) => {
         }}
         className="mb-4"
       >
-        Edit
+        {editLabel}
       </Button>
       <ModalWrapper
         isOpen={isOpen}

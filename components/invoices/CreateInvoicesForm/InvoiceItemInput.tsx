@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel } from "../../ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { InvoiceItemInputValues } from "./InvoiceItemTable";
+import data from "@/data/labels.json";
+
+const { name, price, quantity, sum, type } =
+  data.ru.invoices.invoiceForm.invoiceItems;
 
 type Props = {
   localForm: UseFormReturn<InvoiceItemInputValues>;
@@ -23,7 +27,7 @@ export default function InvoiceItemInput({ localForm, onClear }: Props) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>{name}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -37,7 +41,7 @@ export default function InvoiceItemInput({ localForm, onClear }: Props) {
             name="unit"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Unit</FormLabel>
+                <FormLabel>{type}</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -51,7 +55,7 @@ export default function InvoiceItemInput({ localForm, onClear }: Props) {
             name="quantity"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Quantity</FormLabel>
+                <FormLabel>{quantity}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -68,7 +72,7 @@ export default function InvoiceItemInput({ localForm, onClear }: Props) {
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>{price}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -85,7 +89,7 @@ export default function InvoiceItemInput({ localForm, onClear }: Props) {
             name="total"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Summ</FormLabel>
+                <FormLabel>{sum}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}

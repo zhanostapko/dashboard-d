@@ -8,6 +8,11 @@ export const authConfig = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
     }),
   ],
   callbacks: {
@@ -26,9 +31,11 @@ export const authConfig = {
 
       return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
-      console.log(token);
+    async session({ session }: { session: Session; token?: JWT }) {
       return session;
     },
+  },
+  pages: {
+    error: "/login/error",
   },
 };

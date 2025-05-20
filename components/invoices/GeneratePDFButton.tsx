@@ -17,7 +17,7 @@ export default function GeneratePDFButton({ invoice }: Props) {
 
   return (
     <Button variant="outline" onClick={handleClick}>
-      Open PDF
+      PDF
     </Button>
   );
 }

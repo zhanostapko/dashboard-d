@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { InvoiceWithDetails } from "@/types/invoice";
+import data from "@/data/labels.json";
+
+const deleteLabel = data.ru.invoices.invoiceForm.deleteInvoiceButton;
 
 type Props = {
   invoice: InvoiceWithDetails;
@@ -31,7 +34,7 @@ const DeleteInvoiceButton = ({ invoice }: Props) => {
         deleteInvoice(invoice.id);
       }}
     >
-      {isLoading ? "Deleting..." : "Delete"}
+      {isLoading ? "Deleting..." : `${deleteLabel}`}
     </Button>
   );
 };

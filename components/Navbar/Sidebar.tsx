@@ -12,8 +12,10 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
+import data from "@/data/labels.json";
 
 const Sidebar = () => {
+  const { users, invoices } = data.ru.menu;
   const pathname = usePathname();
 
   return (
@@ -28,7 +30,7 @@ const Sidebar = () => {
               }`}
             >
               <UserRoundCog />
-              Users
+              {users}
             </Link>
           </CommandItem>
           <CommandItem className="p-0">
@@ -41,7 +43,7 @@ const Sidebar = () => {
               }`}
             >
               <Newspaper />
-              Invoices
+              {invoices}
             </Link>
           </CommandItem>
           {/* <CommandItem className="p-0">

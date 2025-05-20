@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -15,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import CreateInvoiceForm from "@/components/invoices/CreateInvoicesForm/CreateInvoiceForm";
 import { InvoicePreview } from "@/lib/invoices";
 import { useRouter } from "next/navigation";
+import labelsData from "@/data/labels.json";
 
 type Props = {
   data: InvoicePreview[];
@@ -25,6 +25,20 @@ const InvoicesTable = ({ data }: Props) => {
   const [loadingInvoiceId, setLoadingInvoiceId] = useState<number | null>(null);
   const router = useRouter();
 
+  const {
+    addInvoiceBtn,
+    actions,
+    carPlate,
+    clientName,
+    date,
+    invoiceNumber,
+    status,
+    nr,
+    total,
+    unpaid,
+    paid,
+    paidBtn,
+  } = labelsData.ru.invoices;
   const statusChangeHandler = async (
     event: React.MouseEvent<HTMLButtonElement>,
     invoiceId: number
@@ -55,21 +69,20 @@ const InvoicesTable = ({ data }: Props) => {
         }}
         className="mb-4"
       >
-        + Add Invoice
+        + {addInvoiceBtn}
       </Button>
 
       <Table>
-        <TableCaption>List of invoices.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50px]">Nr</TableHead>
-            <TableHead>Invoice #</TableHead>
-            <TableHead>Client name</TableHead>
-            <TableHead>Car plate</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="w-[50px]">{nr}</TableHead>
+            <TableHead>{invoiceNumber} #</TableHead>
+            <TableHead>{clientName}</TableHead>
+            <TableHead>{carPlate}</TableHead>
+            <TableHead>{date}</TableHead>
+            <TableHead>{status}</TableHead>
+            <TableHead>{total}</TableHead>
+            <TableHead className="text-right">{actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -95,7 +108,7 @@ const InvoicesTable = ({ data }: Props) => {
                   ) /* or any format */
                 }
               </TableCell>
-              <TableCell>{invoice.status}</TableCell>
+              <TableCell>{invoice.status === "Paid" ? paid : unpaid}</TableCell>
               <TableCell>{invoice.total}</TableCell>
               <TableCell className="flex gap-4 justify-end">
                 <Button
@@ -105,7 +118,9 @@ const InvoicesTable = ({ data }: Props) => {
                   onClick={(event) => statusChangeHandler(event, invoice.id)}
                   variant="outline"
                 >
-                  {loadingInvoiceId === invoice.id ? "Sending..." : "Paid"}
+                  {loadingInvoiceId === invoice.id
+                    ? "Sending..."
+                    : `${paidBtn}`}
                 </Button>
               </TableCell>
             </TableRow>

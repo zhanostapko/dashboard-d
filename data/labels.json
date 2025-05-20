@@ -15,7 +15,73 @@
       "requiredField": "Обязательное поле",
       "editUser": "Редактировать пользователя",
       "saveBtn": "Сохранить",
-      "error": "Не удалось загрузить пользователей. Пожалуйста, попробуйте позже."
+      "error": "Не удалось загрузить пользователей. Пожалуйста, попробуйте позже.",
+      "admin": "Админ",
+      "user": "Пользователь"
+    },
+    "menu": {
+      "users": "Пользователи",
+      "invoices": "Счета"
+    },
+    "invoices": {
+      "nr": "Нр.",
+      "addInvoiceBtn": "Добавить",
+      "invoiceNumber": "Счёт №",
+      "clientName": "Имя клиента",
+      "carPlate": "Номер авто",
+      "date": "Дата",
+      "status": "Статус",
+      "total": "Сумма",
+      "actions": "Действия",
+      "paidBtn": "Оплачено",
+      "paid": "Оплачено",
+      "unpaid": "Не оплачено",
+
+      "invoiceForm": {
+        "createTitle": "Создать счет",
+        "editTitle": "Редактировать счет",
+        "saving": "Сохранение...",
+        "formInvoiceNumber": "Номер счета",
+
+        "clientInformation": {
+          "title": "Информация о клиенте",
+          "clientName": "Имя клиента",
+          "clientRegistrationNumber": "Регистрационный номер",
+          "address": "Адрес",
+          "email": "Электронная почта",
+          "phone": "Телефон",
+          "paymentType": "Тип оплаты",
+          "bank": "Банк",
+          "bankCode": "Код банка",
+          "account": "Счет",
+          "cash": "Наличные",
+          "nonCash": "Безналичные"
+        },
+
+        "carInformation": {
+          "title": "Информация об автомобиле",
+          "brand": "Марка",
+          "model": "Модель",
+          "plate": "Номерной знак",
+          "mileage": "Пробег"
+        },
+
+        "invoiceItems": {
+          "title": "Позиции счета",
+          "name": "Наименование",
+          "type": "Тип",
+          "quantity": "Количество",
+          "price": "Цена",
+          "sum": "Сумма",
+          "actions": "Действия",
+          "addItem": "Добавить позицию"
+        },
+
+        "createInvoiceButton": "Создать",
+        "saveInvoiceButton": "Сохранить",
+        "editInvoiceButton": "Редактировать",
+        "deleteInvoiceButton": "Удалить"
+      }
     }
   }
 }

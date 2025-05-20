@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  if (!token && pathname !== "/login") {
+  if (!token && (pathname.startsWith("/auth") || pathname.startsWith("/api"))) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
@@ -18,5 +18,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/auth/:path*"],
+  matcher: ["/login", "/auth/:path*", "/api/:path*"],
 };

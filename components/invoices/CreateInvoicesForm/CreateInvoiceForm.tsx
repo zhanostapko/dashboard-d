@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Error from "@/components/Error";
+import labelsData from "@/data/labels.json";
 
 type Props = {
   onClose: () => void;
@@ -60,6 +61,39 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   const [total, setTotal] = useState(invoice?.total || 0);
   const [items, setItems] = useState<InvoiceItem[]>(invoice?.items || []);
   const [validatedTotal, setValidatedTotal] = useState(false);
+
+  const { invoiceForm, date, total: totalLabel } = labelsData.ru.invoices;
+
+  const {
+    saveInvoiceButton,
+    createInvoiceButton,
+    formInvoiceNumber,
+    clientInformation,
+    carInformation,
+    invoiceItems,
+    createTitle,
+    editTitle,
+    saving,
+  } = invoiceForm;
+
+  const {
+    title,
+    clientName,
+    account,
+    address,
+    bank,
+    bankCode,
+    clientRegistrationNumber,
+    email,
+    phone,
+    paymentType,
+    cash,
+    nonCash,
+  } = clientInformation;
+
+  const { brand, mileage, model, plate, title: carTitle } = carInformation;
+
+  const { title: itemsTitle } = invoiceItems;
 
   useEffect(() => {
     if (state.success) onClose();
@@ -136,7 +170,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   return (
     <div className=" space-y-2">
       <h2 className="text-2xl font-bold mb-4">
-        {editMode ? "Edit Invoice" : "Create Invoice"}
+        {editMode ? `${editTitle}` : `${createTitle}`}
       </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -147,7 +181,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                 name="number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Invoice Number</FormLabel>
+                    <FormLabel>{formInvoiceNumber}</FormLabel>
                     <FormControl>
                       <div>
                         <div> {invoiceNumber}</div>
@@ -171,7 +205,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Date*</FormLabel>
+                    <FormLabel>{date}*</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -182,7 +216,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             </div>
           </div>
 
-          <h3 className="text-md font-bold mb-4">Client information</h3>
+          <h3 className="text-md font-bold mb-4">{title}</h3>
 
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -190,7 +224,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client Name*</FormLabel>
+                  <FormLabel>{clientName}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -203,7 +237,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientRegNr"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client Registration Number*</FormLabel>
+                  <FormLabel>{clientRegistrationNumber}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -216,7 +250,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientAddress"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address*</FormLabel>
+                  <FormLabel>{address}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -229,7 +263,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientEmail"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client Email</FormLabel>
+                  <FormLabel>{email}</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
@@ -242,7 +276,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientPhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client Phone</FormLabel>
+                  <FormLabel>{phone}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -255,7 +289,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="paymentType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Payment type</FormLabel>
+                  <FormLabel>{paymentType}</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
@@ -265,8 +299,8 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                         <SelectValue placeholder="Select payment type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Cash">Cash</SelectItem>
-                        <SelectItem value="NonCash">Non cash</SelectItem>
+                        <SelectItem value="Cash">{cash}</SelectItem>
+                        <SelectItem value="NonCash">{nonCash}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -282,7 +316,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientBank"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Bank*</FormLabel>
+                  <FormLabel>{bank}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -295,7 +329,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientBankCode"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Bank Code*</FormLabel>
+                  <FormLabel>{bankCode}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -308,7 +342,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="clientAccount"
               render={({ field }) => (
                 <FormItem className="flex-1">
-                  <FormLabel>Account*</FormLabel>
+                  <FormLabel>{account}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -319,7 +353,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
           </div>
 
           <Separator />
-          <h3 className="text-md font-bold mb-4">Car information</h3>
+          <h3 className="text-md font-bold mb-4">{carTitle}</h3>
 
           <div className="flex gap-4">
             <FormField
@@ -327,7 +361,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="carBrand"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Brand*</FormLabel>
+                  <FormLabel>{brand}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -341,7 +375,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="carModel"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Model*</FormLabel>
+                  <FormLabel>{model}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -355,7 +389,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="carPlate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Plate*</FormLabel>
+                  <FormLabel>{plate}*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -368,7 +402,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               name="carMileage"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mileage</FormLabel>
+                  <FormLabel>{mileage}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -383,7 +417,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             name="items"
             render={() => (
               <FormItem>
-                <FormLabel>Invoice Items*</FormLabel>
+                <FormLabel>{itemsTitle}*</FormLabel>
                 <FormControl>
                   <InvoiceItemTable
                     items={items}
@@ -403,7 +437,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
               <FormItem>
                 <FormControl>
                   <div className="flex justify-end">
-                    <h2 className="font-bold text-2xl py-2">{`Total: ${total}`}</h2>
+                    <h2 className="font-bold text-2xl py-2">{`${totalLabel}: ${total}`}</h2>
                     <input type="hidden" {...field} value={total} />
                   </div>
                 </FormControl>
@@ -419,7 +453,11 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             type="submit"
             className="w-full bg-green-500 text-white"
           >
-            {isSubmitting ? "Sending..." : editMode ? "Save" : "Create"}
+            {isSubmitting
+              ? `${saving}`
+              : editMode
+              ? `${saveInvoiceButton}`
+              : `${createInvoiceButton}`}
           </Button>
         </form>
       </Form>

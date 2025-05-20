@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Role, User } from "@prisma/client";
+import data from "@/data/labels.json";
 
 type Props = {
   selectedUser?: User | null;
@@ -25,6 +26,20 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
     success: null,
     user: selectedUser || null,
   });
+
+  const {
+    firstName,
+    lastName,
+    email,
+    editUser,
+    createUser,
+    role: roleLabel,
+    requiredField,
+    saveBtn,
+    addUserBtn,
+    admin,
+    user,
+  } = data.ru.user;
 
   const handleSubmit = (formData: FormData) => {
     formData.append("role", role);
@@ -42,7 +57,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
   return (
     <>
       <h1 className="text-2xl font-bold mb-4">
-        {selectedUser ? "Edit User" : "Create User"}
+        {selectedUser ? `${editUser}` : `${createUser}`}
       </h1>
 
       {state.error && <p className="text-red-500">{state.error}</p>}
@@ -55,7 +70,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
 
         <div>
           <Label className="mb-2" htmlFor="email">
-            Email*
+            {email}*
           </Label>
           <Input
             name="email"
@@ -67,7 +82,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
         <div className="flex gap-4">
           <div className="flex-1">
             <Label className="mb-2" htmlFor="name">
-              Name*
+              {firstName}*
             </Label>
             <Input
               name="name"
@@ -77,14 +92,14 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
           </div>
           <div className="flex-1">
             <Label className="mb-2" htmlFor="surname">
-              Surname
+              {lastName}
             </Label>
             <Input name="surname" defaultValue={state?.user?.surname || ""} />
           </div>
         </div>
 
         <div>
-          <Label className="mb-2">Role*</Label>
+          <Label className="mb-2">{roleLabel}*</Label>
           <Select
             defaultValue={role}
             onValueChange={(value) => setRole(value as Role)}
@@ -93,15 +108,15 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
               <SelectValue placeholder="Select a role" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ADMIN">Admin</SelectItem>
-              <SelectItem value="USER">User</SelectItem>
+              <SelectItem value="ADMIN">{admin}</SelectItem>
+              <SelectItem value="USER">{user}</SelectItem>
             </SelectContent>
           </Select>
         </div>
-        <p className="text-sm text-gray-400">* - Required field</p>
+        <p className="text-sm text-gray-400">* - {requiredField}</p>
 
         <Button type="submit" className="w-full bg-green-500 text-white">
-          {selectedUser ? "Update User" : "Create User"}
+          {selectedUser ? `${saveBtn}` : `${addUserBtn}`}
         </Button>
       </form>
     </>

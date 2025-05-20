@@ -15,6 +15,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { invoiceItemSchema } from "@/lib/schemas/schemas";
 import { z } from "zod";
+import data from "@/data/labels.json";
+
+const { actions, addItem, name, price, quantity, sum, type } =
+  data.ru.invoices.invoiceForm.invoiceItems;
 
 type Props = {
   handleAdd: (item: InvoiceItem) => void;
@@ -66,12 +70,12 @@ export default function InvoiceItemTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Qty</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Summ</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>{name}</TableHead>
+              <TableHead>{type}</TableHead>
+              <TableHead>{quantity}</TableHead>
+              <TableHead>{price}</TableHead>
+              <TableHead>{sum}</TableHead>
+              <TableHead>{actions}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -91,7 +95,7 @@ export default function InvoiceItemTable({
             className=" item-right mt-4"
             type="submit"
           >
-            ➕ Add Item
+            ➕ {addItem}
           </Button>
         </div>
       </div>
