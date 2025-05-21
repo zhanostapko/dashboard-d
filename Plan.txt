@@ -1,4 +1,2 @@
-
 7) Make refactoring and clean code
-9) Add checking in table adn Google data to users
 10) setup to supabase

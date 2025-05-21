@@ -1,4 +1,4 @@
-// pages/auth/error.tsx
+"use client";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -7,7 +7,7 @@ export default function AuthError() {
   const router = useRouter();
   const { error } = router.query;
   useEffect(() => {
-    signOut({ callbackUrl: "/" }); // или на /login
+    signOut({ callbackUrl: "/" });
   }, []);
 
   return (
