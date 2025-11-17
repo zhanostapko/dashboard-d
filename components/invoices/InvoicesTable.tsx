@@ -10,11 +10,10 @@ import {
 } from "@/components/ui/table";
 import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
-// Suppose you have a CreateInvoiceForm similar to your CreateUserForm
-import CreateInvoiceForm from "@/components/invoices/CreateInvoicesForm/CreateInvoiceForm";
 import { InvoicePreview } from "@/lib/invoices";
 import { useRouter } from "next/navigation";
 import labelsData from "@/data/labels.json";
+import CreateInvoiceForm from "./CreateInvoicesForm/CreateInvoiceForm";
 
 type Props = {
   data: InvoicePreview[];
@@ -54,6 +53,7 @@ const InvoicesTable = ({ data }: Props) => {
       throw new Error("Failed to delete invoice");
     }
     setLoadingInvoiceId(null);
+    router.refresh();
   };
 
   return (

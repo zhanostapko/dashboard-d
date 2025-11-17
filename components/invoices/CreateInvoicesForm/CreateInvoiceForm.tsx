@@ -19,7 +19,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { invoiceSchema } from "@/lib/schemas/schemas";
 import { invoiceNumberGenerate } from "@/lib/invoices";
 import { Input } from "../../ui/input";
-import InvoiceItemTable from "./InvoiceItemTable";
 import { Separator } from "../../ui/separator";
 import { Invoice, InvoiceItem } from "@prisma/client";
 import { format } from "date-fns";
@@ -37,6 +36,7 @@ import {
 } from "@/components/ui/select";
 import Error from "@/components/Error";
 import labelsData from "@/data/labels.json";
+import InvoiceItemTable from "./InvoiceItemTable";
 
 type Props = {
   onClose: () => void;
@@ -143,15 +143,12 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   });
 
   function onSubmit(values: InvoiceFormValues) {
-    console.log("Form submitted");
-    console.log(values, "values");
     setValidatedTotal(true);
 
     startTransition(() => {
       formAction({ ...values });
     });
 
-    console.log(values);
   }
 
   const handleAddInvoiceItem = (item: InvoiceItem) => {

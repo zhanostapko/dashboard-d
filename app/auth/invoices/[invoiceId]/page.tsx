@@ -1,11 +1,11 @@
-import EditInvoiceButton from "@/components/invoices/EditInvoiceButton";
-import GeneratePDFButton from "@/components/invoices/GeneratePDFButton";
+import EditInvoiceButton from "@/components/Invoices/EditInvoiceButton";
+import GeneratePDFButton from "@/components/Invoices/GeneratePDFButton";
 import { Card, CardContent } from "@/components/ui/card";
 import { getInvoiceDetails } from "@/lib/invoices";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { format } from "date-fns";
-import DeleteInvoiceButton from "@/components/invoices/DeleteInvoiceButton";
+import DeleteInvoiceButton from "@/components/Invoices/DeleteInvoiceButton";
 import Error from "@/components/Error";
 import data from "@/data/labels.json";
 

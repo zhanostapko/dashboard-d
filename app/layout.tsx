@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dimax dahsboard",
-  description: "Admins dashboard",
+  title: "Local dev",
+  description: "Description",
 };
 
 export default function RootLayout({

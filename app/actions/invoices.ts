@@ -1,7 +1,5 @@
 "use server";
 
-// import prisma from "@/lib/db";
-
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/db";
 import { invoiceSchema } from "@/lib/schemas/schemas";
@@ -36,11 +34,9 @@ export async function saveInvoiceAction(
 
   const { items, ...baseData } = parsedData.data;
 
-  console.log(baseData, "baseData");
 
   try {
     if (id !== 0 || id) {
-      // update data in db
       await prisma.invoice.update({
         where: { id },
         data: {
@@ -60,9 +56,7 @@ export async function saveInvoiceAction(
       });
       revalidatePath("/invoices/[invoiceId]");
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id, ...dataWithoutId } = baseData;
-      // create data in db
       await prisma.invoice.create({
         data: {
           ...dataWithoutId,

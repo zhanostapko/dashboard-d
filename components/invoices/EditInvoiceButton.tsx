@@ -15,7 +15,6 @@ type Props = {
 };
 
 const EditInvoiceButton = ({ invoice }: Props) => {
-  console.log(invoice, "invoice in edit button");
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>

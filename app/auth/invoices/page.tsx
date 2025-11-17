@@ -1,5 +1,5 @@
 import Error from "@/components/Error";
-import InvoicesTable from "@/components/invoices/InvoicesTable";
+import InvoicesTable from "@/components/Invoices/InvoicesTable";
 
 import { getAllInvoices } from "@/lib/invoices";
 import React from "react";

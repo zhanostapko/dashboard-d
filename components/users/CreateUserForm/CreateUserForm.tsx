@@ -47,9 +47,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
   };
 
   useEffect(() => {
-    console.log("success in effect");
     if (state.success) {
-      console.log("inside conditions");
       onClose?.();
     }
   }, [state.success, onClose]);

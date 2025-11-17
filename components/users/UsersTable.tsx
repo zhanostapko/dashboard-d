@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/table";
 import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
-import CreateUserForm from "@/components/users/CreateUserForm/CreateUserForm";
 import { User } from "@prisma/client";
 import data from "@/data/labels.json";
+import CreateUserForm from "./CreateUserForm/CreateUserForm";
 
 type Props = {
   users: User[];
