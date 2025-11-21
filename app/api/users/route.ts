@@ -1,34 +1,27 @@
-import prisma from "@/lib/db";
-import { revalidatePath } from "next/cache";
+import { userCreateSchema } from "@/modules/users/schema";
+import { userService } from "@/modules/users/service";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// export async function DELETE(req: NextRequest) {
-//   const id = req.nextUrl.searchParams.get("userId");
-//   const userId = id ? parseInt(id) : NaN;
+export const GET = async () => {
+  const users = await userService.getAllUsers();
+  return NextResponse.json(users);
+};
 
-//   if (isNaN(userId)) {
-//     return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
-//   }
+export const POST = async (req: NextRequest) => {
+  const body = await req.json();
+  const parsed = userCreateSchema.safeParse(body);
 
-//   try {
-//     await prisma.user.delete({
-//       where: { id: userId },
-//     });
-//     revalidatePath("/users");
-//     return NextResponse.json(
-//       { message: "User deleted successfully" },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     return NextResponse.json(
-//       {
-//         error: (error as Error).message || "Failed to delete user",
-//       },
-//       { status: 500 }
-//     );
-//   }
-// }
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid body", details: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+  const user = await userService.createUser(parsed.data);
+  if (!user) {
+    return NextResponse.json({ error: "User already exists" }, { status: 409 });
+  }
 
-export const GET = async () => {}
-export const POST = async () => {}
+  return NextResponse.json(user, { status: 201 });
+};

@@ -1,2 +1,0 @@
-7) Make refactoring and clean code
-10) setup to supabase

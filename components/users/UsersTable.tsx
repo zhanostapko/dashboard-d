@@ -11,17 +11,20 @@ import {
 } from "@/components/ui/table";
 import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
-import { User } from "@prisma/client";
 import data from "@/data/labels.json";
 import CreateUserForm from "./CreateUserForm/CreateUserForm";
+import { useRouter } from "next/navigation";
+import { UserDto } from "@/modules/users/schema";
 
 type Props = {
-  users: User[];
+  users: UserDto[];
 };
 
 const UsersTable = ({ users }: Props) => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const {
     nr,
@@ -35,12 +38,19 @@ const UsersTable = ({ users }: Props) => {
   } = data.ru.user;
 
   const deleteUser = async (userId: number) => {
-    const res = await fetch(`/api/users?userId=${userId}`, {
-      method: "DELETE",
-    });
+    try {
+      setDeletingUserId(userId);
+      const res = await fetch(`/api/users/${userId}`, {
+        method: "DELETE",
+      });
 
-    if (!res.ok) {
-      throw new Error("Failed to delete user");
+      if (!res.ok) {
+        throw new Error("Failed to delete user");
+      }
+      router.refresh();
+    } catch (err) {
+      console.log(err);
+      setDeletingUserId(null);
     }
   };
 
@@ -93,8 +103,11 @@ const UsersTable = ({ users }: Props) => {
                 >
                   {editUserBtn}
                 </Button>
-                <Button onClick={() => deleteUser(user.id)}>
-                  {deleteUserBtn}
+                <Button
+                  disabled={deletingUserId === user.id}
+                  onClick={() => deleteUser(user.id)}
+                >
+                  {deletingUserId === user.id ? "Loading" : deleteUserBtn}
                 </Button>
               </TableCell>
             </TableRow>

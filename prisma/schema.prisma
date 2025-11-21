@@ -9,15 +9,15 @@ enum Role {
   ADMIN
 }
 
-// enum InvoiceStatus {
-//   Paid
-//   Unpaid
-// }
+enum InvoiceStatus {
+  Paid
+  Unpaid
+}
 
-// enum PaymentType  {
-//   Cash
-//   NonCash
-// }
+enum PaymentType  {
+  Cash
+  NonCash
+}
 
 generator client {
   provider = "prisma-client-js"
@@ -32,7 +32,7 @@ datasource db {
 model User {
   id         Int   @id @default(autoincrement()) 
   email      String   @unique                                    
-  name       String?                       
+  name       String                       
   surname    String?                        
   role       Role     @default(USER)       
   createdAt  DateTime @default(now())       
@@ -59,100 +59,100 @@ model User {
 
 
 //
-// model Invoice {
-//   id         Int     @id @default(autoincrement())
-//   number     String?   @unique
-//   date       DateTime @default(now())
-//   total      Float
-//   paymentType PaymentType @default(NonCash)
-//   supplierId Int
-//   supplier   Supplier @relation(fields: [supplierId], references: [id])
+model Invoice {
+  id         Int     @id @default(autoincrement())
+  number     String?   @unique
+  date       DateTime @default(now())
+  total      Float
+  paymentType PaymentType @default(NonCash)
+  supplierId Int
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
 
-//   clientId   Int? 
-//   client     Client?  @relation(fields: [clientId], references: [id])
+  clientId   Int? 
+  client     Client?  @relation(fields: [clientId], references: [id])
 
 
  
-//   clientName    String?
-//   clientRegNr   String?
-//   clientAddress String?
-//   clientEmail   String?
-//   clientPhone   String?
-//   clientBank    String?
-//   clientBankCode String?
-//   clientAccount String?
+  clientName    String?
+  clientRegNr   String?
+  clientAddress String?
+  clientEmail   String?
+  clientPhone   String?
+  clientBank    String?
+  clientBankCode String?
+  clientAccount String?
 
-//   carBrand     String @default("")
-//   carModel     String @default("")
-//   carPlate     String @default("")
-//   carMileage   String @default("")
+  carBrand     String @default("")
+  carModel     String @default("")
+  carPlate     String @default("")
+  carMileage   String @default("")
 
-//   status       InvoiceStatus @default(Unpaid)
+  status       InvoiceStatus @default(Unpaid)
   
-//   items      InvoiceItem[]
-//   createdAt  DateTime @default(now())
-//   updatedAt  DateTime @updatedAt
-// }
+  items      InvoiceItem[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
 
 // //
 
-// model InvoiceItem {
-//   id         Int      @id @default(autoincrement())
-//   invoiceId  Int
-//   invoice    Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-//   name       String   
-//   unit       String   
-//   quantity   Int      
-//   price      Float    
-//   total      Float    
-// }
+model InvoiceItem {
+  id         Int      @id @default(autoincrement())
+  invoiceId  Int
+  invoice    Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  name       String   
+  unit       String   
+  quantity   Int      
+  price      Float    
+  total      Float    
+}
 
-// model Supplier { 
-//   id       Int    @id @default(autoincrement())
-//   name     String 
-//   regNr    String 
-//   bank     String 
-//   code     String? 
-//   account  String 
-//   phone    String? 
-//   invoices Invoice[]
-// }
+model Supplier { 
+  id       Int    @id @default(autoincrement())
+  name     String 
+  regNr    String 
+  bank     String 
+  code     String? 
+  account  String 
+  phone    String? 
+  invoices Invoice[]
+}
 
-// model Client { 
-//   id       Int     @id @default(autoincrement())
-//   name     String  
-//   regNr    String? 
-//   address  String?
-//   bank     String?
-//   bankCode String? 
-//   account  String? 
-//   phone    String? 
-//   email    String? 
-//   isDeleted  Boolean @default(false)
-//   repairs  Repair[]  
-//   invoices Invoice[] 
-// }
+model Client { 
+  id       Int     @id @default(autoincrement())
+  name     String  
+  regNr    String? 
+  address  String?
+  bank     String?
+  bankCode String? 
+  account  String? 
+  phone    String? 
+  email    String? 
+  isDeleted  Boolean @default(false)
+  repairs  Repair[]  
+  invoices Invoice[] 
+}
 
-// model Repair {
-//   id         Int      @id @default(autoincrement())
-//   date       DateTime @default(now())
-//   clientId   Int?    
-//   client     Client?  @relation(fields: [clientId], references: [id])
-//   clientName  String? 
-//   clientPhone String? 
-//   items      RepairItem[]
-//   createdAt  DateTime @default(now())
-//   updatedAt  DateTime @updatedAt @default(now()) 
-// }
+model Repair {
+  id         Int      @id @default(autoincrement())
+  date       DateTime @default(now())
+  clientId   Int?    
+  client     Client?  @relation(fields: [clientId], references: [id])
+  clientName  String? 
+  clientPhone String? 
+  items      RepairItem[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt @default(now()) 
+}
 
-// model RepairItem { 
-//   id       Int     @id @default(autoincrement())
-//   repairId Int
-//   repair   Repair  @relation(fields: [repairId], references: [id])
-//   name     String
-//   unit     String
-//   quantity Int 
-//   price    Float
-// }
+model RepairItem { 
+  id       Int     @id @default(autoincrement())
+  repairId Int
+  repair   Repair  @relation(fields: [repairId], references: [id])
+  name     String
+  unit     String
+  quantity Int 
+  price    Float
+}
 
 
