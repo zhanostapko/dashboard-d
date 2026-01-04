@@ -10,31 +10,18 @@ import {
   TableHead,
 } from "@/components/ui/table";
 import InvoiceItemInput from "./InvoiceItemInput";
-import { InvoiceItem } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { invoiceItemSchema } from "@/lib/schemas/schemas";
-import { z } from "zod";
 import data from "@/data/labels.json";
+import { InvoiceItemDto, invoiceItemSchema } from "@/modules/invoices/schema";
 
 const { actions, addItem, name, price, quantity, sum, type } =
   data.ru.invoices.invoiceForm.invoiceItems;
 
 type Props = {
-  handleAdd: (item: InvoiceItem) => void;
+  handleAdd: (item: InvoiceItemDto) => void;
   handleRemove: (id: number) => void;
-  items: InvoiceItem[];
-};
-
-export type InvoiceItemInputValues = z.infer<typeof invoiceItemSchema>;
-
-const initialInput = {
-  id: 1,
-  name: "",
-  unit: "pcs",
-  quantity: 1,
-  price: 10.0,
-  total: 10.0,
+  items: InvoiceItemDto[];
 };
 
 export default function InvoiceItemTable({
@@ -42,7 +29,15 @@ export default function InvoiceItemTable({
   handleRemove,
   items,
 }: Props) {
-  const localForm = useForm<InvoiceItemInputValues>({
+  const initialInput = {
+    id: Date.now(),
+    name: "",
+    unit: "pcs",
+    quantity: 1,
+    price: 10.0,
+    total: 10.0,
+  };
+  const localForm = useForm<InvoiceItemDto>({
     resolver: zodResolver(invoiceItemSchema),
     defaultValues: initialInput,
   });
@@ -55,10 +50,9 @@ export default function InvoiceItemTable({
     const total = data.quantity * data.price;
 
     handleAdd({
-      id: Date.now(),
       ...data,
+      id: Date.now(),
       total,
-      invoiceId: 0,
     });
 
     localForm.reset();

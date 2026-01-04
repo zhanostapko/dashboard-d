@@ -1,13 +1,13 @@
 import EditInvoiceButton from "@/components/Invoices/EditInvoiceButton";
 import GeneratePDFButton from "@/components/Invoices/GeneratePDFButton";
 import { Card, CardContent } from "@/components/ui/card";
-import { getInvoiceDetails } from "@/lib/invoices";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { format } from "date-fns";
 import DeleteInvoiceButton from "@/components/Invoices/DeleteInvoiceButton";
 import Error from "@/components/Error";
 import data from "@/data/labels.json";
+import { invoiceService } from "@/modules/invoices/service";
 
 const { total, invoiceForm, date } = data.ru.invoices;
 
@@ -48,7 +48,7 @@ const InvoiceDetailPage = async ({
   let invoice;
   const { invoiceId } = await params;
   try {
-    invoice = await getInvoiceDetails(Number(invoiceId));
+    invoice = await invoiceService.getInvoice(Number(invoiceId));
   } catch (error) {
     console.log(error);
     return <Error />;

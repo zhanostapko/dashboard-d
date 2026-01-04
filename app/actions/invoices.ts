@@ -1,11 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import prisma from "@/lib/db";
-import { invoiceSchema } from "@/lib/schemas/schemas";
-import { z } from "zod";
-
-export type InvoiceFormValues = z.infer<typeof invoiceSchema>;
+import {
+  invoiceCreateSchema,
+  InvoiceFormValues,
+  invoiceUpdateSchema,
+} from "@/modules/invoices/schema";
+import { invoiceService } from "@/modules/invoices/service";
 
 export type SaveInvoiceState = {
   errors: Record<string, string[]> | null;
@@ -17,62 +18,40 @@ export async function saveInvoiceAction(
   prevState: SaveInvoiceState,
   action: InvoiceFormValues
 ): Promise<SaveInvoiceState> {
-  const parsedData = await invoiceSchema.safeParseAsync(action);
-
-  if (!parsedData.success) {
-    return {
-      ...prevState,
-      errors: {
-        validation: ["Validation error occurred. Please check and try again"],
-      },
-      success: false,
-      formData: action,
-    };
-  }
-
-  const { id } = parsedData.data;
-
-  const { items, ...baseData } = parsedData.data;
-
+  const id = action.id;
 
   try {
-    if (id !== 0 || id) {
-      await prisma.invoice.update({
-        where: { id },
-        data: {
-          ...baseData,
-          date: new Date(baseData.date),
-          items: {
-            deleteMany: {},
-            create: items.map((item) => ({
-              name: item.name,
-              unit: item.unit,
-              quantity: item.quantity,
-              price: item.price,
-              total: item.total,
-            })),
+    if (Number.isInteger(id) && id !== 0) {
+      const parsed = await invoiceUpdateSchema.safeParseAsync(action);
+      if (!parsed.success) {
+        return {
+          ...prevState,
+          errors: {
+            validation: [
+              "Validation error occurred. Please check and try again",
+            ],
           },
-        },
-      });
+          success: false,
+          formData: action,
+        };
+      }
+      await invoiceService.updateInvoice(id!, parsed.data);
       revalidatePath("/invoices/[invoiceId]");
     } else {
-      const { id, ...dataWithoutId } = baseData;
-      await prisma.invoice.create({
-        data: {
-          ...dataWithoutId,
-          date: new Date(dataWithoutId.date),
-          supplier: { connect: { id: 1 } },
-          items: {
-            create: items.map((item) => ({
-              name: item.name,
-              unit: item.unit,
-              quantity: item.quantity,
-              price: item.price,
-              total: item.total,
-            })),
+      const parsed = await invoiceCreateSchema.safeParseAsync(action);
+      if (!parsed.success) {
+        return {
+          ...prevState,
+          errors: {
+            validation: [
+              "Validation error occurred. Please check and try again",
+            ],
           },
-        },
-      });
+          success: false,
+          formData: action,
+        };
+      }
+      await invoiceService.createInvoice(parsed.data);
       revalidatePath("/invoices");
     }
 

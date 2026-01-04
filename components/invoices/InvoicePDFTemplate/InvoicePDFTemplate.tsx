@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   page: {
     fontSize: 10,
     padding: 40,
-    paddingTop:0,
+    paddingTop: 0,
     fontFamily: "Roboto",
   },
   header: {

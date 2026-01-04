@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import ModalWrapper from "../General/ModalWrapper";
 import CreateInvoiceForm from "./CreateInvoicesForm/CreateInvoiceForm";
 import { Button } from "../ui/button";
-import { Invoice, InvoiceItem } from "@prisma/client";
 import data from "@/data/labels.json";
+import { InvoiceDto, InvoiceItemDto } from "@/modules/invoices/schema";
 
 const editLabel = data.ru.invoices.invoiceForm.editInvoiceButton;
 
 type Props = {
-  invoice: Invoice & {
-    items: InvoiceItem[];
+  invoice: InvoiceDto & {
+    items: InvoiceItemDto[];
   };
 };
 

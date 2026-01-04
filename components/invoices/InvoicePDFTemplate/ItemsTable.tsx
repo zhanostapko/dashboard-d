@@ -1,8 +1,8 @@
-import { InvoiceItem } from "@prisma/client";
 import { Text, View, StyleSheet } from "@react-pdf/renderer";
+import { InvoiceItemDto } from "@/modules/invoices/schema";
 
 type Props = {
-  items: InvoiceItem[];
+  items: InvoiceItemDto[];
   total: number;
 };
 const ItemsTable = ({ items, total }: Props) => {

@@ -1,12 +1,11 @@
+import React from "react";
 import Error from "@/components/Error";
 import InvoicesTable from "@/components/Invoices/InvoicesTable";
-
-import { getAllInvoices } from "@/lib/invoices";
-import React from "react";
+import { invoiceService } from "@/modules/invoices/service";
 
 const InvoicesPage = async () => {
   try {
-    const data = await getAllInvoices();
+    const data = await invoiceService.getAllInvoices();
     return <InvoicesTable data={data} />;
   } catch (err) {
     console.log(err);

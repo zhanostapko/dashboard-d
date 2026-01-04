@@ -26,7 +26,6 @@ export const invoiceNumberGenerate = async () => {
       number: "desc",
     },
   });
-
   let newNumber = 1;
 
   if (lastInvoice?.number) {
@@ -41,23 +40,23 @@ export const invoiceNumberGenerate = async () => {
   return newInvoiceNumber;
 };
 
-export const getAllInvoices = async (): Promise<InvoicePreview[]> => {
-  return await prisma.invoice.findMany({
-    select: {
-      id: true,
-      total: true,
-      clientName: true,
-      number: true,
-      date: true,
-      carPlate: true,
-      status: true,
-    },
-  });
-};
+// export const getAllInvoices = async (): Promise<InvoicePreview[]> => {
+//   return await prisma.invoice.findMany({
+//     select: {
+//       id: true,
+//       total: true,
+//       clientName: true,
+//       number: true,
+//       date: true,
+//       carPlate: true,
+//       status: true,
+//     },
+//   });
+// };
 
-export const getInvoiceDetails = async (id: number) => {
-  return await prisma.invoice.findUnique({
-    where: { id },
-    include: { items: true, supplier: true },
-  });
-};
+// export const getInvoiceDetails = async (id: number) => {
+//   return await prisma.invoice.findUnique({
+//     where: { id },
+//     include: { items: true, supplier: true },
+//   });
+// };

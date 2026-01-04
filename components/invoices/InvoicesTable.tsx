@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/table";
 import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
-import { InvoicePreview } from "@/lib/invoices";
 import { useRouter } from "next/navigation";
 import labelsData from "@/data/labels.json";
 import CreateInvoiceForm from "./CreateInvoicesForm/CreateInvoiceForm";
+import { InvoiceDto } from "@/modules/invoices/schema";
 
 type Props = {
-  data: InvoicePreview[];
+  data: InvoiceDto[];
 };
 
 const InvoicesTable = ({ data }: Props) => {

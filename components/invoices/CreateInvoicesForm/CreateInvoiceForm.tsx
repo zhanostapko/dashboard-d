@@ -16,17 +16,11 @@ import {
 } from "../../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { invoiceSchema } from "@/lib/schemas/schemas";
 import { invoiceNumberGenerate } from "@/lib/invoices";
 import { Input } from "../../ui/input";
 import { Separator } from "../../ui/separator";
-import { Invoice, InvoiceItem } from "@prisma/client";
 import { format } from "date-fns";
-import {
-  InvoiceFormValues,
-  saveInvoiceAction,
-  SaveInvoiceState,
-} from "@/app/actions/invoices";
+import { saveInvoiceAction, SaveInvoiceState } from "@/app/actions/invoices";
 import {
   Select,
   SelectContent,
@@ -37,11 +31,17 @@ import {
 import Error from "@/components/Error";
 import labelsData from "@/data/labels.json";
 import InvoiceItemTable from "./InvoiceItemTable";
+import {
+  InvoiceDto,
+  invoiceFormSchema,
+  InvoiceFormValues,
+  InvoiceItemDto,
+} from "@/modules/invoices/schema";
 
 type Props = {
   onClose: () => void;
-  invoice?: Invoice & {
-    items: InvoiceItem[];
+  invoice?: InvoiceDto & {
+    items: InvoiceItemDto[];
   };
   editMode?: boolean;
 };
@@ -59,7 +59,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   );
   const [invoiceNumber, setInvoiceNumber] = useState(invoice?.number || "");
   const [total, setTotal] = useState(invoice?.total || 0);
-  const [items, setItems] = useState<InvoiceItem[]>(invoice?.items || []);
+  const [items, setItems] = useState<InvoiceItemDto[]>(invoice?.items || []);
   const [validatedTotal, setValidatedTotal] = useState(false);
 
   const { invoiceForm, date, total: totalLabel } = labelsData.ru.invoices;
@@ -95,6 +95,28 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
 
   const { title: itemsTitle } = invoiceItems;
 
+  const form = useForm<InvoiceFormValues>({
+    resolver: zodResolver(invoiceFormSchema),
+    defaultValues: {
+      id: invoice?.id || 0,
+      date: invoice?.date ? format(new Date(invoice.date), "yyyy-MM-dd") : "",
+      clientName: invoice?.clientName || "",
+      clientRegNr: invoice?.clientRegNr || "",
+      clientAddress: invoice?.clientAddress || "",
+      clientBank: invoice?.carBrand || "",
+      clientBankCode: invoice?.clientBankCode || "",
+      clientAccount: invoice?.clientAccount || "",
+      clientEmail: invoice?.clientEmail || "",
+      clientPhone: invoice?.clientPhone || "",
+      carBrand: invoice?.carBrand || "",
+      carModel: invoice?.carModel || "",
+      carPlate: invoice?.carPlate || "",
+      carMileage: invoice?.carMileage || "",
+      paymentType: invoice?.paymentType || "NonCash",
+      items: invoice?.items || [],
+    },
+  });
+
   useEffect(() => {
     if (state.success) onClose();
   }, [state.success, onClose]);
@@ -118,29 +140,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     );
     setTotal(total);
     form.setValue("total", total, { shouldValidate: validatedTotal });
-  }, [items]);
-
-  const form = useForm<InvoiceFormValues>({
-    resolver: zodResolver(invoiceSchema),
-    defaultValues: {
-      id: invoice?.id || 0,
-      date: invoice?.date ? format(new Date(invoice.date), "yyyy-MM-dd") : "",
-      clientName: invoice?.clientName || "",
-      clientRegNr: invoice?.clientRegNr || "",
-      clientAddress: invoice?.clientAddress || "",
-      clientBank: invoice?.carBrand || "",
-      clientBankCode: invoice?.clientBankCode || "",
-      clientAccount: invoice?.clientAccount || "",
-      clientEmail: invoice?.clientEmail || "",
-      clientPhone: invoice?.clientPhone || "",
-      carBrand: invoice?.carBrand || "",
-      carModel: invoice?.carModel || "",
-      carPlate: invoice?.carPlate || "",
-      carMileage: invoice?.carMileage || "",
-      paymentType: invoice?.paymentType || "NonCash",
-      items: invoice?.items || [],
-    },
-  });
+  }, [items, form, validatedTotal]);
 
   function onSubmit(values: InvoiceFormValues) {
     setValidatedTotal(true);
@@ -148,10 +148,9 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     startTransition(() => {
       formAction({ ...values });
     });
-
   }
 
-  const handleAddInvoiceItem = (item: InvoiceItem) => {
+  const handleAddInvoiceItem = (item: InvoiceItemDto) => {
     const newItems = [...items, item];
     setItems(newItems);
     form.setValue("items", newItems, { shouldValidate: true });
@@ -175,6 +174,18 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             <div className="flex-1">
               <FormField
                 control={form.control}
+                name="id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <input type="hidden" {...field} value={invoice?.id} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="number"
                 render={({ field }) => (
                   <FormItem>
@@ -192,11 +203,6 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             </div>
 
             <div className="flex-1">
-              <input
-                type="hidden"
-                {...form.register("id")}
-                value={invoice?.id || ""}
-              />
               <FormField
                 control={form.control}
                 name="date"
@@ -206,7 +212,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
-                    <FormMessage />
+                    {/* <FormMessage /> */}
                   </FormItem>
                 )}
               />
@@ -225,7 +231,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -238,7 +244,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -251,7 +257,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -264,7 +270,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -277,7 +283,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -301,7 +307,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -317,7 +323,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -330,7 +336,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -343,7 +349,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -362,7 +368,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -376,7 +382,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
@@ -390,7 +396,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
+                  {/* <FormMessage /> */}
                 </FormItem>
               )}
             />
