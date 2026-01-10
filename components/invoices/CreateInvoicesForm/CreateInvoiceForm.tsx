@@ -35,7 +35,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import Error from "@/components/Error";
+import ErrorState from "@/components/Error";
 import labelsData from "@/data/labels.json";
 import InvoiceItemTable from "./InvoiceItemTable";
 import {
@@ -147,7 +147,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
       try {
         const res = await fetch("/api/clients");
         if (!res.ok) {
-          throw new Error("Failed to load clients");
+          throw new globalThis.Error("Failed to load clients");
         }
         const data = (await res.json()) as ClientDto[];
         if (isActive) {
@@ -608,7 +608,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             )}
           />
 
-          {state.errors && <Error />}
+          {state.errors && <ErrorState />}
 
           <Button
             disabled={isSubmitting}
