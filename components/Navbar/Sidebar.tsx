@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { UserRoundCog, Newspaper } from "lucide-react";
+import { UserRoundCog, Newspaper, IdCard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,7 +15,7 @@ import {
 import data from "@/data/labels.json";
 
 const Sidebar = () => {
-  const { users, invoices } = data.ru.menu;
+  const { users, invoices, clients } = data.ru.menu;
   const pathname = usePathname();
 
   return (
@@ -57,7 +57,7 @@ const Sidebar = () => {
               Repairs
             </Link>
           </CommandItem> */}
-          {/* <CommandItem className="p-0">
+          <CommandItem className="p-0">
             <Link
               href="/auth/clients"
               className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
@@ -65,9 +65,9 @@ const Sidebar = () => {
               }`}
             >
               <IdCard />
-              Clients
+              {clients}
             </Link>
-          </CommandItem> */}
+          </CommandItem>
         </CommandGroup>
         <CommandSeparator />
       </CommandList>

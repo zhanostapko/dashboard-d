@@ -21,8 +21,34 @@
     },
     "menu": {
       "users": "Пользователи",
-      "invoices": "Счета"
+      "invoices": "Счета",
+      "clients": "Клиенты"
     },
+    "clients": {
+      "nr": "№",
+      "name": "Название",
+      "regNr": "Рег. номер",
+      "address": "Адрес",
+      "bank": "Банк",
+      "bankCode": "Код банка",
+      "account": "Счет",
+      "phone": "Телефон",
+      "email": "Email",
+      "actions": "Действия",
+      "addClientBtn": "Добавить клиента",
+      "editClientBtn": "Редактировать",
+      "deleteClientBtn": "Удалить",
+      "createClient": "Создать клиента",
+      "editClient": "Редактировать клиента",
+      "selectClient": "Клиент",
+      "searchClient": "Поиск клиента",
+      "clearClient": "Очистить",
+      "noClients": "Клиенты не найдены",
+      "requiredField": "Обязательное поле",
+      "saveBtn": "Сохранить",
+      "error": "Не удалось загрузить клиентов."
+    },
+
     "invoices": {
       "nr": "Нр.",
       "addInvoiceBtn": "Добавить",

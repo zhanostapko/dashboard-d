@@ -28,6 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import Error from "@/components/Error";
 import labelsData from "@/data/labels.json";
 import InvoiceItemTable from "./InvoiceItemTable";
@@ -37,6 +44,7 @@ import {
   InvoiceFormValues,
   InvoiceItemDto,
 } from "@/modules/invoices/schema";
+import { ClientDto } from "@/modules/clients/schema";
 
 type Props = {
   onClose: () => void;
@@ -61,8 +69,18 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   const [total, setTotal] = useState(invoice?.total || 0);
   const [items, setItems] = useState<InvoiceItemDto[]>(invoice?.items || []);
   const [validatedTotal, setValidatedTotal] = useState(false);
+  const [clients, setClients] = useState<ClientDto[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
+  const [clientsLoadError, setClientsLoadError] = useState<string | null>(null);
+  const [clientQuery, setClientQuery] = useState("");
 
   const { invoiceForm, date, total: totalLabel } = labelsData.ru.invoices;
+  const {
+    selectClient,
+    searchClient,
+    clearClient,
+    error: clientsError,
+  } = labelsData.ru.clients;
 
   const {
     saveInvoiceButton,
@@ -120,6 +138,48 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   useEffect(() => {
     if (state.success) onClose();
   }, [state.success, onClose]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadClients = async () => {
+      setClientsLoadError(null);
+      try {
+        const res = await fetch("/api/clients");
+        if (!res.ok) {
+          throw new Error("Failed to load clients");
+        }
+        const data = (await res.json()) as ClientDto[];
+        if (isActive) {
+          setClients(data);
+        }
+      } catch (error) {
+        console.error(error);
+        if (isActive) {
+          setClientsLoadError(clientsError);
+        }
+      }
+    };
+
+    loadClients();
+
+    return () => {
+      isActive = false;
+    };
+  }, [clientsError]);
+
+  useEffect(() => {
+    if (!invoice || selectedClientId || clients.length === 0) return;
+
+    const matchedClient = clients.find((client) => {
+      const regNrMatch = (client.regNr ?? "") === (invoice.clientRegNr ?? "");
+      return client.name === invoice.clientName && regNrMatch;
+    });
+
+    if (matchedClient) {
+      setSelectedClientId(matchedClient.id);
+    }
+  }, [clients, invoice, selectedClientId]);
   useEffect(() => {
     if (!invoice?.number) {
       const generatedInvoiceNumber = async () => {
@@ -161,6 +221,55 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     const newItems = items.filter((item) => item.id !== id);
     setItems(newItems);
     form.setValue("items", newItems, { shouldValidate: true });
+  };
+
+  const filteredClients =
+    clientQuery.trim().length < 3
+      ? []
+      : clients.filter((client) => {
+          const query = clientQuery.trim().toLowerCase();
+          const haystack = [
+            client.name,
+            client.regNr,
+            client.phone,
+            client.email,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          return haystack.includes(query);
+        });
+
+  const applyClient = (client: ClientDto) => {
+    setSelectedClientId(client.id);
+    form.setValue("clientName", client.name ?? "", { shouldValidate: true });
+    form.setValue("clientRegNr", client.regNr ?? "", { shouldValidate: true });
+    form.setValue("clientAddress", client.address ?? "", {
+      shouldValidate: true,
+    });
+    form.setValue("clientBank", client.bank ?? "", { shouldValidate: true });
+    form.setValue("clientBankCode", client.bankCode ?? "", {
+      shouldValidate: true,
+    });
+    form.setValue("clientAccount", client.account ?? "", {
+      shouldValidate: true,
+    });
+    form.setValue("clientPhone", client.phone ?? "", { shouldValidate: true });
+    form.setValue("clientEmail", client.email ?? "", { shouldValidate: true });
+    setClientQuery("");
+  };
+
+  const clearClientFields = () => {
+    setSelectedClientId(null);
+    form.setValue("clientName", "", { shouldValidate: true });
+    form.setValue("clientRegNr", "", { shouldValidate: true });
+    form.setValue("clientAddress", "", { shouldValidate: true });
+    form.setValue("clientBank", "", { shouldValidate: true });
+    form.setValue("clientBankCode", "", { shouldValidate: true });
+    form.setValue("clientAccount", "", { shouldValidate: true });
+    form.setValue("clientPhone", "", { shouldValidate: true });
+    form.setValue("clientEmail", "", { shouldValidate: true });
+    setClientQuery("");
   };
 
   return (
@@ -222,6 +331,56 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
           <h3 className="text-md font-bold mb-4">{title}</h3>
 
           <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2 space-y-2">
+              <div className="flex items-center justify-between">
+                <FormLabel>{selectClient}</FormLabel>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearClientFields}
+                  disabled={!selectedClientId}
+                >
+                  {clearClient}
+                </Button>
+              </div>
+              <Command className="rounded-md">
+                <CommandInput
+                  placeholder={searchClient}
+                  value={clientQuery}
+                  onValueChange={setClientQuery}
+                />
+                {clientQuery.trim().length >= 3 &&
+                  filteredClients.length > 0 && (
+                    <CommandList>
+                      <CommandGroup>
+                        {filteredClients.map((client) => (
+                          <CommandItem
+                            key={client.id}
+                            value={`${client.name} ${client.regNr ?? ""} ${
+                              client.phone ?? ""
+                            } ${client.email ?? ""}`}
+                            onSelect={() => applyClient(client)}
+                          >
+                            <div className="flex flex-col">
+                              <span>{client.name}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {client.regNr ||
+                                  client.phone ||
+                                  client.email ||
+                                  ""}
+                              </span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  )}
+              </Command>
+              {clientsLoadError && (
+                <p className="text-sm text-red-500">{clientsLoadError}</p>
+              )}
+            </div>
             <FormField
               control={form.control}
               name="clientName"
