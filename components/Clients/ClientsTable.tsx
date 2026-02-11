@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import data from "@/data/labels.json";
 import { useRouter } from "next/navigation";
 import { ClientDto } from "@/modules/clients/schema";
+import Link from "next/link";
 import CreateClientForm from "./CreateClientForm/CreateClientForm";
 
 type Props = {
@@ -91,7 +92,14 @@ const ClientsTable = ({ clients }: Props) => {
           {clients.map((client, index) => (
             <TableRow key={client.id}>
               <TableCell className="font-medium">{index + 1}</TableCell>
-              <TableCell>{client.name}</TableCell>
+              <TableCell>
+                <Link
+                  href={`/auth/clients/${client.id}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {client.name}
+                </Link>
+              </TableCell>
               <TableCell>{client.regNr || "-"}</TableCell>
               <TableCell>{client.phone || "-"}</TableCell>
               <TableCell>{client.email || "-"}</TableCell>

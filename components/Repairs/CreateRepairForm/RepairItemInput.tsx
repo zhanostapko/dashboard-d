@@ -3,21 +3,19 @@
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
 import { FormControl, FormField, FormItem, FormLabel } from "../../ui/form";
 import { UseFormReturn } from "react-hook-form";
 import data from "@/data/labels.json";
-import { InvoiceItemDto } from "@/modules/invoices/schema";
+import { RepairItemDto } from "@/modules/repairs/schema";
 
-const { name, price, quantity, sum, type } =
-  data.ru.invoices.invoiceForm.invoiceItems;
+const { name, price, quantity, type } = data.ru.repairs.repairForm.repairItems;
 
 type Props = {
-  localForm: UseFormReturn<InvoiceItemDto>;
+  localForm: UseFormReturn<RepairItemDto>;
   onClear: () => void;
 };
 
-export default function InvoiceItemInput({ localForm, onClear }: Props) {
+export default function RepairItemInput({ localForm, onClear }: Props) {
   return (
     <>
       <TableRow>
@@ -84,28 +82,6 @@ export default function InvoiceItemInput({ localForm, onClear }: Props) {
           />
         </TableCell>
         <TableCell>
-          <FormField
-            control={localForm.control}
-            name="total"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{sum}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    readOnly
-                    disabled
-                    value={
-                      localForm.watch("price") * localForm.watch("quantity")
-                    }
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </TableCell>
-        <TableCell>
           <Button type="button" variant="destructive" onClick={onClear}>
             ✕
           </Button>
@@ -114,11 +90,11 @@ export default function InvoiceItemInput({ localForm, onClear }: Props) {
 
       {Object.keys(localForm.formState.errors).length > 0 && (
         <TableRow>
-          <TableCell colSpan={6}>
+          <TableCell colSpan={5}>
             <div className="text-red-500 text-sm space-y-1">
               {Object.entries(localForm.formState.errors).map(
                 ([field, error]) => (
-                  <div key={field}>• {error?.message}</div>
+                  <div key={field}>ƒ?› {error?.message}</div>
                 )
               )}
             </div>

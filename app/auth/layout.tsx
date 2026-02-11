@@ -29,7 +29,7 @@ const MainPage = async ({ children }: Props) => {
       <Navbar />
       <main className="flex">
         <div className="hidden md:block h-[100vh] w-[300px]">
-          <Sidebar />
+          <Sidebar role={user.role} />
         </div>
         <div className="p-5 w-full md:max-w-[1140px]">{children}</div>
       </main>

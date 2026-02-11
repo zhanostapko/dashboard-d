@@ -1,11 +1,18 @@
 import { userUpdateSchema } from "@/modules/users/schema";
 import { userService } from "@/modules/users/service";
+import { requireRole } from "@/lib/authz";
+import { Role } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const guard = await requireRole(Role.ADMIN);
+  if (guard.response) {
+    return guard.response;
+  }
+
   const { id } = await params;
   if (isNaN(+id)) {
     return NextResponse.json({ error: "Invalid id" }, { status: 400 });
@@ -21,6 +28,11 @@ export const PUT = async (
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const guard = await requireRole(Role.ADMIN);
+  if (guard.response) {
+    return guard.response;
+  }
+
   const { id } = await params;
   const user = await req.json();
   const parsed = userUpdateSchema.safeParse(user);
@@ -41,6 +53,11 @@ export const DELETE = async (
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) => {
+  const guard = await requireRole(Role.ADMIN);
+  if (guard.response) {
+    return guard.response;
+  }
+
   const { id } = await params;
 
   if (isNaN(+id)) {

@@ -22,7 +22,8 @@
     "menu": {
       "users": "Пользователи",
       "invoices": "Счета",
-      "clients": "Клиенты"
+      "clients": "Клиенты",
+      "repairs": "Ремонты"
     },
     "clients": {
       "nr": "№",
@@ -34,6 +35,12 @@
       "account": "Счет",
       "phone": "Телефон",
       "email": "Email",
+      "detailsTitle": "Клиент",
+      "infoTitle": "Информация о клиенте",
+      "repairsTitle": "Ремонты",
+      "invoicesTitle": "Счета",
+      "noRepairs": "Ремонтов пока нет",
+      "noInvoices": "Счетов пока нет",
       "actions": "Действия",
       "addClientBtn": "Добавить клиента",
       "editClientBtn": "Редактировать",
@@ -107,6 +114,44 @@
         "saveInvoiceButton": "Сохранить",
         "editInvoiceButton": "Редактировать",
         "deleteInvoiceButton": "Удалить"
+      }
+    },
+    "repairs": {
+      "nr": "№",
+      "clientName": "Имя клиента",
+      "carPlate": "Номер авто",
+      "date": "Дата",
+      "actions": "Действия",
+      "addRepairBtn": "Добавить ремонт",
+      "editRepairBtn": "Редактировать",
+      "deleteRepairBtn": "Удалить",
+      "repairForm": {
+        "createTitle": "Создать ремонт",
+        "editTitle": "Редактировать ремонт",
+        "saving": "Сохранение...",
+        "saveRepairButton": "Сохранить",
+        "createRepairButton": "Создать",
+        "clientInformation": {
+          "title": "Информация о клиенте",
+          "clientName": "Имя клиента",
+          "phone": "Телефон"
+        },
+        "carInformation": {
+          "title": "Информация об автомобиле",
+          "brand": "Марка",
+          "model": "Модель",
+          "plate": "Номерной знак",
+          "mileage": "Пробег"
+        },
+        "repairItems": {
+          "title": "Позиции ремонта",
+          "name": "Наименование",
+          "type": "Тип",
+          "quantity": "Количество",
+          "price": "Цена",
+          "actions": "Действия",
+          "addItem": "Добавить позицию"
+        }
       }
     }
   }

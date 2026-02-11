@@ -28,13 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+// import {
+//   Command,
+//   CommandGroup,
+//   CommandInput,
+//   CommandItem,
+//   CommandList,
+// } from "@/components/ui/command";
 import ErrorState from "@/components/Error";
 import labelsData from "@/data/labels.json";
 import InvoiceItemTable from "./InvoiceItemTable";
@@ -44,7 +44,7 @@ import {
   InvoiceFormValues,
   InvoiceItemDto,
 } from "@/modules/invoices/schema";
-import { ClientDto } from "@/modules/clients/schema";
+// import { ClientDto } from "@/modules/clients/schema";
 
 type Props = {
   onClose: () => void;
@@ -63,24 +63,24 @@ const initialState: SaveInvoiceState = {
 const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   const [state, formAction, isSubmitting] = useActionState(
     saveInvoiceAction,
-    initialState
+    initialState,
   );
   const [invoiceNumber, setInvoiceNumber] = useState(invoice?.number || "");
   const [total, setTotal] = useState(invoice?.total || 0);
   const [items, setItems] = useState<InvoiceItemDto[]>(invoice?.items || []);
   const [validatedTotal, setValidatedTotal] = useState(false);
-  const [clients, setClients] = useState<ClientDto[]>([]);
-  const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
-  const [clientsLoadError, setClientsLoadError] = useState<string | null>(null);
-  const [clientQuery, setClientQuery] = useState("");
+  // const [clients, setClients] = useState<ClientDto[]>([]);
+  // const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
+  // const [clientsLoadError, setClientsLoadError] = useState<string | null>(null);
+  // const [clientQuery, setClientQuery] = useState("");
 
   const { invoiceForm, date, total: totalLabel } = labelsData.ru.invoices;
-  const {
-    selectClient,
-    searchClient,
-    clearClient,
-    error: clientsError,
-  } = labelsData.ru.clients;
+  // const {
+  //   selectClient,
+  //   searchClient,
+  //   clearClient,
+  //   error: clientsError,
+  // } = labelsData.ru.clients;
 
   const {
     saveInvoiceButton,
@@ -139,47 +139,47 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     if (state.success) onClose();
   }, [state.success, onClose]);
 
-  useEffect(() => {
-    let isActive = true;
+  // useEffect(() => {
+  //   let isActive = true;
 
-    const loadClients = async () => {
-      setClientsLoadError(null);
-      try {
-        const res = await fetch("/api/clients");
-        if (!res.ok) {
-          throw new globalThis.Error("Failed to load clients");
-        }
-        const data = (await res.json()) as ClientDto[];
-        if (isActive) {
-          setClients(data);
-        }
-      } catch (error) {
-        console.error(error);
-        if (isActive) {
-          setClientsLoadError(clientsError);
-        }
-      }
-    };
+  //   const loadClients = async () => {
+  //     setClientsLoadError(null);
+  //     try {
+  //       const res = await fetch("/api/clients");
+  //       if (!res.ok) {
+  //         throw new globalThis.Error("Failed to load clients");
+  //       }
+  //       const data = (await res.json()) as ClientDto[];
+  //       if (isActive) {
+  //         setClients(data);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //       if (isActive) {
+  //         setClientsLoadError(clientsError);
+  //       }
+  //     }
+  //   };
 
-    loadClients();
+  //   loadClients();
 
-    return () => {
-      isActive = false;
-    };
-  }, [clientsError]);
+  //   return () => {
+  //     isActive = false;
+  //   };
+  // }, [clientsError]);
 
-  useEffect(() => {
-    if (!invoice || selectedClientId || clients.length === 0) return;
+  // useEffect(() => {
+  //   if (!invoice || selectedClientId || clients.length === 0) return;
 
-    const matchedClient = clients.find((client) => {
-      const regNrMatch = (client.regNr ?? "") === (invoice.clientRegNr ?? "");
-      return client.name === invoice.clientName && regNrMatch;
-    });
+  //   const matchedClient = clients.find((client) => {
+  //     const regNrMatch = (client.regNr ?? "") === (invoice.clientRegNr ?? "");
+  //     return client.name === invoice.clientName && regNrMatch;
+  //   });
 
-    if (matchedClient) {
-      setSelectedClientId(matchedClient.id);
-    }
-  }, [clients, invoice, selectedClientId]);
+  //   if (matchedClient) {
+  //     setSelectedClientId(matchedClient.id);
+  //   }
+  // }, [clients, invoice, selectedClientId]);
   useEffect(() => {
     if (!invoice?.number) {
       const generatedInvoiceNumber = async () => {
@@ -196,7 +196,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   useEffect(() => {
     const total = items.reduce(
       (acc, item) => acc + item.quantity * item.price,
-      0
+      0,
     );
     setTotal(total);
     form.setValue("total", total, { shouldValidate: validatedTotal });
@@ -223,54 +223,54 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     form.setValue("items", newItems, { shouldValidate: true });
   };
 
-  const filteredClients =
-    clientQuery.trim().length < 3
-      ? []
-      : clients.filter((client) => {
-          const query = clientQuery.trim().toLowerCase();
-          const haystack = [
-            client.name,
-            client.regNr,
-            client.phone,
-            client.email,
-          ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
-          return haystack.includes(query);
-        });
+  // const filteredClients =
+  //   clientQuery.trim().length < 3
+  //     ? []
+  //     : clients.filter((client) => {
+  //         const query = clientQuery.trim().toLowerCase();
+  //         const haystack = [
+  //           client.name,
+  //           client.regNr,
+  //           client.phone,
+  //           client.email,
+  //         ]
+  //           .filter(Boolean)
+  //           .join(" ")
+  //           .toLowerCase();
+  //         return haystack.includes(query);
+  //       });
 
-  const applyClient = (client: ClientDto) => {
-    setSelectedClientId(client.id);
-    form.setValue("clientName", client.name ?? "", { shouldValidate: true });
-    form.setValue("clientRegNr", client.regNr ?? "", { shouldValidate: true });
-    form.setValue("clientAddress", client.address ?? "", {
-      shouldValidate: true,
-    });
-    form.setValue("clientBank", client.bank ?? "", { shouldValidate: true });
-    form.setValue("clientBankCode", client.bankCode ?? "", {
-      shouldValidate: true,
-    });
-    form.setValue("clientAccount", client.account ?? "", {
-      shouldValidate: true,
-    });
-    form.setValue("clientPhone", client.phone ?? "", { shouldValidate: true });
-    form.setValue("clientEmail", client.email ?? "", { shouldValidate: true });
-    setClientQuery("");
-  };
+  // const applyClient = (client: ClientDto) => {
+  //   setSelectedClientId(client.id);
+  //   form.setValue("clientName", client.name ?? "", { shouldValidate: true });
+  //   form.setValue("clientRegNr", client.regNr ?? "", { shouldValidate: true });
+  //   form.setValue("clientAddress", client.address ?? "", {
+  //     shouldValidate: true,
+  //   });
+  //   form.setValue("clientBank", client.bank ?? "", { shouldValidate: true });
+  //   form.setValue("clientBankCode", client.bankCode ?? "", {
+  //     shouldValidate: true,
+  //   });
+  //   form.setValue("clientAccount", client.account ?? "", {
+  //     shouldValidate: true,
+  //   });
+  //   form.setValue("clientPhone", client.phone ?? "", { shouldValidate: true });
+  //   form.setValue("clientEmail", client.email ?? "", { shouldValidate: true });
+  //   setClientQuery("");
+  // };
 
-  const clearClientFields = () => {
-    setSelectedClientId(null);
-    form.setValue("clientName", "", { shouldValidate: true });
-    form.setValue("clientRegNr", "", { shouldValidate: true });
-    form.setValue("clientAddress", "", { shouldValidate: true });
-    form.setValue("clientBank", "", { shouldValidate: true });
-    form.setValue("clientBankCode", "", { shouldValidate: true });
-    form.setValue("clientAccount", "", { shouldValidate: true });
-    form.setValue("clientPhone", "", { shouldValidate: true });
-    form.setValue("clientEmail", "", { shouldValidate: true });
-    setClientQuery("");
-  };
+  // const clearClientFields = () => {
+  //   setSelectedClientId(null);
+  //   form.setValue("clientName", "", { shouldValidate: true });
+  //   form.setValue("clientRegNr", "", { shouldValidate: true });
+  //   form.setValue("clientAddress", "", { shouldValidate: true });
+  //   form.setValue("clientBank", "", { shouldValidate: true });
+  //   form.setValue("clientBankCode", "", { shouldValidate: true });
+  //   form.setValue("clientAccount", "", { shouldValidate: true });
+  //   form.setValue("clientPhone", "", { shouldValidate: true });
+  //   form.setValue("clientEmail", "", { shouldValidate: true });
+  //   setClientQuery("");
+  // };
 
   return (
     <div className=" space-y-2">
@@ -332,7 +332,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2 space-y-2">
-              <div className="flex items-center justify-between">
+              {/* <div className="flex items-center justify-between">
                 <FormLabel>{selectClient}</FormLabel>
                 <Button
                   type="button"
@@ -343,8 +343,8 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                 >
                   {clearClient}
                 </Button>
-              </div>
-              <Command className="rounded-md">
+              </div> */}
+              {/* <Command className="rounded-md">
                 <CommandInput
                   placeholder={searchClient}
                   value={clientQuery}
@@ -376,10 +376,10 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                       </CommandGroup>
                     </CommandList>
                   )}
-              </Command>
-              {clientsLoadError && (
+              </Command> */}
+              {/* {clientsLoadError && (
                 <p className="text-sm text-red-500">{clientsLoadError}</p>
-              )}
+              )} */}
             </div>
             <FormField
               control={form.control}
@@ -618,8 +618,8 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
             {isSubmitting
               ? `${saving}`
               : editMode
-              ? `${saveInvoiceButton}`
-              : `${createInvoiceButton}`}
+                ? `${saveInvoiceButton}`
+                : `${createInvoiceButton}`}
           </Button>
         </form>
       </Form>
