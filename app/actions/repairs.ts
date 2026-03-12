@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/authz";
 import {
   repairCreateSchema,
   RepairFormValues,
@@ -19,6 +20,18 @@ export async function saveRepairAction(
   action: RepairFormValues
 ): Promise<SaveRepairState> {
   const id = action.id;
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return {
+      ...prevState,
+      success: false,
+      formData: action,
+      errors: {
+        auth: ["Authentication required."],
+      },
+    };
+  }
 
   try {
     if (Number.isInteger(id) && id !== 0) {
@@ -35,8 +48,18 @@ export async function saveRepairAction(
           formData: action,
         };
       }
-      await repairService.updateRepair(id!, parsed.data);
-      revalidatePath("/repairs");
+      const updatedRepair = await repairService.updateRepair(id!, parsed.data);
+      if (!updatedRepair) {
+        return {
+          ...prevState,
+          errors: {
+            repair: ["Repair not found."],
+          },
+          success: false,
+          formData: action,
+        };
+      }
+      revalidatePath("/auth/repairs");
     } else {
       const parsed = await repairCreateSchema.safeParseAsync(action);
       if (!parsed.success) {
@@ -52,7 +75,7 @@ export async function saveRepairAction(
         };
       }
       await repairService.createRepair(parsed.data);
-      revalidatePath("/repairs");
+      revalidatePath("/auth/repairs");
     }
 
     return { errors: null, success: true, formData: null };

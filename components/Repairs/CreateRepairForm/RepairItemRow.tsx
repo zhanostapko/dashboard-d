@@ -1,6 +1,7 @@
 "use client";
 
 import { TableRow, TableCell } from "@/components/ui/table";
+import data from "@/data/labels.json";
 import { RepairItemDto } from "@/modules/repairs/schema";
 
 type Props = {
@@ -9,10 +10,13 @@ type Props = {
 };
 
 export default function RepairItemRow({ item, onRemove }: Props) {
+  const { work, materials } = data.ru.repairs.repairForm.repairItems;
+  const typeLabel = item.unit === "materials" ? materials : work;
+
   return (
     <TableRow>
       <TableCell>{item.name}</TableCell>
-      <TableCell>{item.unit}</TableCell>
+      <TableCell>{typeLabel}</TableCell>
       <TableCell>{item.quantity}</TableCell>
       <TableCell>{item.price?.toFixed(2)}</TableCell>
       <TableCell>
@@ -21,7 +25,7 @@ export default function RepairItemRow({ item, onRemove }: Props) {
           className="text-red-500 hover:text-red-700"
           onClick={() => onRemove?.(item.id)}
         >
-          ƒo
+          ✕
         </button>
       </TableCell>
     </TableRow>

@@ -16,7 +16,6 @@ import {
 } from "../../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { invoiceNumberGenerate } from "@/lib/invoices";
 import { Input } from "../../ui/input";
 import { Separator } from "../../ui/separator";
 import { format } from "date-fns";
@@ -63,9 +62,8 @@ const initialState: SaveInvoiceState = {
 const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   const [state, formAction, isSubmitting] = useActionState(
     saveInvoiceAction,
-    initialState,
+    initialState
   );
-  const [invoiceNumber, setInvoiceNumber] = useState(invoice?.number || "");
   const [total, setTotal] = useState(invoice?.total || 0);
   const [items, setItems] = useState<InvoiceItemDto[]>(invoice?.items || []);
   const [validatedTotal, setValidatedTotal] = useState(false);
@@ -117,11 +115,12 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: {
       id: invoice?.id || 0,
+      number: invoice?.number || "AUTO",
       date: invoice?.date ? format(new Date(invoice.date), "yyyy-MM-dd") : "",
       clientName: invoice?.clientName || "",
       clientRegNr: invoice?.clientRegNr || "",
       clientAddress: invoice?.clientAddress || "",
-      clientBank: invoice?.carBrand || "",
+      clientBank: invoice?.clientBank || "",
       clientBankCode: invoice?.clientBankCode || "",
       clientAccount: invoice?.clientAccount || "",
       clientEmail: invoice?.clientEmail || "",
@@ -132,6 +131,7 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
       carMileage: invoice?.carMileage || "",
       paymentType: invoice?.paymentType || "NonCash",
       items: invoice?.items || [],
+      total: invoice?.total || 0,
     },
   });
 
@@ -139,64 +139,10 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     if (state.success) onClose();
   }, [state.success, onClose]);
 
-  // useEffect(() => {
-  //   let isActive = true;
-
-  //   const loadClients = async () => {
-  //     setClientsLoadError(null);
-  //     try {
-  //       const res = await fetch("/api/clients");
-  //       if (!res.ok) {
-  //         throw new globalThis.Error("Failed to load clients");
-  //       }
-  //       const data = (await res.json()) as ClientDto[];
-  //       if (isActive) {
-  //         setClients(data);
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //       if (isActive) {
-  //         setClientsLoadError(clientsError);
-  //       }
-  //     }
-  //   };
-
-  //   loadClients();
-
-  //   return () => {
-  //     isActive = false;
-  //   };
-  // }, [clientsError]);
-
-  // useEffect(() => {
-  //   if (!invoice || selectedClientId || clients.length === 0) return;
-
-  //   const matchedClient = clients.find((client) => {
-  //     const regNrMatch = (client.regNr ?? "") === (invoice.clientRegNr ?? "");
-  //     return client.name === invoice.clientName && regNrMatch;
-  //   });
-
-  //   if (matchedClient) {
-  //     setSelectedClientId(matchedClient.id);
-  //   }
-  // }, [clients, invoice, selectedClientId]);
-  useEffect(() => {
-    if (!invoice?.number) {
-      const generatedInvoiceNumber = async () => {
-        const number = await invoiceNumberGenerate();
-        setInvoiceNumber(number);
-        form.setValue("number", number, { shouldValidate: true });
-      };
-      generatedInvoiceNumber();
-    } else {
-      form.setValue("number", invoice.number);
-    }
-  }, [invoice?.number]);
-
   useEffect(() => {
     const total = items.reduce(
       (acc, item) => acc + item.quantity * item.price,
-      0,
+      0
     );
     setTotal(total);
     form.setValue("total", total, { shouldValidate: validatedTotal });
@@ -301,8 +247,8 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                     <FormLabel>{formInvoiceNumber}</FormLabel>
                     <FormControl>
                       <div>
-                        <div> {invoiceNumber}</div>
-                        <input type="hidden" {...field} value={invoiceNumber} />
+                        <div>{invoice?.number ?? "Assigned on save"}</div>
+                        <input type="hidden" {...field} value={field.value} />
                       </div>
                     </FormControl>
                     <FormMessage />

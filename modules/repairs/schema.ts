@@ -1,8 +1,13 @@
 import { z } from "zod";
 
+export const repairItemTypeSchema = z.enum(["work", "materials"], {
+  required_error: "Type is required",
+  invalid_type_error: "Type is required",
+});
+
 export const repairItemCreateSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  unit: z.string().min(1, "Unit is required"),
+  unit: repairItemTypeSchema,
   quantity: z.number().min(1, "Quantity must be at least 1"),
   price: z.number().min(0, "Price must be positive"),
 });
@@ -52,6 +57,7 @@ export const repairFormSchema = z.object({
 });
 
 export type RepairFormValues = z.infer<typeof repairFormSchema>;
+export type RepairItemType = z.infer<typeof repairItemTypeSchema>;
 export type RepairItemCreateDto = z.infer<typeof repairItemCreateSchema>;
 export type RepairItemDto = z.infer<typeof repairItemSchema>;
 export type RepairDto = z.infer<typeof repairSchema>;

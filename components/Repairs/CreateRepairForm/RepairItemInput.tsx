@@ -4,11 +4,19 @@ import { TableRow, TableCell } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel } from "../../ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import data from "@/data/labels.json";
 import { RepairItemDto } from "@/modules/repairs/schema";
 
-const { name, price, quantity, type } = data.ru.repairs.repairForm.repairItems;
+const { name, price, quantity, type, work, materials } =
+  data.ru.repairs.repairForm.repairItems;
 
 type Props = {
   localForm: UseFormReturn<RepairItemDto>;
@@ -41,7 +49,18 @@ export default function RepairItemInput({ localForm, onClear }: Props) {
               <FormItem>
                 <FormLabel>{type}</FormLabel>
                 <FormControl>
-                  <Input {...field} />
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || "work"}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder={type} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="work">{work}</SelectItem>
+                      <SelectItem value="materials">{materials}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
               </FormItem>
             )}
@@ -94,8 +113,8 @@ export default function RepairItemInput({ localForm, onClear }: Props) {
             <div className="text-red-500 text-sm space-y-1">
               {Object.entries(localForm.formState.errors).map(
                 ([field, error]) => (
-                  <div key={field}>ƒ?› {error?.message}</div>
-                )
+                  <div key={field}> {error?.message}</div>
+                ),
               )}
             </div>
           </TableCell>

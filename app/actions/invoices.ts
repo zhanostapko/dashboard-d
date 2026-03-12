@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/authz";
 import {
   invoiceCreateSchema,
   InvoiceFormValues,
@@ -19,9 +20,45 @@ export async function saveInvoiceAction(
   action: InvoiceFormValues
 ): Promise<SaveInvoiceState> {
   const id = action.id;
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return {
+      ...prevState,
+      success: false,
+      formData: action,
+      errors: {
+        auth: ["Authentication required."],
+      },
+    };
+  }
 
   try {
     if (Number.isInteger(id) && id !== 0) {
+      const existingInvoice = await invoiceService.getInvoice(id!);
+
+      if (!existingInvoice) {
+        return {
+          ...prevState,
+          errors: {
+            invoice: ["Invoice not found."],
+          },
+          success: false,
+          formData: action,
+        };
+      }
+
+      if (existingInvoice.status === "Paid") {
+        return {
+          ...prevState,
+          errors: {
+            invoice: ["Paid invoices cannot be edited."],
+          },
+          success: false,
+          formData: action,
+        };
+      }
+
       const parsed = await invoiceUpdateSchema.safeParseAsync(action);
       if (!parsed.success) {
         return {
@@ -36,7 +73,8 @@ export async function saveInvoiceAction(
         };
       }
       await invoiceService.updateInvoice(id!, parsed.data);
-      revalidatePath("/invoices/[invoiceId]");
+      revalidatePath("/auth/invoices");
+      revalidatePath(`/auth/invoices/${id}`);
     } else {
       const parsed = await invoiceCreateSchema.safeParseAsync(action);
       if (!parsed.success) {
@@ -52,7 +90,7 @@ export async function saveInvoiceAction(
         };
       }
       await invoiceService.createInvoice(parsed.data);
-      revalidatePath("/invoices");
+      revalidatePath("/auth/invoices");
     }
 
     return { errors: null, success: true, formData: null };

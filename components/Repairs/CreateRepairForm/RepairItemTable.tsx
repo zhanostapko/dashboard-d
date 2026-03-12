@@ -29,10 +29,9 @@ export default function RepairItemTable({
   handleRemove,
   items,
 }: Props) {
-  const initialInput: RepairItemDto = {
+  const initialInput: Partial<RepairItemDto> = {
     id: Date.now(),
     name: "",
-    unit: "pcs",
     quantity: 1,
     price: 0,
   };

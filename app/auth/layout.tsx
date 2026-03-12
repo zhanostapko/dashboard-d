@@ -10,6 +10,9 @@ import React from "react";
 type Props = {
   children: React.ReactNode;
 };
+
+export const dynamic = "force-dynamic";
+
 const MainPage = async ({ children }: Props) => {
   const session = await getServerSession(authConfig);
 

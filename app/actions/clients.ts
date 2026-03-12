@@ -81,7 +81,7 @@ export async function saveClientAction(
       await clientService.createClient(client);
     }
 
-    revalidatePath("/clients");
+    revalidatePath("/auth/clients");
     return { error: null, success: "Client saved!", client: null };
   } catch (error) {
     return {

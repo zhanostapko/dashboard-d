@@ -10,10 +10,16 @@ export type RepairWithItems = Prisma.RepairGetPayload<{
   include: { items: true };
 }>;
 
+const normalizeRepairItemType = (
+  unit: string | null | undefined
+): RepairItemDto["unit"] => {
+  return unit === "materials" ? "materials" : "work";
+};
+
 const toRepairItemDto = (item: RepairItem): RepairItemDto => ({
   id: item.id,
   name: item.name,
-  unit: item.unit,
+  unit: normalizeRepairItemType(item.unit),
   quantity: item.quantity,
   price: item.price,
 });

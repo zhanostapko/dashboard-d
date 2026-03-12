@@ -4,6 +4,9 @@ import {
   InvoiceDto,
   InvoiceUpdateDto,
 } from "@/modules/invoices/schema";
+import { Prisma } from "@prisma/client";
+import { invoiceNumberGenerate } from "@/lib/invoices";
+import { getDefaultSupplierId } from "@/lib/suppliers";
 import { invoiceRepository } from "./repository";
 import {
   toInvoiceCreateEntity,
@@ -11,6 +14,8 @@ import {
   toInvoiceDto,
   toInvoiceUpdateEntity,
 } from "./mappers";
+
+const MAX_INVOICE_NUMBER_ATTEMPTS = 5;
 
 export const invoiceService = {
   getAllInvoices: async (): Promise<InvoiceDto[]> => {
@@ -36,9 +41,38 @@ export const invoiceService = {
     return mappedInvoice;
   },
   createInvoice: async (invoice: InvoiceCreateDto): Promise<InvoiceDto> => {
-    const invoiceEntity = toInvoiceCreateEntity(invoice);
-    const createdInvoice = await invoiceRepository.createInvoice(invoiceEntity);
-    return toInvoiceDto(createdInvoice);
+    const supplierId = invoice.supplierId ?? (await getDefaultSupplierId());
+    let lastError: unknown;
+
+    for (let attempt = 0; attempt < MAX_INVOICE_NUMBER_ATTEMPTS; attempt += 1) {
+      const invoiceEntity = toInvoiceCreateEntity({
+        ...invoice,
+        supplierId,
+        number: await invoiceNumberGenerate(),
+      });
+
+      try {
+        const createdInvoice = await invoiceRepository.createInvoice(
+          invoiceEntity
+        );
+        return toInvoiceDto(createdInvoice);
+      } catch (error) {
+        lastError = error;
+
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2002"
+        ) {
+          continue;
+        }
+
+        throw error;
+      }
+    }
+
+    throw lastError instanceof Error
+      ? lastError
+      : new Error("Failed to generate a unique invoice number.");
   },
   updateInvoice: async (
     id: number,

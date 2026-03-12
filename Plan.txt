@@ -1,0 +1,16 @@
+1) Link repairs and invoices with client if possible. if there is link.
+    page id with link to specific invoice and repair
+2) Link to invoices 
+    a) like private or not
+3) Create repairs modules
+    a) link to client
+    b) create invoice based on that
+
+4) Check mobile view
+
+//  After review
+
+1) check icon delete
+2) total
+3) work type
+4) add masters

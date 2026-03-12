@@ -85,35 +85,41 @@ export const toInvoiceDetailsDto = (
 
 export const toInvoiceCreateEntity = (
   dto: InvoiceCreateDto
-): Prisma.InvoiceCreateInput => ({
-  number: dto.number,
-  date: new Date(dto.date),
-  status: dto.status ?? "Unpaid",
-  supplier: { connect: { id: dto.supplierId ?? 1 } },
-  clientName: dto.clientName,
-  clientRegNr: dto.clientRegNr,
-  clientAddress: dto.clientAddress,
-  clientBank: dto.clientBank,
-  clientBankCode: dto.clientBankCode,
-  clientAccount: dto.clientAccount,
-  clientPhone: dto.clientPhone ?? null,
-  clientEmail: dto.clientEmail ?? null,
-  carBrand: dto.carBrand,
-  carModel: dto.carModel,
-  carPlate: dto.carPlate,
-  carMileage: dto.carMileage ?? "",
-  paymentType: dto.paymentType,
-  total: dto.total,
-  items: {
-    create: dto.items.map((item) => ({
-      name: item.name,
-      unit: item.unit,
-      quantity: item.quantity,
-      price: item.price,
-      total: item.total,
-    })),
-  },
-});
+): Prisma.InvoiceCreateInput => {
+  if (dto.supplierId === undefined) {
+    throw new Error("Supplier must be configured before creating an invoice.");
+  }
+
+  return {
+    number: dto.number,
+    date: new Date(dto.date),
+    status: dto.status ?? "Unpaid",
+    supplier: { connect: { id: dto.supplierId } },
+    clientName: dto.clientName,
+    clientRegNr: dto.clientRegNr,
+    clientAddress: dto.clientAddress,
+    clientBank: dto.clientBank,
+    clientBankCode: dto.clientBankCode,
+    clientAccount: dto.clientAccount,
+    clientPhone: dto.clientPhone ?? null,
+    clientEmail: dto.clientEmail ?? null,
+    carBrand: dto.carBrand,
+    carModel: dto.carModel,
+    carPlate: dto.carPlate,
+    carMileage: dto.carMileage ?? "",
+    paymentType: dto.paymentType,
+    total: dto.total,
+    items: {
+      create: dto.items.map((item) => ({
+        name: item.name,
+        unit: item.unit,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.total,
+      })),
+    },
+  };
+};
 
 export const toInvoiceUpdateEntity = (
   dto: InvoiceUpdateDto

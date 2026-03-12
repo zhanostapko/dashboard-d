@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/authz";
 import {
   userCreateSchema,
   UserDto,
@@ -17,11 +18,28 @@ export async function saveUserAction(
   _prevState: SaveUserState,
   payload: FormData
 ): Promise<SaveUserState> {
+  const currentUser = await getCurrentUser();
   const id = payload.get("id") ? Number(payload.get("id")) : null;
   const email = payload.get("email") as string;
   const name = payload.get("name") as string;
   const surname = payload.get("surname") as string;
   const role = (payload.get("role") as "USER" | "ADMIN") || "USER";
+
+  if (!currentUser) {
+    return {
+      error: "Authentication required.",
+      success: null,
+      user: { email, name, surname, role },
+    };
+  }
+
+  if (currentUser.role !== "ADMIN") {
+    return {
+      error: "Forbidden.",
+      success: null,
+      user: { email, name, surname, role },
+    };
+  }
 
   try {
     if (id) {
@@ -63,7 +81,7 @@ export async function saveUserAction(
       }
     }
 
-    revalidatePath("/users");
+    revalidatePath("/auth/users");
     return { error: null, success: "User saved!", user: null };
   } catch (error) {
     return {

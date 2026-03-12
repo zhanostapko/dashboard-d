@@ -1,6 +1,6 @@
 import React from "react";
+import Error from "@/components/Error";
 import RepairsTable from "@/components/Repairs/RepairsTable";
-import data from "@/data/labels.json";
 import { repairService } from "@/modules/repairs/service";
 
 const RepairsPage = async () => {
@@ -10,7 +10,7 @@ const RepairsPage = async () => {
     repairs = await repairService.getAllRepairs();
   } catch (error) {
     console.error("Failed to load repairs:", error);
-    return <p className="text-red-500">{data.ru.repairs.error}</p>;
+    return <Error />;
   }
 
   return <RepairsTable repairs={repairs} />;
