@@ -35,6 +35,7 @@ const UsersTable = ({ users }: Props) => {
     actions,
     deleteUserBtn,
     editUserBtn,
+    loading,
   } = data.ru.user;
 
   const deleteUser = async (userId: number) => {
@@ -107,7 +108,7 @@ const UsersTable = ({ users }: Props) => {
                   disabled={deletingUserId === user.id}
                   onClick={() => deleteUser(user.id)}
                 >
-                  {deletingUserId === user.id ? "Loading" : deleteUserBtn}
+                  {deletingUserId === user.id ? loading : deleteUserBtn}
                 </Button>
               </TableCell>
             </TableRow>

@@ -15,11 +15,11 @@ export default function AuthError() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 text-center">
       <div className="max-w-md space-y-3">
-        <h1 className="text-2xl font-semibold">Authentication error</h1>
+        <h1 className="text-2xl font-semibold">Ошибка аутентификации</h1>
         {error === "AccessDenied" ? (
-          <p>Your account is not allowed to access this dashboard.</p>
+          <p>Вашему аккаунту не разрешен доступ к этой панели.</p>
         ) : (
-          <p>Something went wrong during sign-in. Please try again.</p>
+          <p>Во время входа произошла ошибка. Пожалуйста, попробуйте снова.</p>
         )}
       </div>
     </div>

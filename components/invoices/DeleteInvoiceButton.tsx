@@ -6,6 +6,7 @@ import { InvoiceWithDetails } from "@/types/invoice";
 import data from "@/data/labels.json";
 
 const deleteLabel = data.ru.invoices.invoiceForm.deleteInvoiceButton;
+const deletingLabel = data.ru.invoices.deleting;
 
 type Props = {
   invoice: InvoiceWithDetails;
@@ -34,7 +35,7 @@ const DeleteInvoiceButton = ({ invoice }: Props) => {
         deleteInvoice(invoice.id);
       }}
     >
-      {isLoading ? "Deleting..." : `${deleteLabel}`}
+      {isLoading ? deletingLabel : `${deleteLabel}`}
     </Button>
   );
 };

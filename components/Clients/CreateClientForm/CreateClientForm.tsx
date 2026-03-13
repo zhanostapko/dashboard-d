@@ -33,6 +33,7 @@ export default function CreateClientForm({ selectedClient, onClose }: Props) {
     requiredField,
     saveBtn,
     addClientBtn,
+    loading,
   } = data.ru.clients;
 
   useEffect(() => {
@@ -123,7 +124,7 @@ export default function CreateClientForm({ selectedClient, onClose }: Props) {
           type="submit"
           className="w-full bg-green-500 text-white"
         >
-          {isPending ? "Loading" : selectedClient ? `${saveBtn}` : `${addClientBtn}`}
+          {isPending ? loading : selectedClient ? `${saveBtn}` : `${addClientBtn}`}
         </Button>
       </form>
     </>

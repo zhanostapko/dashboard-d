@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "../../ui/button";
 import {
   Form,
@@ -46,7 +47,6 @@ import {
 // import { ClientDto } from "@/modules/clients/schema";
 
 type Props = {
-  onClose: () => void;
   invoice?: InvoiceDto & {
     items: InvoiceItemDto[];
   };
@@ -59,7 +59,8 @@ const initialState: SaveInvoiceState = {
   formData: null,
 };
 
-const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
+const CreateInvoiceForm = ({ invoice, editMode = false }: Props) => {
+  const router = useRouter();
   const [state, formAction, isSubmitting] = useActionState(
     saveInvoiceAction,
     initialState
@@ -87,8 +88,6 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
     clientInformation,
     carInformation,
     invoiceItems,
-    createTitle,
-    editTitle,
     saving,
   } = invoiceForm;
 
@@ -136,8 +135,11 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
   });
 
   useEffect(() => {
-    if (state.success) onClose();
-  }, [state.success, onClose]);
+    if (state.success) {
+      router.push("/auth/invoices");
+      router.refresh();
+    }
+  }, [router, state.success]);
 
   useEffect(() => {
     const total = items.reduce(
@@ -220,9 +222,6 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
 
   return (
     <div className=" space-y-2">
-      <h2 className="text-2xl font-bold mb-4">
-        {editMode ? `${editTitle}` : `${createTitle}`}
-      </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex gap-4">
@@ -239,22 +238,26 @@ const CreateInvoiceForm = ({ invoice, onClose, editMode = false }: Props) => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{formInvoiceNumber}</FormLabel>
-                    <FormControl>
-                      <div>
-                        <div>{invoice?.number ?? "Assigned on save"}</div>
-                        <input type="hidden" {...field} value={field.value} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {invoice?.number ? (
+                <FormField
+                  control={form.control}
+                  name="number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{formInvoiceNumber}</FormLabel>
+                      <FormControl>
+                        <div>
+                          <div>{invoice.number}</div>
+                          <input type="hidden" {...field} value={field.value} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <input type="hidden" {...form.register("number")} />
+              )}
             </div>
 
             <div className="flex-1">

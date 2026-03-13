@@ -2,7 +2,7 @@
 import React from "react";
 
 const error = () => {
-  return <div>Something went wrong on server, please try again later</div>;
+  return <div>На сервере произошла ошибка, пожалуйста, попробуйте позже</div>;
 };
 
 export default error;

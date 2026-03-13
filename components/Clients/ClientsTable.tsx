@@ -37,6 +37,7 @@ const ClientsTable = ({ clients }: Props) => {
     deleteClientBtn,
     editClientBtn,
     addClientBtn,
+    loading,
   } = data.ru.clients;
 
   const deleteClient = async (clientId: number) => {
@@ -116,7 +117,7 @@ const ClientsTable = ({ clients }: Props) => {
                   disabled={deletingClientId === client.id}
                   onClick={() => deleteClient(client.id)}
                 >
-                  {deletingClientId === client.id ? "Loading" : deleteClientBtn}
+                  {deletingClientId === client.id ? loading : deleteClientBtn}
                 </Button>
               </TableCell>
             </TableRow>

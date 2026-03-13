@@ -35,7 +35,7 @@ const baseInvoiceFields = {
   carMileage: z.string().optional(),
   items: z
     .array(invoiceItemCreateSchema)
-    .min(1, "At least one item is required"),
+    .min(1, "Нужно добавить хотя бы одну позицию."),
   paymentType: z.enum(["Cash", "NonCash"]),
   total: z.number().min(1, "Total must be greater than 0"),
 };
@@ -54,7 +54,7 @@ export const invoiceSchema = z.object({
   id: z.number(),
   createdAt: z.string().optional(),
   ...baseInvoiceFields,
-  items: z.array(invoiceItemSchema).min(1, "At least one item is required"),
+  items: z.array(invoiceItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 });
 
 export const invoiceDetailsSchema = invoiceSchema.extend({
@@ -90,7 +90,7 @@ export const invoiceFormSchema = z.object({
   carPlate: z.string().min(1, "Car plate is required"),
   carMileage: z.string().optional(),
   paymentType: z.enum(["Cash", "NonCash"]),
-  items: z.array(invoiceItemFormSchema).min(1, "At least one item is required"),
+  items: z.array(invoiceItemFormSchema).min(1, "Нужно добавить хотя бы одну позицию."),
   total: z.number().min(1, "Total must be greater than 0"),
 });
 export type InvoiceFormValues = z.infer<typeof invoiceFormSchema>;

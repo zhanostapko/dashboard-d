@@ -24,14 +24,14 @@ const baseRepairFields = {
   carModel: z.string().min(1, "Car model is required"),
   carPlate: z.string().min(1, "Car plate is required"),
   carMileage: z.string().optional(),
-  items: z.array(repairItemCreateSchema).min(1, "At least one item is required"),
+  items: z.array(repairItemCreateSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 };
 
 export const repairSchema = z.object({
   id: z.number(),
   createdAt: z.string().optional(),
   ...baseRepairFields,
-  items: z.array(repairItemSchema).min(1, "At least one item is required"),
+  items: z.array(repairItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 });
 
 export const repairCreateSchema = z.object(baseRepairFields);
@@ -53,7 +53,7 @@ export const repairFormSchema = z.object({
   carModel: z.string().min(1, "Car model is required"),
   carPlate: z.string().min(1, "Car plate is required"),
   carMileage: z.string().optional(),
-  items: z.array(repairItemFormSchema).min(1, "At least one item is required"),
+  items: z.array(repairItemFormSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 });
 
 export type RepairFormValues = z.infer<typeof repairFormSchema>;

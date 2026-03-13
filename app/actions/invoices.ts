@@ -41,7 +41,7 @@ export async function saveInvoiceAction(
         return {
           ...prevState,
           errors: {
-            invoice: ["Invoice not found."],
+            invoice: ["Счет не найден."],
           },
           success: false,
           formData: action,
@@ -65,7 +65,7 @@ export async function saveInvoiceAction(
           ...prevState,
           errors: {
             validation: [
-              "Validation error occurred. Please check and try again",
+              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
             ],
           },
           success: false,
@@ -82,7 +82,7 @@ export async function saveInvoiceAction(
           ...prevState,
           errors: {
             validation: [
-              "Validation error occurred. Please check and try again",
+              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
             ],
           },
           success: false,
@@ -101,7 +101,7 @@ export async function saveInvoiceAction(
       success: false,
       formData: action,
       errors: {
-        db: ["Something went wrong on the server. Please try again later."],
+        db: ["На сервере произошла ошибка. Пожалуйста, попробуйте позже."],
       },
     };
   }

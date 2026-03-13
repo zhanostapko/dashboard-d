@@ -40,6 +40,8 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
     addUserBtn,
     admin,
     user,
+    selectRole,
+    loading,
   } = data.ru.user;
 
   const handleSubmit = (formData: FormData) => {
@@ -105,7 +107,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
             onValueChange={(value) => setRole(value as Role)}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select a role" />
+              <SelectValue placeholder={selectRole} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ADMIN">{admin}</SelectItem>
@@ -121,7 +123,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
           className="w-full bg-green-500 text-white"
         >
           {isPending
-            ? "Loading"
+            ? loading
             : selectedUser
             ? `${saveBtn}`
             : `${addUserBtn}`}

@@ -32,6 +32,7 @@ export default function RepairItemTable({
   const initialInput: Partial<RepairItemDto> = {
     id: Date.now(),
     name: "",
+    unit: "work",
     quantity: 1,
     price: 0,
   };
@@ -41,7 +42,7 @@ export default function RepairItemTable({
   });
 
   const onInputClear = () => {
-    localForm.reset();
+    localForm.reset(initialInput);
   };
 
   const handleAddItem = localForm.handleSubmit((data) => {
@@ -50,7 +51,7 @@ export default function RepairItemTable({
       id: Date.now(),
     });
 
-    localForm.reset();
+    localForm.reset(initialInput);
   });
 
   return (

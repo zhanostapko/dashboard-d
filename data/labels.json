@@ -17,7 +17,9 @@
       "saveBtn": "Сохранить",
       "error": "Не удалось загрузить пользователей. Пожалуйста, попробуйте позже.",
       "admin": "Админ",
-      "user": "Пользователь"
+      "user": "Пользователь",
+      "selectRole": "Выберите роль",
+      "loading": "Загрузка..."
     },
     "menu": {
       "users": "Пользователи",
@@ -53,7 +55,8 @@
       "noClients": "Клиенты не найдены",
       "requiredField": "Обязательное поле",
       "saveBtn": "Сохранить",
-      "error": "Не удалось загрузить клиентов."
+      "error": "Не удалось загрузить клиентов.",
+      "loading": "Загрузка..."
     },
 
     "invoices": {
@@ -69,6 +72,14 @@
       "paidBtn": "Оплачено",
       "paid": "Оплачено",
       "unpaid": "Не оплачено",
+      "noInvoicesFound": "Счета не найдены",
+      "sending": "Отправка...",
+      "createPageTitle": "Создать счет",
+      "editPageTitle": "Редактировать счет",
+      "backToInvoices": "Назад",
+      "notFound": "Счет не найден",
+      "noItems": "Позиции не добавлены",
+      "deleting": "Удаление...",
 
       "invoiceForm": {
         "createTitle": "Создать счет",
@@ -118,13 +129,21 @@
     },
     "repairs": {
       "nr": "№",
+      "repairNumber": "Номер ремонта",
+      "detailsTitle": "Ремонт",
       "clientName": "Имя клиента",
       "carPlate": "Номер авто",
       "date": "Дата",
       "actions": "Действия",
+      "notFound": "Ремонт не найден",
+      "deleting": "Удаление...",
       "addRepairBtn": "Добавить ремонт",
       "editRepairBtn": "Редактировать",
       "deleteRepairBtn": "Удалить",
+      "createPageTitle": "Создать ремонт",
+      "editPageTitle": "Редактировать ремонт",
+      "backToRepairs": "Назад",
+      "loading": "Загрузка...",
       "repairForm": {
         "createTitle": "Создать ремонт",
         "editTitle": "Редактировать ремонт",

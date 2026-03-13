@@ -9,11 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import labelsData from "@/data/labels.json";
-import CreateRepairForm from "./CreateRepairForm/CreateRepairForm";
 import { RepairDto } from "@/modules/repairs/schema";
 
 type Props = {
@@ -21,9 +19,7 @@ type Props = {
 };
 
 const RepairsTable = ({ repairs }: Props) => {
-  const [selectedRepair, setSelectedRepair] = useState<RepairDto | null>(null);
   const [deletingRepairId, setDeletingRepairId] = useState<number | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   const {
@@ -33,8 +29,8 @@ const RepairsTable = ({ repairs }: Props) => {
     date,
     actions,
     addRepairBtn,
-    editRepairBtn,
     deleteRepairBtn,
+    loading,
   } = labelsData.ru.repairs;
 
   const deleteRepair = async (repairId: number) => {
@@ -56,22 +52,8 @@ const RepairsTable = ({ repairs }: Props) => {
 
   return (
     <>
-      <ModalWrapper
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        modalContent={
-          <CreateRepairForm
-            repair={selectedRepair ?? undefined}
-            editMode={!!selectedRepair}
-            onClose={() => setIsOpen(false)}
-          />
-        }
-      ></ModalWrapper>
       <Button
-        onClick={() => {
-          setSelectedRepair(null);
-          setIsOpen(true);
-        }}
+        onClick={() => router.push("/auth/repairs/new")}
         className="mb-4"
       >
         + {addRepairBtn}
@@ -88,7 +70,11 @@ const RepairsTable = ({ repairs }: Props) => {
         </TableHeader>
         <TableBody>
           {repairs.map((repair, index) => (
-            <TableRow key={repair.id}>
+            <TableRow
+              key={repair.id}
+              className="cursor-pointer"
+              onClick={() => router.push(`/auth/repairs/${repair.id}`)}
+            >
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{repair.clientName}</TableCell>
               <TableCell>{repair.carPlate}</TableCell>
@@ -97,19 +83,14 @@ const RepairsTable = ({ repairs }: Props) => {
               </TableCell>
               <TableCell className="flex gap-4 justify-end">
                 <Button
-                  onClick={() => {
-                    setSelectedRepair(repair);
-                    setIsOpen(true);
+                  disabled={deletingRepairId === repair.id}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    deleteRepair(repair.id);
                   }}
                 >
-                  {editRepairBtn}
-                </Button>
-                <Button
-                  disabled={deletingRepairId === repair.id}
-                  onClick={() => deleteRepair(repair.id)}
-                >
                   {deletingRepairId === repair.id
-                    ? "Loading"
+                    ? loading
                     : deleteRepairBtn}
                 </Button>
               </TableCell>

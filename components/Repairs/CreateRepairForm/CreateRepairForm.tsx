@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "../../ui/button";
 import {
   Form,
@@ -39,7 +40,6 @@ import {
 // import { ClientDto } from "@/modules/clients/schema";
 
 type Props = {
-  onClose: () => void;
   repair?: RepairDto;
   editMode?: boolean;
 };
@@ -50,7 +50,8 @@ const initialState: SaveRepairState = {
   formData: null,
 };
 
-const CreateRepairForm = ({ repair, onClose, editMode = false }: Props) => {
+const CreateRepairForm = ({ repair, editMode = false }: Props) => {
+  const router = useRouter();
   const [state, formAction, isSubmitting] = useActionState(
     saveRepairAction,
     initialState,
@@ -76,8 +77,6 @@ const CreateRepairForm = ({ repair, onClose, editMode = false }: Props) => {
     clientInformation,
     carInformation,
     repairItems,
-    createTitle,
-    editTitle,
     saving,
   } = repairForm;
 
@@ -103,8 +102,11 @@ const CreateRepairForm = ({ repair, onClose, editMode = false }: Props) => {
   });
 
   useEffect(() => {
-    if (state.success) onClose();
-  }, [state.success, onClose]);
+    if (state.success) {
+      router.push("/auth/repairs");
+      router.refresh();
+    }
+  }, [router, state.success]);
 
   // useEffect(() => {
   //   let isActive = true;
@@ -202,9 +204,6 @@ const CreateRepairForm = ({ repair, onClose, editMode = false }: Props) => {
 
   return (
     <div className=" space-y-2">
-      <h2 className="text-2xl font-bold mb-4">
-        {editMode ? `${editTitle}` : `${createTitle}`}
-      </h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex gap-4">
