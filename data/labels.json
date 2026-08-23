@@ -17,12 +17,48 @@
       "saveBtn": "Сохранить",
       "error": "Не удалось загрузить пользователей. Пожалуйста, попробуйте позже.",
       "admin": "Админ",
-      "user": "Пользователь"
+      "user": "Пользователь",
+      "selectRole": "Выберите роль",
+      "loading": "Загрузка..."
     },
     "menu": {
       "users": "Пользователи",
-      "invoices": "Счета"
+      "invoices": "Счета",
+      "clients": "Клиенты",
+      "repairs": "Ремонты"
     },
+    "clients": {
+      "nr": "№",
+      "name": "Название",
+      "regNr": "Рег. номер",
+      "address": "Адрес",
+      "bank": "Банк",
+      "bankCode": "Код банка",
+      "account": "Счет",
+      "phone": "Телефон",
+      "email": "Email",
+      "detailsTitle": "Клиент",
+      "infoTitle": "Информация о клиенте",
+      "repairsTitle": "Ремонты",
+      "invoicesTitle": "Счета",
+      "noRepairs": "Ремонтов пока нет",
+      "noInvoices": "Счетов пока нет",
+      "actions": "Действия",
+      "addClientBtn": "Добавить клиента",
+      "editClientBtn": "Редактировать",
+      "deleteClientBtn": "Удалить",
+      "createClient": "Создать клиента",
+      "editClient": "Редактировать клиента",
+      "selectClient": "Клиент",
+      "searchClient": "Поиск клиента",
+      "clearClient": "Очистить",
+      "noClients": "Клиенты не найдены",
+      "requiredField": "Обязательное поле",
+      "saveBtn": "Сохранить",
+      "error": "Не удалось загрузить клиентов.",
+      "loading": "Загрузка..."
+    },
+
     "invoices": {
       "nr": "Нр.",
       "addInvoiceBtn": "Добавить",
@@ -36,6 +72,14 @@
       "paidBtn": "Оплачено",
       "paid": "Оплачено",
       "unpaid": "Не оплачено",
+      "noInvoicesFound": "Счета не найдены",
+      "sending": "Отправка...",
+      "createPageTitle": "Создать счет",
+      "editPageTitle": "Редактировать счет",
+      "backToInvoices": "Назад",
+      "notFound": "Счет не найден",
+      "noItems": "Позиции не добавлены",
+      "deleting": "Удаление...",
 
       "invoiceForm": {
         "createTitle": "Создать счет",
@@ -81,6 +125,54 @@
         "saveInvoiceButton": "Сохранить",
         "editInvoiceButton": "Редактировать",
         "deleteInvoiceButton": "Удалить"
+      }
+    },
+    "repairs": {
+      "nr": "№",
+      "repairNumber": "Номер ремонта",
+      "detailsTitle": "Ремонт",
+      "clientName": "Имя клиента",
+      "carPlate": "Номер авто",
+      "date": "Дата",
+      "actions": "Действия",
+      "notFound": "Ремонт не найден",
+      "deleting": "Удаление...",
+      "addRepairBtn": "Добавить ремонт",
+      "editRepairBtn": "Редактировать",
+      "deleteRepairBtn": "Удалить",
+      "createPageTitle": "Создать ремонт",
+      "editPageTitle": "Редактировать ремонт",
+      "backToRepairs": "Назад",
+      "loading": "Загрузка...",
+      "repairForm": {
+        "createTitle": "Создать ремонт",
+        "editTitle": "Редактировать ремонт",
+        "saving": "Сохранение...",
+        "saveRepairButton": "Сохранить",
+        "createRepairButton": "Создать",
+        "clientInformation": {
+          "title": "Информация о клиенте",
+          "clientName": "Имя клиента",
+          "phone": "Телефон"
+        },
+        "carInformation": {
+          "title": "Информация об автомобиле",
+          "brand": "Марка",
+          "model": "Модель",
+          "plate": "Номерной знак",
+          "mileage": "Пробег"
+        },
+        "repairItems": {
+          "title": "Позиции ремонта",
+          "name": "Наименование",
+          "type": "Тип",
+          "work": "Работа",
+          "materials": "Материалы",
+          "quantity": "Количество",
+          "price": "Цена",
+          "actions": "Действия",
+          "addItem": "Добавить позицию"
+        }
       }
     }
   }

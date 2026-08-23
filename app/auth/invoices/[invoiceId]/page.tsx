@@ -1,15 +1,18 @@
-import EditInvoiceButton from "@/components/invoices/EditInvoiceButton";
-import GeneratePDFButton from "@/components/invoices/GeneratePDFButton";
+import EditInvoiceButton from "@/components/Invoices/EditInvoiceButton";
+import GeneratePDFButton from "@/components/Invoices/GeneratePDFButton";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getInvoiceDetails } from "@/lib/invoices";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { format } from "date-fns";
-import DeleteInvoiceButton from "@/components/invoices/DeleteInvoiceButton";
+import DeleteInvoiceButton from "@/components/Invoices/DeleteInvoiceButton";
 import Error from "@/components/Error";
 import data from "@/data/labels.json";
+import { invoiceService } from "@/modules/invoices/service";
+import Link from "next/link";
 
-const { total, invoiceForm, date } = data.ru.invoices;
+const { total, invoiceForm, date, notFound, noItems, backToInvoices } =
+  data.ru.invoices;
 
 const { formInvoiceNumber, clientInformation, carInformation, invoiceItems } =
   invoiceForm;
@@ -48,7 +51,7 @@ const InvoiceDetailPage = async ({
   let invoice;
   const { invoiceId } = await params;
   try {
-    invoice = await getInvoiceDetails(Number(invoiceId));
+    invoice = await invoiceService.getInvoice(Number(invoiceId));
   } catch (error) {
     console.log(error);
     return <Error />;
@@ -57,13 +60,19 @@ const InvoiceDetailPage = async ({
   if (!invoice)
     return (
       <div className="text-center text-2xl font-semibold">
-        Invoice not found
+        {notFound}
       </div>
     );
 
   return (
-    <Card className="max-w-4xl mx-auto p-6">
-      <CardContent className="space-y-6">
+    <div className="mx-auto max-w-4xl space-y-4">
+      <div className="flex justify-end">
+        <Button asChild variant="outline">
+          <Link href="/auth/invoices">{backToInvoices}</Link>
+        </Button>
+      </div>
+      <Card className="p-6">
+        <CardContent className="space-y-6">
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-4">
             <h2 className="text-2xl font-bold mb-1">
@@ -163,7 +172,7 @@ const InvoiceDetailPage = async ({
                       colSpan={5}
                       className="py-4 text-center text-muted-foreground"
                     >
-                      No items added.
+                      {noItems}
                     </td>
                   </tr>
                 )}
@@ -175,8 +184,9 @@ const InvoiceDetailPage = async ({
         <div className="flex justify-end">
           <h2 className="font-bold text-2xl py-2">{`${total}: ${invoice.total}`}</h2>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

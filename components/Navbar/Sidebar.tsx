@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-
-import { UserRoundCog, Newspaper } from "lucide-react";
+import { Newspaper, Car, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { Role } from "@prisma/client";
 import {
   Command,
   CommandGroup,
@@ -14,30 +14,40 @@ import {
 } from "../ui/command";
 import data from "@/data/labels.json";
 
-const Sidebar = () => {
-  const { users, invoices } = data.ru.menu;
+type SidebarProps = {
+  role: Role;
+};
+
+const Sidebar = ({ role }: SidebarProps) => {
+  const { invoices, repairs, users } = data.ru.menu;
   const pathname = usePathname();
+  const isSectionActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <Command className="bg-secondary rounded-none">
+    <Command className="bg-secondary rounded-none" data-role={role}>
       <CommandList>
         <CommandGroup heading="Menu">
-          <CommandItem className="p-0">
-            <Link
-              href="/auth/users"
-              className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
-                pathname === "/auth/users" ? "font-bold" : "hover:bg-gray-200"
-              }`}
-            >
-              <UserRoundCog />
-              {users}
-            </Link>
-          </CommandItem>
+          {role === "ADMIN" && (
+            <CommandItem className="p-0">
+              <Link
+                href="/auth/users"
+                className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
+                  isSectionActive("/auth/users")
+                    ? "font-bold"
+                    : "hover:bg-gray-200"
+                }`}
+              >
+                <Users />
+                {users}
+              </Link>
+            </CommandItem>
+          )}
           <CommandItem className="p-0">
             <Link
               href="/auth/invoices"
               className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
-                pathname === "/auth/invoices"
+                isSectionActive("/auth/invoices")
                   ? "font-bold"
                   : "hover:bg-gray-200"
               }`}
@@ -46,28 +56,19 @@ const Sidebar = () => {
               {invoices}
             </Link>
           </CommandItem>
-          {/* <CommandItem className="p-0">
+          <CommandItem className="p-0">
             <Link
               href="/auth/repairs"
               className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
-                pathname === "/auth/repairs" ? "font-bold" : "hover:bg-gray-200"
+                isSectionActive("/auth/repairs")
+                  ? "font-bold"
+                  : "hover:bg-gray-200"
               }`}
             >
               <Car />
-              Repairs
+              {repairs}
             </Link>
-          </CommandItem> */}
-          {/* <CommandItem className="p-0">
-            <Link
-              href="/auth/clients"
-              className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
-                pathname === "/auth/clients" ? "font-bold" : "hover:bg-gray-200"
-              }`}
-            >
-              <IdCard />
-              Clients
-            </Link>
-          </CommandItem> */}
+          </CommandItem>
         </CommandGroup>
         <CommandSeparator />
       </CommandList>

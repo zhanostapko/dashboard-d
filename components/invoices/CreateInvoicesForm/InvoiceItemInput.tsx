@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 
 import { FormControl, FormField, FormItem, FormLabel } from "../../ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { InvoiceItemInputValues } from "./InvoiceItemTable";
 import data from "@/data/labels.json";
+import { InvoiceItemDto } from "@/modules/invoices/schema";
 
 const { name, price, quantity, sum, type } =
   data.ru.invoices.invoiceForm.invoiceItems;
 
 type Props = {
-  localForm: UseFormReturn<InvoiceItemInputValues>;
+  localForm: UseFormReturn<InvoiceItemDto>;
   onClear: () => void;
 };
 

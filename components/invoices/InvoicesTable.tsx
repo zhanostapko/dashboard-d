@@ -8,20 +8,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import ModalWrapper from "@/components/General/ModalWrapper";
 import { Button } from "@/components/ui/button";
-// Suppose you have a CreateInvoiceForm similar to your CreateUserForm
-import CreateInvoiceForm from "@/components/invoices/CreateInvoicesForm/CreateInvoiceForm";
-import { InvoicePreview } from "@/lib/invoices";
 import { useRouter } from "next/navigation";
 import labelsData from "@/data/labels.json";
+import { InvoiceDto } from "@/modules/invoices/schema";
 
 type Props = {
-  data: InvoicePreview[];
+  data: InvoiceDto[];
 };
 
 const InvoicesTable = ({ data }: Props) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [loadingInvoiceId, setLoadingInvoiceId] = useState<number | null>(null);
   const router = useRouter();
 
@@ -38,6 +34,8 @@ const InvoicesTable = ({ data }: Props) => {
     unpaid,
     paid,
     paidBtn,
+    noInvoicesFound,
+    sending,
   } = labelsData.ru.invoices;
   const statusChangeHandler = async (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -54,19 +52,13 @@ const InvoicesTable = ({ data }: Props) => {
       throw new Error("Failed to delete invoice");
     }
     setLoadingInvoiceId(null);
+    router.refresh();
   };
 
   return (
     <>
-      <ModalWrapper
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        modalContent={<CreateInvoiceForm onClose={() => setIsOpen(false)} />}
-      ></ModalWrapper>
       <Button
-        onClick={() => {
-          setIsOpen(true);
-        }}
+        onClick={() => router.push("/auth/invoices/new")}
         className="mb-4"
       >
         + {addInvoiceBtn}
@@ -88,7 +80,7 @@ const InvoicesTable = ({ data }: Props) => {
         <TableBody>
           {data?.length === 0 && (
             <TableRow className="text-center">
-              <TableCell colSpan={8}>No invoices found</TableCell>
+              <TableCell colSpan={8}>{noInvoicesFound}</TableCell>
             </TableRow>
           )}
           {data?.map((invoice, index) => (
@@ -119,7 +111,7 @@ const InvoicesTable = ({ data }: Props) => {
                   variant="outline"
                 >
                   {loadingInvoiceId === invoice.id
-                    ? "Sending..."
+                    ? sending
                     : `${paidBtn}`}
                 </Button>
               </TableCell>

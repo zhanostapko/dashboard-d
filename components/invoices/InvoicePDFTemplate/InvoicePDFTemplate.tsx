@@ -6,7 +6,7 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
+  Image as PdfImage,
   Font,
 } from "@react-pdf/renderer";
 import pdfLogo from "@/public/pdfLogo.png";
@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   page: {
     fontSize: 10,
     padding: 40,
+    paddingTop: 0,
     fontFamily: "Roboto",
   },
   header: {
@@ -105,7 +106,7 @@ export default function InvoicePDFTemplate({ invoice }: Props) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Image
+          <PdfImage
             src={{ uri: pdfLogo.src }}
             style={{ width: "50%", height: 100 }}
           />

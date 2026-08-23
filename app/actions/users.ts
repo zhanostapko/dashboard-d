@@ -1,45 +1,41 @@
 "use server";
-
-import { User } from "@prisma/client";
-import prisma from "@/lib/db";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/authz";
+import {
+  userCreateSchema,
+  UserDto,
+  userUpdateSchema,
+} from "@/modules/users/schema";
+import { userService } from "@/modules/users/service";
 
 type SaveUserState = {
   error: string | null;
   success: string | null;
-  user: Partial<User> | null;
+  user: Partial<UserDto> | null;
 };
 
-const userSchema = z.object({
-  email: z
-    .string()
-    .email("Invalid email format")
-    .refine(async (email) => {
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-      return !existingUser;
-    }, "Email must be unique"),
-  name: z.string().min(1, "Name is required"),
-  role: z.enum(["USER", "ADMIN"], {
-    errorMap: () => ({ message: "Invalid role" }),
-  }),
-});
-
 export async function saveUserAction(
-  prevState: SaveUserState,
+  _prevState: SaveUserState,
   payload: FormData
 ): Promise<SaveUserState> {
+  const currentUser = await getCurrentUser();
   const id = payload.get("id") ? Number(payload.get("id")) : null;
   const email = payload.get("email") as string;
   const name = payload.get("name") as string;
   const surname = payload.get("surname") as string;
   const role = (payload.get("role") as "USER" | "ADMIN") || "USER";
 
-  const parsed = await userSchema.safeParseAsync({ email, name, role });
-
-  if (!parsed.success) {
+  if (!currentUser) {
     return {
-      error: parsed.error.issues.map((issue) => issue.message).join(", "),
+      error: "Authentication required.",
+      success: null,
+      user: { email, name, surname, role },
+    };
+  }
+
+  if (currentUser.role !== "ADMIN") {
+    return {
+      error: "Forbidden.",
       success: null,
       user: { email, name, surname, role },
     };
@@ -47,16 +43,45 @@ export async function saveUserAction(
 
   try {
     if (id) {
-      await prisma.user.update({
-        where: { id },
-        data: { email, name, surname, role },
-      });
+      const user = { id, name, surname, role };
+      const parsed = await userUpdateSchema.safeParseAsync(user);
+      if (parsed && !parsed.success) {
+        return {
+          error: parsed.error.issues.map((issue) => issue.message).join(", "),
+          success: null,
+          user: { email, name, surname, role },
+        };
+      }
+
+      const updatedUser = await userService.updateUser(id, user);
+      if (!updatedUser) {
+        return {
+          error: "Can't find user",
+          success: null,
+          user: { email, name, surname, role },
+        };
+      }
     } else {
-      await prisma.user.create({
-        data: { email, name, surname, role },
-      });
+      const user = { email, name, surname, role };
+      const parsed = await userCreateSchema.safeParseAsync(user);
+      if (parsed && !parsed.success) {
+        return {
+          error: parsed.error.issues.map((issue) => issue.message).join(", "),
+          success: null,
+          user: { email, name, surname, role },
+        };
+      }
+      const createdUser = await userService.createUser(user);
+      if (!createdUser) {
+        return {
+          error: "User with that email already exist",
+          success: null,
+          user: { email, name, surname, role },
+        };
+      }
     }
-    revalidatePath("/users");
+
+    revalidatePath("/auth/users");
     return { error: null, success: "User saved!", user: null };
   } catch (error) {
     return {

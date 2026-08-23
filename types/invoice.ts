@@ -1,5 +1,5 @@
-import { getInvoiceDetails } from "@/lib/invoices";
+import { invoiceService } from "@/modules/invoices/service";
 
 export type InvoiceWithDetails = NonNullable<
-  Awaited<ReturnType<typeof getInvoiceDetails>>
+  Awaited<ReturnType<typeof invoiceService.getInvoice>>
 >;

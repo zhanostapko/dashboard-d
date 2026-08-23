@@ -1,10 +1,16 @@
-import prisma from "@/lib/db";
+import { requireAuthenticatedUser } from "@/lib/authz";
+import { invoiceService } from "@/modules/invoices/service";
 import { revalidatePath } from "next/cache";
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function DELETE(req: NextRequest) {
+  const guard = await requireAuthenticatedUser();
+  if (guard.response) {
+    return guard.response;
+  }
+
   const id = req.nextUrl.searchParams.get("invoiceId");
   const invoiceId = id ? parseInt(id) : NaN;
 
@@ -13,10 +19,22 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    await prisma.invoice.delete({
-      where: { id: invoiceId },
-    });
-    revalidatePath("/invoices");
+    const invoice = await invoiceService.getInvoice(invoiceId);
+
+    if (!invoice) {
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+    }
+
+    if (invoice.status === "Paid") {
+      return NextResponse.json(
+        { error: "Paid invoices cannot be deleted" },
+        { status: 409 }
+      );
+    }
+
+    await invoiceService.deleteInvoice(invoiceId);
+    revalidatePath("/auth/invoices");
+    revalidatePath(`/auth/invoices/${invoiceId}`);
 
     return NextResponse.json(
       { message: "Invoice deleted successfully" },
@@ -33,6 +51,11 @@ export async function DELETE(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  const guard = await requireAuthenticatedUser();
+  if (guard.response) {
+    return guard.response;
+  }
+
   const body = await req.json();
   const invoiceId = body.invoiceId ? parseInt(body.invoiceId) : NaN;
 
@@ -41,11 +64,21 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    await prisma.invoice.update({
-      where: { id: invoiceId },
-      data: { status: "Paid" },
-    });
-    revalidatePath("/invoices");
+    const invoice = await invoiceService.getInvoice(invoiceId);
+
+    if (!invoice) {
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+    }
+
+    if (invoice.status !== "Paid") {
+      await invoiceService.updateInvoice(invoiceId, {
+        id: invoiceId,
+        status: "Paid",
+      });
+    }
+
+    revalidatePath("/auth/invoices");
+    revalidatePath(`/auth/invoices/${invoiceId}`);
 
     return NextResponse.json(
       { message: "Invoice updated successfully" },

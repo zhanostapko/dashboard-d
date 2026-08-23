@@ -33,33 +33,13 @@ datasource db {
 model User {
   id         Int   @id @default(autoincrement()) 
   email      String   @unique                                    
-  name       String?                       
+  name       String
   surname    String?                        
   role       Role     @default(USER)       
   createdAt  DateTime @default(now())       
   updatedAt  DateTime @updatedAt            
 }
 
-
-
-// model Invoice {
-//   id         Int      @id @default(autoincrement())
-//   number     String   @unique
-//   date       DateTime @default(now())
-//   total      Float
-//   supplierId Int
-//   supplier   Supplier @relation(fields: [supplierId], references: [id])
-//   clientId   Int? 
-//   client     Client?  @relation(fields: [clientId], references: [id])
-//   clientName  String? 
-//   clientPhone String? 
-//   items      InvoiceItem[]
-//   createdAt  DateTime @default(now())
-//   updatedAt  DateTime @updatedAt
-// }
-
-
-//
 model Invoice {
   id         Int     @id @default(autoincrement())
   number     String?   @unique
@@ -68,12 +48,8 @@ model Invoice {
   paymentType PaymentType @default(NonCash)
   supplierId Int
   supplier   Supplier @relation(fields: [supplierId], references: [id])
-
   clientId   Int? 
   client     Client?  @relation(fields: [clientId], references: [id])
-
-
- 
   clientName    String?
   clientRegNr   String?
   clientAddress String?
@@ -82,20 +58,15 @@ model Invoice {
   clientBank    String?
   clientBankCode String?
   clientAccount String?
-
   carBrand     String @default("")
   carModel     String @default("")
   carPlate     String @default("")
   carMileage   String @default("")
-
   status       InvoiceStatus @default(Unpaid)
-  
   items      InvoiceItem[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
-
-//
 
 model InvoiceItem {
   id         Int      @id @default(autoincrement())
@@ -141,6 +112,10 @@ model Repair {
   client     Client?  @relation(fields: [clientId], references: [id])
   clientName  String? 
   clientPhone String? 
+  carBrand   String   @default("")
+  carModel   String   @default("")
+  carPlate   String   @default("")
+  carMileage String   @default("")
   items      RepairItem[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt @default(now()) 

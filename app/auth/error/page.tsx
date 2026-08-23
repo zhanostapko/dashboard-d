@@ -1,23 +1,27 @@
 "use client";
+
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AuthError() {
-  const router = useRouter();
-  const { error } = router.query;
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
+
   useEffect(() => {
-    signOut({ callbackUrl: "/" });
+    void signOut({ callbackUrl: "/login" });
   }, []);
 
   return (
-    <div>
-      <h1>Ошибка входа</h1>
-      {error === "AccessDenied" ? (
-        <p>У вас нет доступа. Обратитесь к администратору.</p>
-      ) : (
-        <p>Что-то пошло не так. Попробуйте снова.</p>
-      )}
+    <div className="flex min-h-screen items-center justify-center px-4 text-center">
+      <div className="max-w-md space-y-3">
+        <h1 className="text-2xl font-semibold">Ошибка аутентификации</h1>
+        {error === "AccessDenied" ? (
+          <p>Вашему аккаунту не разрешен доступ к этой панели.</p>
+        ) : (
+          <p>Во время входа произошла ошибка. Пожалуйста, попробуйте снова.</p>
+        )}
+      </div>
     </div>
   );
 }
