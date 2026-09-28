@@ -1,17 +1,8 @@
-import FormPageShell from "@/components/General/FormPageShell";
-import CreateRepairForm from "@/components/Repairs/CreateRepairForm/CreateRepairForm";
-import data from "@/data/labels.json";
+import { redirect } from "next/navigation";
 
 const NewRepairPage = () => {
-  return (
-    <FormPageShell
-      title={data.ru.repairs.createPageTitle}
-      backHref="/auth/repairs"
-      backLabel={data.ru.repairs.backToRepairs}
-    >
-      <CreateRepairForm />
-    </FormPageShell>
-  );
+  // Temporarily disabled during the focused users/auth/shared refactor.
+  redirect("/auth");
 };
 
 export default NewRepairPage;

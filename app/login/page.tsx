@@ -10,7 +10,7 @@ const LoginPage = () => {
 
   const handleGoogleSignIn = async () => {
     setIsSubmitting(true);
-    await signIn("google", { callbackUrl: "/auth/invoices" });
+    await signIn("google", { callbackUrl: "/auth" });
   };
 
   return (

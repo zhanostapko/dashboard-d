@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Newspaper, Car, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Role } from "@prisma/client";
@@ -19,7 +19,7 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ role }: SidebarProps) => {
-  const { invoices, repairs, users } = data.ru.menu;
+  const { users } = data.ru.menu;
   const pathname = usePathname();
   const isSectionActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -43,32 +43,12 @@ const Sidebar = ({ role }: SidebarProps) => {
               </Link>
             </CommandItem>
           )}
-          <CommandItem className="p-0">
-            <Link
-              href="/auth/invoices"
-              className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
-                isSectionActive("/auth/invoices")
-                  ? "font-bold"
-                  : "hover:bg-gray-200"
-              }`}
-            >
-              <Newspaper />
-              {invoices}
-            </Link>
-          </CommandItem>
-          <CommandItem className="p-0">
-            <Link
-              href="/auth/repairs"
-              className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
-                isSectionActive("/auth/repairs")
-                  ? "font-bold"
-                  : "hover:bg-gray-200"
-              }`}
-            >
-              <Car />
-              {repairs}
-            </Link>
-          </CommandItem>
+          {/* Invoices and repairs are temporarily disabled during the focused users/auth/shared refactor. */}
+          {role !== "ADMIN" && (
+            <CommandItem disabled className="px-3 py-2 text-muted-foreground">
+              Разделы временно недоступны
+            </CommandItem>
+          )}
         </CommandGroup>
         <CommandSeparator />
       </CommandList>

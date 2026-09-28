@@ -1,13 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { getCurrentUser } from "@/lib/authz";
-import {
-  invoiceCreateSchema,
-  InvoiceFormValues,
-  invoiceUpdateSchema,
-} from "@/modules/invoices/schema";
-import { invoiceService } from "@/modules/invoices/service";
+import type { InvoiceFormValues } from "@/modules/invoices/schema";
 
 export type SaveInvoiceState = {
   errors: Record<string, string[]> | null;
@@ -19,90 +12,13 @@ export async function saveInvoiceAction(
   prevState: SaveInvoiceState,
   action: InvoiceFormValues
 ): Promise<SaveInvoiceState> {
-  const id = action.id;
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    return {
-      ...prevState,
-      success: false,
-      formData: action,
-      errors: {
-        auth: ["Authentication required."],
-      },
-    };
-  }
-
-  try {
-    if (Number.isInteger(id) && id !== 0) {
-      const existingInvoice = await invoiceService.getInvoice(id!);
-
-      if (!existingInvoice) {
-        return {
-          ...prevState,
-          errors: {
-            invoice: ["Счет не найден."],
-          },
-          success: false,
-          formData: action,
-        };
-      }
-
-      if (existingInvoice.status === "Paid") {
-        return {
-          ...prevState,
-          errors: {
-            invoice: ["Paid invoices cannot be edited."],
-          },
-          success: false,
-          formData: action,
-        };
-      }
-
-      const parsed = await invoiceUpdateSchema.safeParseAsync(action);
-      if (!parsed.success) {
-        return {
-          ...prevState,
-          errors: {
-            validation: [
-              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
-            ],
-          },
-          success: false,
-          formData: action,
-        };
-      }
-      await invoiceService.updateInvoice(id!, parsed.data);
-      revalidatePath("/auth/invoices");
-      revalidatePath(`/auth/invoices/${id}`);
-    } else {
-      const parsed = await invoiceCreateSchema.safeParseAsync(action);
-      if (!parsed.success) {
-        return {
-          ...prevState,
-          errors: {
-            validation: [
-              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
-            ],
-          },
-          success: false,
-          formData: action,
-        };
-      }
-      await invoiceService.createInvoice(parsed.data);
-      revalidatePath("/auth/invoices");
-    }
-
-    return { errors: null, success: true, formData: null };
-  } catch (err) {
-    console.error("Server error:", err);
-
-    return {
-      success: false,
-      formData: action,
-      errors: {
-        db: ["На сервере произошла ошибка. Пожалуйста, попробуйте позже."],
-      },
-    };
-  }
+  // Temporarily disabled during the focused users/auth/shared refactor.
+  return {
+    ...prevState,
+    success: false,
+    formData: action,
+    errors: {
+      invoice: ["Счета временно отключены на время рефакторинга."],
+    },
+  };
 }

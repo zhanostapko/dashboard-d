@@ -1,17 +1,8 @@
-import FormPageShell from "@/components/General/FormPageShell";
-import CreateInvoiceForm from "@/components/Invoices/CreateInvoicesForm/CreateInvoiceForm";
-import data from "@/data/labels.json";
+import { redirect } from "next/navigation";
 
 const NewInvoicePage = () => {
-  return (
-    <FormPageShell
-      title={data.ru.invoices.createPageTitle}
-      backHref="/auth/invoices"
-      backLabel={data.ru.invoices.backToInvoices}
-    >
-      <CreateInvoiceForm />
-    </FormPageShell>
-  );
+  // Temporarily disabled during the focused users/auth/shared refactor.
+  redirect("/auth");
 };
 
 export default NewInvoicePage;

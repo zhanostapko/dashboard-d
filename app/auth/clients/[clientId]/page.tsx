@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 const ClientDetailPage = () => {
-  redirect("/auth/invoices");
+  redirect("/auth");
   return null;
 };
 

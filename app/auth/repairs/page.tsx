@@ -1,19 +1,8 @@
-import React from "react";
-import Error from "@/components/Error";
-import RepairsTable from "@/components/Repairs/RepairsTable";
-import { repairService } from "@/modules/repairs/service";
+import { redirect } from "next/navigation";
 
-const RepairsPage = async () => {
-  let repairs;
-
-  try {
-    repairs = await repairService.getAllRepairs();
-  } catch (error) {
-    console.error("Failed to load repairs:", error);
-    return <Error />;
-  }
-
-  return <RepairsTable repairs={repairs} />;
+const RepairsPage = () => {
+  // Temporarily disabled during the focused users/auth/shared refactor.
+  redirect("/auth");
 };
 
 export default RepairsPage;

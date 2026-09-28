@@ -1,15 +1,8 @@
-import React from "react";
-import Error from "@/components/Error";
-import InvoicesTable from "@/components/Invoices/InvoicesTable";
-import { invoiceService } from "@/modules/invoices/service";
+import { redirect } from "next/navigation";
 
-const InvoicesPage = async () => {
-  try {
-    const data = await invoiceService.getAllInvoices();
-    return <InvoicesTable data={data} />;
-  } catch (err) {
-    console.log(err);
-    return <Error />;
-  }
+const InvoicesPage = () => {
+  // Temporarily disabled during the focused users/auth/shared refactor.
+  redirect("/auth");
 };
+
 export default InvoicesPage;
