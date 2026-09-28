@@ -2,6 +2,11 @@ import { toUserDto, toUserCreateEntity, toUserUpdateEntity } from "./mappers";
 import { userRepository } from "./repository";
 import { UserCreateDto, UserDto, UserUpdateDto } from "./schema";
 
+const LAST_ADMIN_ERROR =
+  "At least one admin user must remain in the system.";
+
+export class UserServiceConflictError extends Error {}
+
 export const userService = {
   getAllUsers: async (): Promise<UserDto[]> => {
     const users = await userRepository.getAllUsers();
@@ -26,6 +31,14 @@ export const userService = {
       return null;
     }
 
+    if (existingUser.role === "ADMIN" && user.role === "USER") {
+      const adminCount = await userRepository.countAdmins();
+
+      if (adminCount <= 1) {
+        throw new UserServiceConflictError(LAST_ADMIN_ERROR);
+      }
+    }
+
     const mappedUser = toUserUpdateEntity(user);
     const updatedUser = await userRepository.updateUser(id, mappedUser);
 
@@ -48,6 +61,14 @@ export const userService = {
 
     if (!existingUser) {
       return null;
+    }
+
+    if (existingUser.role === "ADMIN") {
+      const adminCount = await userRepository.countAdmins();
+
+      if (adminCount <= 1) {
+        throw new UserServiceConflictError(LAST_ADMIN_ERROR);
+      }
     }
 
     await userRepository.deleteUser(existingUser.id);

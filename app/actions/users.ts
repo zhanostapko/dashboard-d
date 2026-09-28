@@ -43,6 +43,14 @@ export async function saveUserAction(
 
   try {
     if (id) {
+      if (id === currentUser.id && role !== "ADMIN") {
+        return {
+          error: "You cannot remove your own admin role.",
+          success: null,
+          user: { email, name, surname, role },
+        };
+      }
+
       const user = { id, name, surname, role };
       const parsed = await userUpdateSchema.safeParseAsync(user);
       if (parsed && !parsed.success) {
@@ -53,10 +61,18 @@ export async function saveUserAction(
         };
       }
 
-      const updatedUser = await userService.updateUser(id, user);
-      if (!updatedUser) {
+      try {
+        const updatedUser = await userService.updateUser(id, user);
+        if (!updatedUser) {
+          return {
+            error: "Can't find user",
+            success: null,
+            user: { email, name, surname, role },
+          };
+        }
+      } catch (error) {
         return {
-          error: "Can't find user",
+          error: (error as Error).message,
           success: null,
           user: { email, name, surname, role },
         };

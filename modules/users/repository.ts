@@ -1,10 +1,13 @@
 import prisma from "@/lib/db";
-import { Prisma, User } from "@prisma/client";
+import { Prisma, Role, User } from "@prisma/client";
 
 export const userRepository = {
   getAllUsers: async (): Promise<User[]> => {
     const users = await prisma.user.findMany();
     return users;
+  },
+  countAdmins: async (): Promise<number> => {
+    return prisma.user.count({ where: { role: Role.ADMIN } });
   },
   getUserById: async (id: number): Promise<User | null> => {
     const user = await prisma.user.findUnique({ where: { id } });

@@ -1,26 +1,18 @@
 import React from "react";
 import UsersTable from "@/components/Users/UsersTable";
 import data from "@/data/labels.json";
-import { authConfig } from "@/lib/authConfig";
-import prisma from "@/lib/db";
+import { getCurrentUser } from "@/lib/authz";
 import { userService } from "@/modules/users/service";
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 const UsersPage = async () => {
-  const session = await getServerSession(authConfig);
-  const email = session?.user?.email;
+  const currentUser = await getCurrentUser();
 
-  if (!email) {
+  if (!currentUser) {
     redirect("/login");
   }
 
-  const currentUser = await prisma.user.findUnique({
-    where: { email },
-    select: { role: true },
-  });
-
-  if (!currentUser || currentUser.role !== "ADMIN") {
+  if (currentUser.role !== "ADMIN") {
     redirect("/auth");
   }
 
@@ -33,7 +25,7 @@ const UsersPage = async () => {
     return <p className="text-red-500">{data.ru.user.error}</p>;
   }
 
-  return <UsersTable users={users} />;
+  return <UsersTable currentUserId={currentUser.id} users={users} />;
 };
 
 export default UsersPage;
