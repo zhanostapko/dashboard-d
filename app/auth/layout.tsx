@@ -1,9 +1,6 @@
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Navbar/Sidebar";
-import { authConfig } from "@/lib/authConfig";
-import prisma from "@/lib/db";
-import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
+import { requirePageUser } from "@/lib/authz";
 
 import React from "react";
 
@@ -14,19 +11,8 @@ type Props = {
 export const dynamic = "force-dynamic";
 
 const MainPage = async ({ children }: Props) => {
-  const session = await getServerSession(authConfig);
+  const user = await requirePageUser();
 
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
-
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-  });
-
-  if (!user) {
-    redirect("/login");
-  }
   return (
     <div>
       <Navbar />

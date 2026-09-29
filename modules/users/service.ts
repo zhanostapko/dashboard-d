@@ -3,7 +3,7 @@ import { userRepository } from "./repository";
 import { UserCreateDto, UserDto, UserUpdateDto } from "./schema";
 
 const LAST_ADMIN_ERROR =
-  "At least one admin user must remain in the system.";
+  "В системе должен оставаться хотя бы один администратор.";
 
 export class UserServiceConflictError extends Error {}
 

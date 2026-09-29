@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import data from "@/data/labels.json";
+import { deleteUserAction } from "@/app/actions/users";
 import CreateUserForm from "./CreateUserForm/CreateUserForm";
 import { useRouter } from "next/navigation";
 import { UserDto } from "@/modules/users/schema";
@@ -57,15 +58,10 @@ const UsersTable = ({ currentUserId, users }: Props) => {
     try {
       const userId = userToDelete.id;
       setDeletingUserId(userId);
-      const res = await fetch(`/api/users/${userId}`, {
-        method: "DELETE",
-      });
+      const result = await deleteUserAction(userId);
 
-      if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        throw new Error(body?.error ?? "Failed to delete user");
+      if (!result.success) {
+        throw new Error(result.error ?? "Не удалось удалить пользователя.");
       }
       setDeleteError(null);
       setUserToDelete(null);

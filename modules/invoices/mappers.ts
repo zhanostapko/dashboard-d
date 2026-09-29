@@ -15,13 +15,22 @@ export type InvoiceWithItemsAndSupplier = Prisma.InvoiceGetPayload<{
   include: { items: true; supplier: true };
 }>;
 
+const toMoneyNumber = (value: number | Prisma.Decimal): number =>
+  typeof value === "number" ? value : value.toNumber();
+
+const calculateItemTotal = (item: { quantity: number; price: number }) =>
+  item.quantity * item.price;
+
+const calculateInvoiceTotal = (items: { quantity: number; price: number }[]) =>
+  items.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+
 const toInvoiceItemDto = (item: InvoiceItem): InvoiceItemDto => ({
   id: item.id,
   name: item.name,
   unit: item.unit,
   quantity: item.quantity,
-  price: item.price,
-  total: item.total,
+  price: toMoneyNumber(item.price),
+  total: toMoneyNumber(item.total),
 });
 
 export const toInvoiceDto = (invoice: InvoiceWithItems): InvoiceDto => ({
@@ -43,7 +52,7 @@ export const toInvoiceDto = (invoice: InvoiceWithItems): InvoiceDto => ({
   carPlate: invoice.carPlate ?? "",
   carMileage: invoice.carMileage ?? "",
   paymentType: invoice.paymentType,
-  total: invoice.total,
+  total: toMoneyNumber(invoice.total),
   createdAt: invoice.createdAt.toISOString(),
   items: invoice.items?.map(toInvoiceItemDto) ?? [],
 });
@@ -78,7 +87,7 @@ export const toInvoiceDetailsDto = (
   carPlate: invoice.carPlate ?? "",
   carMileage: invoice.carMileage ?? "",
   paymentType: invoice.paymentType,
-  total: invoice.total,
+  total: toMoneyNumber(invoice.total),
   createdAt: invoice.createdAt.toISOString(),
   items: invoice.items?.map(toInvoiceItemDto) ?? [],
 });
@@ -89,6 +98,8 @@ export const toInvoiceCreateEntity = (
   if (dto.supplierId === undefined) {
     throw new Error("Supplier must be configured before creating an invoice.");
   }
+
+  const total = calculateInvoiceTotal(dto.items);
 
   return {
     number: dto.number,
@@ -108,14 +119,14 @@ export const toInvoiceCreateEntity = (
     carPlate: dto.carPlate,
     carMileage: dto.carMileage ?? "",
     paymentType: dto.paymentType,
-    total: dto.total,
+    total,
     items: {
       create: dto.items.map((item) => ({
         name: item.name,
         unit: item.unit,
         quantity: item.quantity,
         price: item.price,
-        total: item.total,
+        total: calculateItemTotal(item),
       })),
     },
   };
@@ -145,10 +156,10 @@ export const toInvoiceUpdateEntity = (
   if (dto.carPlate !== undefined) data.carPlate = dto.carPlate;
   if (dto.carMileage !== undefined) data.carMileage = dto.carMileage ?? "";
   if (dto.paymentType !== undefined) data.paymentType = dto.paymentType;
-  if (dto.total !== undefined) data.total = dto.total;
   if (dto.status !== undefined) data.status = dto.status;
 
   if (dto.items !== undefined) {
+    data.total = calculateInvoiceTotal(dto.items);
     data.items = {
       deleteMany: {},
       create: dto.items.map((item) => ({
@@ -156,7 +167,7 @@ export const toInvoiceUpdateEntity = (
         unit: item.unit,
         quantity: item.quantity,
         price: item.price,
-        total: item.total,
+        total: calculateItemTotal(item),
       })),
     };
   }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const disabledResponse = () =>
   NextResponse.json(
-    { error: "Invoices are temporarily disabled during refactor." },
+    { error: "Invoices API is disabled. Use server actions." },
     { status: 410 }
   );
 

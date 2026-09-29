@@ -16,6 +16,9 @@ import {
 } from "./mappers";
 
 const MAX_INVOICE_NUMBER_ATTEMPTS = 5;
+const PAID_INVOICE_ERROR = "Оплаченный счет нельзя изменить или удалить.";
+
+export class InvoiceServiceConflictError extends Error {}
 
 export const invoiceService = {
   getAllInvoices: async (): Promise<InvoiceDto[]> => {
@@ -77,7 +80,17 @@ export const invoiceService = {
   updateInvoice: async (
     id: number,
     invoice: InvoiceUpdateDto
-  ): Promise<InvoiceDto> => {
+  ): Promise<InvoiceDto | null> => {
+    const existingInvoice = await invoiceRepository.getInvoiceById(id);
+
+    if (!existingInvoice) {
+      return null;
+    }
+
+    if (existingInvoice.status === "Paid") {
+      throw new InvoiceServiceConflictError(PAID_INVOICE_ERROR);
+    }
+
     const invoiceEntity = toInvoiceUpdateEntity(invoice);
     const updatedInvoice = await invoiceRepository.updateInvoice(
       id,
@@ -85,7 +98,17 @@ export const invoiceService = {
     );
     return toInvoiceDto(updatedInvoice);
   },
-  deleteInvoice: async (id: number): Promise<InvoiceDto> => {
+  deleteInvoice: async (id: number): Promise<InvoiceDto | null> => {
+    const existingInvoice = await invoiceRepository.getInvoiceById(id);
+
+    if (!existingInvoice) {
+      return null;
+    }
+
+    if (existingInvoice.status === "Paid") {
+      throw new InvoiceServiceConflictError(PAID_INVOICE_ERROR);
+    }
+
     const invoice = await invoiceRepository.deleteInvoice(id);
     return toInvoiceDto(invoice);
   },

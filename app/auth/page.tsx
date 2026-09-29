@@ -1,11 +1,13 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/authz";
+import { requirePageUser } from "@/lib/authz";
+import { getDefaultSection } from "@/lib/app-sections";
 
 const page = async () => {
-  const currentUser = await getCurrentUser();
+  const currentUser = await requirePageUser();
+  const defaultSection = getDefaultSection(currentUser.role);
 
-  if (currentUser?.role === "ADMIN") {
-    redirect("/auth/users");
+  if (defaultSection) {
+    redirect(defaultSection.href);
   }
 
   return (

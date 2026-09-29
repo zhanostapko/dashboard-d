@@ -1,10 +1,10 @@
 "use client";
 
 import { TableRow, TableCell } from "@/components/ui/table";
-import { InvoiceItem } from "@prisma/client";
+import { InvoiceItemDto } from "@/modules/invoices/schema";
 
 type Props = {
-  item: Omit<InvoiceItem, "invoiceId">;
+  item: InvoiceItemDto;
   onRemove: (id: number) => void;
 };
 

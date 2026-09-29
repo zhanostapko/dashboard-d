@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Users } from "lucide-react";
+import { Car, Newspaper, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Role } from "@prisma/client";
@@ -13,13 +13,20 @@ import {
   CommandSeparator,
 } from "../ui/command";
 import data from "@/data/labels.json";
+import { getAvailableSections, type AppSection } from "@/lib/app-sections";
 
 type SidebarProps = {
   role: Role;
 };
 
+const sectionIcons: Record<AppSection["id"], React.ComponentType> = {
+  invoices: Newspaper,
+  repairs: Car,
+  users: Users,
+};
+
 const Sidebar = ({ role }: SidebarProps) => {
-  const { users } = data.ru.menu;
+  const sections = getAvailableSections(role);
   const pathname = usePathname();
   const isSectionActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -28,23 +35,27 @@ const Sidebar = ({ role }: SidebarProps) => {
     <Command className="bg-secondary rounded-none" data-role={role}>
       <CommandList>
         <CommandGroup heading="Menu">
-          {role === "ADMIN" && (
-            <CommandItem className="p-0">
+          {sections.map((section) => {
+            const Icon = sectionIcons[section.id];
+            const label = data.ru.menu[section.labelKey];
+
+            return (
+              <CommandItem className="p-0" key={section.id}>
               <Link
-                href="/auth/users"
+                href={section.href}
                 className={`flex w-full gap-2 px-3 py-2 rounded-md transition-colors  ${
-                  isSectionActive("/auth/users")
+                  isSectionActive(section.href)
                     ? "font-bold"
                     : "hover:bg-gray-200"
                 }`}
               >
-                <Users />
-                {users}
+                <Icon />
+                {label}
               </Link>
             </CommandItem>
-          )}
-          {/* Invoices and repairs are temporarily disabled during the focused users/auth/shared refactor. */}
-          {role !== "ADMIN" && (
+            );
+          })}
+          {sections.length === 0 && (
             <CommandItem disabled className="px-3 py-2 text-muted-foreground">
               Разделы временно недоступны
             </CommandItem>

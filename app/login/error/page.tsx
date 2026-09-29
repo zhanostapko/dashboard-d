@@ -1,11 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { getAuthErrorMessage } from "@/lib/auth-messages";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
 const AccessDeniedPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const message = getAuthErrorMessage(searchParams.get("error"));
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050505] px-4 py-8 text-white">
@@ -16,7 +19,7 @@ const AccessDeniedPage = () => {
         <section className="w-full max-w-sm rounded-[24px] border border-white/12 bg-white/6 p-8 text-white shadow-[0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur-md">
           <h1 className="text-3xl font-semibold tracking-tight">Доступ запрещен</h1>
           <p className="mt-3 text-sm leading-6 text-white/68">
-            Что-то пошло не так.
+            {message}
           </p>
           <Button
             onClick={() => router.push("/")}

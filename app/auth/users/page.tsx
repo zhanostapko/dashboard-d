@@ -1,20 +1,12 @@
 import React from "react";
 import UsersTable from "@/components/Users/UsersTable";
 import data from "@/data/labels.json";
-import { getCurrentUser } from "@/lib/authz";
+import { requirePageRole } from "@/lib/authz";
 import { userService } from "@/modules/users/service";
-import { redirect } from "next/navigation";
+import { Role } from "@prisma/client";
 
 const UsersPage = async () => {
-  const currentUser = await getCurrentUser();
-
-  if (!currentUser) {
-    redirect("/login");
-  }
-
-  if (currentUser.role !== "ADMIN") {
-    redirect("/auth");
-  }
+  const currentUser = await requirePageRole(Role.ADMIN);
 
   let users;
 

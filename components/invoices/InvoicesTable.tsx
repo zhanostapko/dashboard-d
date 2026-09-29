@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import labelsData from "@/data/labels.json";
 import { InvoiceDto } from "@/modules/invoices/schema";
+import { markInvoicePaidAction } from "@/app/actions/invoices";
 
 type Props = {
   data: InvoiceDto[];
@@ -19,6 +20,7 @@ type Props = {
 
 const InvoicesTable = ({ data }: Props) => {
   const [loadingInvoiceId, setLoadingInvoiceId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -43,14 +45,14 @@ const InvoicesTable = ({ data }: Props) => {
   ) => {
     event?.stopPropagation();
     setLoadingInvoiceId(invoiceId);
-    const res = await fetch(`/api/invoices`, {
-      method: "PUT",
-      body: JSON.stringify({ invoiceId }),
-    });
+    const result = await markInvoicePaidAction(invoiceId);
 
-    if (!res.ok) {
-      throw new Error("Failed to delete invoice");
+    if (!result.success) {
+      setError(result.error ?? "Не удалось обновить счет.");
+      setLoadingInvoiceId(null);
+      return;
     }
+    setError(null);
     setLoadingInvoiceId(null);
     router.refresh();
   };
@@ -63,6 +65,7 @@ const InvoicesTable = ({ data }: Props) => {
       >
         + {addInvoiceBtn}
       </Button>
+      {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
 
       <Table>
         <TableHeader>
