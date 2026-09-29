@@ -20,6 +20,7 @@ type SidebarProps = {
 };
 
 const sectionIcons: Record<AppSection["id"], React.ComponentType> = {
+  clients: Users,
   invoices: Newspaper,
   repairs: Car,
   users: Users,

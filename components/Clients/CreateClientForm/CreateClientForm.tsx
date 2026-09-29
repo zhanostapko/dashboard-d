@@ -1,5 +1,6 @@
 "use client";
 import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { saveClientAction } from "@/app/actions/clients";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function CreateClientForm({ selectedClient, onClose }: Props) {
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState(saveClientAction, {
     error: null,
     success: null,
@@ -38,9 +40,10 @@ export default function CreateClientForm({ selectedClient, onClose }: Props) {
 
   useEffect(() => {
     if (state.success) {
+      router.refresh();
       onClose?.();
     }
-  }, [state.success, onClose]);
+  }, [state.success, onClose, router]);
 
   return (
     <>

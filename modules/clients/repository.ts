@@ -4,6 +4,7 @@ import { Client, Prisma } from "@prisma/client";
 export const clientRepository = {
   getAllClients: async (): Promise<Client[]> => {
     const clients = await prisma.client.findMany({
+      orderBy: { name: "asc" },
       where: { isDeleted: false },
     });
     return clients;

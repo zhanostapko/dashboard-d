@@ -1,10 +1,10 @@
 export type AppSectionRole = "ADMIN" | "USER";
 
 export type AppSection = {
-  id: "users" | "invoices" | "repairs";
+  id: "users" | "invoices" | "clients" | "repairs";
   enabled: boolean;
   href: string;
-  labelKey: "users" | "invoices" | "repairs";
+  labelKey: "users" | "invoices" | "clients" | "repairs";
   requiredRole?: AppSectionRole;
 };
 
@@ -14,6 +14,12 @@ export const appSections: AppSection[] = [
     enabled: true,
     href: "/auth/invoices",
     labelKey: "invoices",
+  },
+  {
+    id: "clients",
+    enabled: true,
+    href: "/auth/clients",
+    labelKey: "clients",
   },
   {
     id: "users",

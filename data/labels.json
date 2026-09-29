@@ -49,6 +49,7 @@
       "deleteClientBtn": "Удалить",
       "createClient": "Создать клиента",
       "editClient": "Редактировать клиента",
+      "backToClients": "Назад",
       "selectClient": "Клиент",
       "searchClient": "Поиск клиента",
       "clearClient": "Очистить",

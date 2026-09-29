@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { authMessages } from "@/lib/auth-messages";
+import { getCurrentUser } from "@/lib/authz";
 import {
   clientCreateSchema,
   ClientDto,
@@ -14,19 +16,44 @@ type SaveClientState = {
   client: Partial<ClientDto> | null;
 };
 
+type DeleteClientState = {
+  error: string | null;
+  success: boolean;
+};
+
+const getFormValue = (payload: FormData, key: string) =>
+  String(payload.get(key) ?? "");
+
 export async function saveClientAction(
   _prevState: SaveClientState,
   payload: FormData
 ): Promise<SaveClientState> {
+  const currentUser = await getCurrentUser();
   const id = payload.get("id") ? Number(payload.get("id")) : null;
-  const name = payload.get("name") as string;
-  const regNr = payload.get("regNr") as string;
-  const address = payload.get("address") as string;
-  const bank = payload.get("bank") as string;
-  const bankCode = payload.get("bankCode") as string;
-  const account = payload.get("account") as string;
-  const phone = payload.get("phone") as string;
-  const email = payload.get("email") as string;
+  const name = getFormValue(payload, "name");
+  const regNr = getFormValue(payload, "regNr");
+  const address = getFormValue(payload, "address");
+  const bank = getFormValue(payload, "bank");
+  const bankCode = getFormValue(payload, "bankCode");
+  const account = getFormValue(payload, "account");
+  const phone = getFormValue(payload, "phone");
+  const email = getFormValue(payload, "email");
+
+  if (!currentUser) {
+    return {
+      error: authMessages.authenticationRequired,
+      success: null,
+      client: { name, regNr, address, bank, bankCode, account, phone, email },
+    };
+  }
+
+  if (id !== null && !Number.isInteger(id)) {
+    return {
+      error: "Некорректный клиент.",
+      success: null,
+      client: { name, regNr, address, bank, bankCode, account, phone, email },
+    };
+  }
 
   try {
     if (id) {
@@ -82,12 +109,55 @@ export async function saveClientAction(
     }
 
     revalidatePath("/auth/clients");
+    if (id) {
+      revalidatePath(`/auth/clients/${id}`);
+    }
     return { error: null, success: "Client saved!", client: null };
   } catch (error) {
     return {
       error: `Database error: ${(error as Error).message}`,
       success: null,
       client: { name, regNr, address, bank, bankCode, account, phone, email },
+    };
+  }
+}
+
+export async function deleteClientAction(
+  id: number
+): Promise<DeleteClientState> {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return {
+      error: authMessages.authenticationRequired,
+      success: false,
+    };
+  }
+
+  if (!Number.isInteger(id)) {
+    return {
+      error: "Некорректный клиент.",
+      success: false,
+    };
+  }
+
+  try {
+    const deletedClient = await clientService.deleteClient(id);
+
+    if (!deletedClient) {
+      return {
+        error: "Клиент не найден.",
+        success: false,
+      };
+    }
+
+    revalidatePath("/auth/clients");
+    revalidatePath(`/auth/clients/${id}`);
+    return { error: null, success: true };
+  } catch (error) {
+    return {
+      error: `Ошибка базы данных: ${(error as Error).message}`,
+      success: false,
     };
   }
 }
