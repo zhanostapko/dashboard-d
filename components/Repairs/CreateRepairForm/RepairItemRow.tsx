@@ -5,11 +5,18 @@ import data from "@/data/labels.json";
 import { RepairItemDto } from "@/modules/repairs/schema";
 
 type Props = {
+  editLabel: string;
   item: RepairItemDto;
+  onEdit: (item: RepairItemDto) => void;
   onRemove: (id: number) => void;
 };
 
-export default function RepairItemRow({ item, onRemove }: Props) {
+export default function RepairItemRow({
+  editLabel,
+  item,
+  onEdit,
+  onRemove,
+}: Props) {
   const { work, materials } = data.ru.repairs.repairForm.repairItems;
   const typeLabel = item.unit === "materials" ? materials : work;
 
@@ -19,7 +26,16 @@ export default function RepairItemRow({ item, onRemove }: Props) {
       <TableCell>{typeLabel}</TableCell>
       <TableCell>{item.quantity}</TableCell>
       <TableCell>{item.price?.toFixed(2)}</TableCell>
-      <TableCell>
+      <TableCell>{(item.quantity * item.price).toFixed(2)}</TableCell>
+      <TableCell className="space-x-2">
+        <button
+          type="button"
+          className="text-blue-500 hover:text-blue-700"
+          onClick={() => onEdit(item)}
+          title={editLabel}
+        >
+          ✎
+        </button>
         <button
           type="button"
           className="text-red-500 hover:text-red-700"

@@ -16,16 +16,20 @@ const normalizeRepairItemType = (
   return unit === "materials" ? "materials" : "work";
 };
 
+const toMoneyNumber = (value: number | Prisma.Decimal): number =>
+  typeof value === "number" ? value : value.toNumber();
+
 const toRepairItemDto = (item: RepairItem): RepairItemDto => ({
   id: item.id,
   name: item.name,
   unit: normalizeRepairItemType(item.unit),
   quantity: item.quantity,
-  price: item.price,
+  price: toMoneyNumber(item.price),
 });
 
 export const toRepairDto = (repair: RepairWithItems): RepairDto => ({
   id: repair.id,
+  clientId: repair.clientId,
   date: repair.date.toISOString(),
   clientName: repair.clientName ?? "",
   clientPhone: repair.clientPhone ?? "",
@@ -39,29 +43,42 @@ export const toRepairDto = (repair: RepairWithItems): RepairDto => ({
 
 export const toRepairCreateEntity = (
   dto: RepairCreateDto
-): Prisma.RepairCreateInput => ({
-  date: new Date(dto.date),
-  clientName: dto.clientName,
-  clientPhone: dto.clientPhone ?? null,
-  carBrand: dto.carBrand,
-  carModel: dto.carModel,
-  carPlate: dto.carPlate,
-  carMileage: dto.carMileage ?? "",
-  items: {
-    create: dto.items.map((item) => ({
-      name: item.name,
-      unit: item.unit,
-      quantity: item.quantity,
-      price: item.price,
-    })),
-  },
-});
+): Prisma.RepairCreateInput => {
+  const data: Prisma.RepairCreateInput = {
+    date: new Date(dto.date),
+    clientName: dto.clientName,
+    clientPhone: dto.clientPhone ?? null,
+    carBrand: dto.carBrand,
+    carModel: dto.carModel,
+    carPlate: dto.carPlate,
+    carMileage: dto.carMileage ?? "",
+    items: {
+      create: dto.items.map((item) => ({
+        name: item.name,
+        unit: item.unit,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    },
+  };
+
+  if (dto.clientId !== undefined) {
+    data.client = { connect: { id: dto.clientId } };
+  }
+
+  return data;
+};
 
 export const toRepairUpdateEntity = (
   dto: RepairUpdateDto
 ): Prisma.RepairUpdateInput => {
   const data: Prisma.RepairUpdateInput = {};
 
+  if (dto.clientId !== undefined) {
+    data.client = dto.clientId
+      ? { connect: { id: dto.clientId } }
+      : { disconnect: true };
+  }
   if (dto.date !== undefined) data.date = new Date(dto.date);
   if (dto.clientName !== undefined) data.clientName = dto.clientName;
   if (dto.clientPhone !== undefined)

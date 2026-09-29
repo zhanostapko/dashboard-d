@@ -30,7 +30,7 @@ export const appSections: AppSection[] = [
   },
   {
     id: "repairs",
-    enabled: false,
+    enabled: true,
     href: "/auth/repairs",
     labelKey: "repairs",
   },

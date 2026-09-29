@@ -147,6 +147,8 @@
       "createPageTitle": "Создать ремонт",
       "editPageTitle": "Редактировать ремонт",
       "backToRepairs": "Назад",
+      "error": "Не удалось загрузить ремонты.",
+      "noItems": "Позиции не добавлены",
       "loading": "Загрузка...",
       "repairForm": {
         "createTitle": "Создать ремонт",
@@ -174,7 +176,11 @@
           "materials": "Материалы",
           "quantity": "Количество",
           "price": "Цена",
+          "sum": "Сумма",
           "actions": "Действия",
+          "editItem": "Редактировать позицию",
+          "saveItem": "Сохранить позицию",
+          "cancelEdit": "Отмена",
           "addItem": "Добавить позицию"
         }
       }

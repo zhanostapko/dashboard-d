@@ -8,11 +8,7 @@ export const repairService = {
     const mappedRepairs = repairs.map((repair) => {
       return toRepairDto(repair);
     });
-    return mappedRepairs.sort((a, b) => {
-      return (
-        new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
-      );
-    });
+    return mappedRepairs;
   },
   getRepairById: async (id: number): Promise<RepairDto | null> => {
     const repair = await repairRepository.getRepairById(id);

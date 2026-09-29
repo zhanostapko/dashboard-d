@@ -5,6 +5,8 @@ export const authMessages = {
   genericSignInError: "Во время входа произошла ошибка. Попробуйте снова.",
   clientApiDisabled:
     "Clients API is disabled. Use server actions for client management.",
+  repairApiDisabled:
+    "Repairs API is disabled. Use server actions for repair management.",
   userApiDisabled:
     "Users API is disabled. Use server actions for user management.",
 };

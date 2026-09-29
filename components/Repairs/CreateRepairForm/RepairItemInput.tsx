@@ -1,9 +1,7 @@
 "use client";
 
-import { TableRow, TableCell } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FormControl, FormField, FormItem, FormLabel } from "../../ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -11,93 +9,87 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { UseFormReturn } from "react-hook-form";
+import { TableCell, TableRow } from "@/components/ui/table";
 import data from "@/data/labels.json";
 import { RepairItemDto } from "@/modules/repairs/schema";
 
-const { name, price, quantity, type, work, materials } =
+const { materials, name, price, quantity, sum, type, work } =
   data.ru.repairs.repairForm.repairItems;
 
+type RepairItemDraftErrors = Partial<Record<keyof RepairItemDto, string>>;
+
 type Props = {
-  localForm: UseFormReturn<RepairItemDto>;
+  errors: RepairItemDraftErrors;
+  item: RepairItemDto;
+  onChange: <Field extends keyof RepairItemDto>(
+    field: Field,
+    value: RepairItemDto[Field]
+  ) => void;
   onClear: () => void;
 };
 
-export default function RepairItemInput({ localForm, onClear }: Props) {
+export default function RepairItemInput({
+  errors,
+  item,
+  onChange,
+  onClear,
+}: Props) {
+  const hasErrors = Object.keys(errors).length > 0;
+
   return (
     <>
       <TableRow>
         <TableCell>
-          <FormField
-            control={localForm.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{name}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-              </FormItem>
-            )}
+          <Input
+            aria-label={name}
+            value={item.name}
+            onChange={(event) => onChange("name", event.target.value)}
           />
         </TableCell>
         <TableCell>
-          <FormField
-            control={localForm.control}
-            name="unit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{type}</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value || "work"}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={type} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="work">{work}</SelectItem>
-                      <SelectItem value="materials">{materials}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-              </FormItem>
-            )}
+          <Select
+            value={item.unit}
+            onValueChange={(value) =>
+              onChange("unit", value as RepairItemDto["unit"])
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={type} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="work">{work}</SelectItem>
+              <SelectItem value="materials">{materials}</SelectItem>
+            </SelectContent>
+          </Select>
+        </TableCell>
+        <TableCell>
+          <Input
+            aria-label={quantity}
+            min={1}
+            type="number"
+            value={item.quantity}
+            onChange={(event) =>
+              onChange("quantity", Number(event.target.value))
+            }
           />
         </TableCell>
         <TableCell>
-          <FormField
-            control={localForm.control}
-            name="quantity"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{quantity}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    onChange={(e) => field.onChange(+e.target.value)}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+          <Input
+            aria-label={price}
+            min={0}
+            step="0.01"
+            type="number"
+            value={item.price}
+            onChange={(event) => onChange("price", Number(event.target.value))}
           />
         </TableCell>
         <TableCell>
-          <FormField
-            control={localForm.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{price}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    onChange={(e) => field.onChange(+e.target.value)}
-                  />
-                </FormControl>
-              </FormItem>
-            )}
+          <Input
+            aria-label={sum}
+            disabled
+            readOnly
+            type="number"
+            value={(item.quantity * item.price).toFixed(2)}
           />
         </TableCell>
         <TableCell>
@@ -107,15 +99,13 @@ export default function RepairItemInput({ localForm, onClear }: Props) {
         </TableCell>
       </TableRow>
 
-      {Object.keys(localForm.formState.errors).length > 0 && (
+      {hasErrors && (
         <TableRow>
-          <TableCell colSpan={5}>
-            <div className="text-red-500 text-sm space-y-1">
-              {Object.entries(localForm.formState.errors).map(
-                ([field, error]) => (
-                  <div key={field}> {error?.message}</div>
-                ),
-              )}
+          <TableCell colSpan={6}>
+            <div className="space-y-1 text-sm text-red-500">
+              {Object.entries(errors).map(([field, error]) => (
+                <div key={field}>• {error}</div>
+              ))}
             </div>
           </TableCell>
         </TableRow>

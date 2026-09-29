@@ -1,92 +1,159 @@
 "use client";
 
+import { useState } from "react";
 import RepairItemRow from "./RepairItemRow";
 import { Button } from "@/components/ui/button";
 import {
   Table,
-  TableHeader,
   TableBody,
-  TableRow,
   TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import RepairItemInput from "./RepairItemInput";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import data from "@/data/labels.json";
 import { RepairItemDto, repairItemSchema } from "@/modules/repairs/schema";
 
-const { actions, addItem, name, price, quantity, type } =
-  data.ru.repairs.repairForm.repairItems;
+const {
+  actions,
+  addItem,
+  cancelEdit,
+  editItem,
+  name,
+  price,
+  quantity,
+  saveItem,
+  sum,
+  type,
+} = data.ru.repairs.repairForm.repairItems;
+
+type RepairItemDraftErrors = Partial<Record<keyof RepairItemDto, string>>;
 
 type Props = {
   handleAdd: (item: RepairItemDto) => void;
   handleRemove: (id: number) => void;
+  handleUpdate: (item: RepairItemDto) => void;
   items: RepairItemDto[];
 };
+
+const createInitialItem = (): RepairItemDto => ({
+  id: Date.now(),
+  name: "",
+  unit: "work",
+  quantity: 1,
+  price: 0,
+});
 
 export default function RepairItemTable({
   handleAdd,
   handleRemove,
+  handleUpdate,
   items,
 }: Props) {
-  const initialInput: Partial<RepairItemDto> = {
-    id: Date.now(),
-    name: "",
-    unit: "work",
-    quantity: 1,
-    price: 0,
+  const [draftItem, setDraftItem] = useState<RepairItemDto>(createInitialItem);
+  const [draftErrors, setDraftErrors] = useState<RepairItemDraftErrors>({});
+  const [editingItemId, setEditingItemId] = useState<number | null>(null);
+
+  const handleDraftChange = <Field extends keyof RepairItemDto>(
+    field: Field,
+    value: RepairItemDto[Field]
+  ) => {
+    setDraftItem((current) => ({
+      ...current,
+      [field]: value,
+    }));
+    setDraftErrors((current) => ({ ...current, [field]: undefined }));
   };
-  const localForm = useForm<RepairItemDto>({
-    resolver: zodResolver(repairItemSchema),
-    defaultValues: initialInput,
-  });
 
-  const onInputClear = () => {
-    localForm.reset(initialInput);
+  const handleClear = () => {
+    setDraftItem(createInitialItem());
+    setDraftErrors({});
+    setEditingItemId(null);
   };
 
-  const handleAddItem = localForm.handleSubmit((data) => {
-    handleAdd({
-      ...data,
-      id: Date.now(),
-    });
+  const handleEditItem = (item: RepairItemDto) => {
+    setDraftItem(item);
+    setDraftErrors({});
+    setEditingItemId(item.id);
+  };
 
-    localForm.reset(initialInput);
-  });
+  const handleSaveItem = () => {
+    const item = {
+      ...draftItem,
+      id: editingItemId ?? Date.now(),
+    };
+
+    const parsed = repairItemSchema.safeParse(item);
+
+    if (!parsed.success) {
+      const nextErrors: RepairItemDraftErrors = {};
+
+      for (const issue of parsed.error.issues) {
+        const fieldName = issue.path[0] as keyof RepairItemDto | undefined;
+
+        if (fieldName) {
+          nextErrors[fieldName] = issue.message;
+        }
+      }
+
+      setDraftErrors(nextErrors);
+      return;
+    }
+
+    if (editingItemId) {
+      handleUpdate(parsed.data);
+    } else {
+      handleAdd(parsed.data);
+    }
+
+    handleClear();
+  };
 
   return (
     <div className="p-4">
-      <div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{name}</TableHead>
-              <TableHead>{type}</TableHead>
-              <TableHead>{quantity}</TableHead>
-              <TableHead>{price}</TableHead>
-              <TableHead>{actions}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {items.map((item) => (
-              <RepairItemRow
-                key={item?.id}
-                item={item}
-                onRemove={() => handleRemove(item.id)}
-              />
-            ))}
-            <RepairItemInput localForm={localForm} onClear={onInputClear} />
-          </TableBody>
-        </Table>
-        <div className="flex justify-end">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{name}</TableHead>
+            <TableHead>{type}</TableHead>
+            <TableHead>{quantity}</TableHead>
+            <TableHead>{price}</TableHead>
+            <TableHead>{sum}</TableHead>
+            <TableHead>{actions}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item) => (
+            <RepairItemRow
+              editLabel={editItem}
+              item={item}
+              key={item.id}
+              onEdit={handleEditItem}
+              onRemove={() => handleRemove(item.id)}
+            />
+          ))}
+          <RepairItemInput
+            errors={draftErrors}
+            item={draftItem}
+            onChange={handleDraftChange}
+            onClear={handleClear}
+          />
+        </TableBody>
+      </Table>
+      <div className="flex justify-end gap-2">
+        {editingItemId && (
           <Button
-            onClick={handleAddItem}
-            className=" item-right mt-4"
-            type="submit"
+            className="item-right mt-4"
+            onClick={handleClear}
+            type="button"
+            variant="outline"
           >
-            {addItem}
+            {cancelEdit}
           </Button>
-        </div>
+        )}
+        <Button className="item-right mt-4" onClick={handleSaveItem} type="button">
+          {editingItemId ? `✓ ${saveItem}` : `➕ ${addItem}`}
+        </Button>
       </div>
     </div>
   );

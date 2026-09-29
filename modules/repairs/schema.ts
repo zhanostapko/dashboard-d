@@ -29,12 +29,16 @@ const baseRepairFields = {
 
 export const repairSchema = z.object({
   id: z.number(),
+  clientId: z.number().nullable().optional(),
   createdAt: z.string().optional(),
   ...baseRepairFields,
   items: z.array(repairItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 });
 
-export const repairCreateSchema = z.object(baseRepairFields);
+export const repairCreateSchema = z.object({
+  clientId: z.number().optional(),
+  ...baseRepairFields,
+});
 
 export const repairUpdateSchema = repairCreateSchema.partial().extend({
   id: z.number(),
@@ -46,6 +50,7 @@ const repairItemFormSchema = repairItemCreateSchema.extend({
 
 export const repairFormSchema = z.object({
   id: z.number().optional(),
+  clientId: z.number().optional(),
   date: z.string().min(1, "Date is required"),
   clientName: z.string().min(1, "Client name is required"),
   clientPhone: z.string().optional(),

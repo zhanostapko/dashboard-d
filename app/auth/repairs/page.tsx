@@ -1,8 +1,25 @@
-import { redirect } from "next/navigation";
+import React from "react";
+import Error from "@/components/Error";
+import RepairsTable from "@/components/Repairs/RepairsTable";
+import data from "@/data/labels.json";
+import { requirePageUser } from "@/lib/authz";
+import { repairService } from "@/modules/repairs/service";
 
-const RepairsPage = () => {
-  // Temporarily disabled during the focused users/auth/shared refactor.
-  redirect("/auth");
+const RepairsPage = async () => {
+  await requirePageUser();
+
+  try {
+    const repairs = await repairService.getAllRepairs();
+    return <RepairsTable repairs={repairs} />;
+  } catch (error) {
+    console.error("Failed to load repairs:", error);
+    return (
+      <div className="p-6">
+        <p className="mb-4 text-red-500">{data.ru.repairs.error}</p>
+        <Error />
+      </div>
+    );
+  }
 };
 
 export default RepairsPage;

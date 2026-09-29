@@ -6,6 +6,7 @@ export const repairRepository = {
   getAllRepairs: async (): Promise<RepairWithItems[]> => {
     const repairs = await prisma.repair.findMany({
       include: { items: true },
+      orderBy: { createdAt: "desc" },
     });
     return repairs;
   },
@@ -37,7 +38,6 @@ export const repairRepository = {
     return updatedRepair;
   },
   deleteRepair: async (id: number): Promise<void> => {
-    await prisma.repairItem.deleteMany({ where: { repairId: id } });
     await prisma.repair.delete({ where: { id } });
   },
 };

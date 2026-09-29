@@ -1,3 +1,4 @@
+import { authMessages } from "@/lib/auth-messages";
 import { NextResponse } from "next/server";
 
 const disabledResponse = async (
@@ -7,7 +8,7 @@ const disabledResponse = async (
   await params;
 
   return NextResponse.json(
-    { error: "Repairs are temporarily disabled during refactor." },
+    { error: authMessages.repairApiDisabled },
     { status: 410 }
   );
 };

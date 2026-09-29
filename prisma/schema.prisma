@@ -124,11 +124,11 @@ model Repair {
 model RepairItem { 
   id       Int     @id @default(autoincrement())
   repairId Int
-  repair   Repair  @relation(fields: [repairId], references: [id])
+  repair   Repair  @relation(fields: [repairId], references: [id], onDelete: Cascade)
   name     String
   unit     String
   quantity Int 
-  price    Float
+  price    Decimal @db.Decimal(12, 2)
 }
 
 
