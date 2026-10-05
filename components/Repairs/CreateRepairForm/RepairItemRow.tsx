@@ -1,7 +1,7 @@
 "use client";
 
 import { TableRow, TableCell } from "@/components/ui/table";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { RepairItemDto } from "@/modules/repairs/schema";
 
 type Props = {
@@ -17,7 +17,7 @@ export default function RepairItemRow({
   onEdit,
   onRemove,
 }: Props) {
-  const { work, materials } = data.ru.repairs.repairForm.repairItems;
+  const { work, materials } = useLocaleData().ru.repairs.repairForm.repairItems;
   const typeLabel = item.unit === "materials" ? materials : work;
 
   return (

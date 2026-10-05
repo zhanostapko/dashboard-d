@@ -47,6 +47,13 @@ export const repairRepository = {
       include: { items: true, invoice: true },
     });
   },
+  reopenRepair: async (id: number): Promise<RepairWithItems> => {
+    return prisma.repair.update({
+      where: { id },
+      data: { status: "Open" },
+      include: { items: true, invoice: true },
+    });
+  },
   closeRepairByPaidInvoice: async (
     invoiceId: number
   ): Promise<RepairWithItems | null> => {

@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DeleteRepairButton from "@/components/Repairs/DeleteRepairButton";
 import EditRepairButton from "@/components/Repairs/EditRepairButton";
 import CloseRepairButton from "@/components/Repairs/CloseRepairButton";
-import labelsData from "@/data/labels.json";
+import ReopenRepairButton from "@/components/Repairs/ReopenRepairButton";
+import { getServerLabels } from "@/lib/i18n";
 import { requirePageUser } from "@/lib/authz";
 import { RepairItemDto } from "@/modules/repairs/schema";
 import { repairService } from "@/modules/repairs/service";
@@ -17,6 +18,7 @@ const RepairDetailPage = async ({
   params: Promise<{ repairId: string }>;
 }) => {
   await requirePageUser();
+  const labelsData = await getServerLabels();
 
   const { repairId } = await params;
   const id = Number(repairId);
@@ -44,7 +46,7 @@ const RepairDetailPage = async ({
     closed,
     createInvoiceBtn,
     invoiceAttached,
-  } = labelsData.ru.repairs;
+  } = labelsData.repairs;
   const { carInformation, clientInformation, repairItems } = repairForm;
   const total = calculateRepairTotal(repair.items);
 
@@ -74,8 +76,11 @@ const RepairDetailPage = async ({
                   )}
                   <CloseRepairButton repairId={repair.id} />
                   <EditRepairButton repairId={repair.id} />
-                  <DeleteRepairButton repairId={repair.id} />
+                  {!repair.invoiceId && <DeleteRepairButton repairId={repair.id} />}
                 </>
+              )}
+              {repair.status === "Closed" && !repair.invoiceId && (
+                <ReopenRepairButton repairId={repair.id} />
               )}
             </div>
           </div>

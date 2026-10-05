@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 
 type Props = {
   repairId: number;
@@ -11,6 +11,7 @@ type Props = {
 
 const EditRepairButton = ({ repairId }: Props) => {
   const router = useRouter();
+  const labelsData = useLocaleData();
 
   return (
     <Button onClick={() => router.push(`/auth/repairs/${repairId}/edit`)}>

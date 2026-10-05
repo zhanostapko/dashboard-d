@@ -1,11 +1,12 @@
 import RepairFormSection from "./RepairFormSection";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 
 type Props = {
   total: number;
 };
 
 export default function RepairSummarySection({ total }: Props) {
+  const labelsData = useLocaleData();
   const { sum } = labelsData.ru.repairs.repairForm.repairItems;
 
   return (

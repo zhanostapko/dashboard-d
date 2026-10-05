@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { Button } from "../../ui/button";
 import { Form } from "../../ui/form";
 import ErrorState from "@/components/Error";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { saveRepairAction, SaveRepairState } from "@/app/actions/repairs";
 import { ClientDto } from "@/modules/clients/schema";
 import {
@@ -51,6 +51,7 @@ const CreateRepairForm = ({
     initialState
   );
   const [items, setItems] = useState<RepairItemDto[]>(repair?.items || []);
+  const labelsData = useLocaleData();
 
   const { repairForm, date } = labelsData.ru.repairs;
   const { saveRepairButton, createRepairButton, saving } = repairForm;

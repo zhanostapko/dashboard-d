@@ -2,7 +2,7 @@ import React from "react";
 import { redirect } from "next/navigation";
 import CreateRepairForm from "@/components/Repairs/CreateRepairForm/CreateRepairForm";
 import FormPageShell from "@/components/General/FormPageShell";
-import labelsData from "@/data/labels.json";
+import { getServerLabels } from "@/lib/i18n";
 import { requirePageUser } from "@/lib/authz";
 import { clientService } from "@/modules/clients/service";
 import { repairService } from "@/modules/repairs/service";
@@ -13,6 +13,7 @@ const EditRepairPage = async ({
   params: Promise<{ repairId: string }>;
 }) => {
   await requirePageUser();
+  const labelsData = await getServerLabels();
 
   const { repairId } = await params;
   const id = Number(repairId);
@@ -36,9 +37,9 @@ const EditRepairPage = async ({
 
   return (
     <FormPageShell
-      title={labelsData.ru.repairs.editPageTitle}
+      title={labelsData.repairs.editPageTitle}
       backHref={`/auth/repairs/${repair.id}`}
-      backLabel={labelsData.ru.repairs.backToRepairs}
+      backLabel={labelsData.repairs.backToRepairs}
     >
       <CreateRepairForm clients={clients} editMode repair={repair} />
     </FormPageShell>

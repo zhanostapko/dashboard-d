@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "../../ui/form";
 import { Input } from "../../ui/input";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { RepairFormValues } from "@/modules/repairs/schema";
 import RepairFormSection from "./RepairFormSection";
 
@@ -20,6 +20,7 @@ type Props = {
 
 export default function RepairMainSection({ dateLabel, repairId }: Props) {
   const form = useFormContext<RepairFormValues>();
+  const labelsData = useLocaleData();
 
   return (
     <RepairFormSection title={labelsData.ru.repairs.repairNumber}>

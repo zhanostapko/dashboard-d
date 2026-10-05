@@ -1,15 +1,25 @@
 import { z } from "zod";
 
 export const repairItemTypeSchema = z.enum(["work", "materials"], {
-  required_error: "Type is required",
-  invalid_type_error: "Type is required",
+  required_error: "Укажите тип позиции.",
+  invalid_type_error: "Укажите тип позиции.",
 });
 
 export const repairItemCreateSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Введите наименование позиции."),
   unit: repairItemTypeSchema,
-  quantity: z.number().min(1, "Quantity must be at least 1"),
-  price: z.number().min(0, "Price must be positive"),
+  quantity: z
+    .number({
+      required_error: "Введите количество.",
+      invalid_type_error: "Количество должно быть числом.",
+    })
+    .min(1, "Количество должно быть не менее 1."),
+  price: z
+    .number({
+      required_error: "Введите цену.",
+      invalid_type_error: "Цена должна быть числом.",
+    })
+    .min(0, "Цена не может быть отрицательной."),
 });
 
 export const repairItemSchema = repairItemCreateSchema.extend({
@@ -17,11 +27,11 @@ export const repairItemSchema = repairItemCreateSchema.extend({
 });
 
 const baseRepairFields = {
-  date: z.string().min(1, "Date is required"),
-  clientName: z.string().min(1, "Client name is required"),
+  date: z.string().min(1, "Укажите дату ремонта."),
+  clientName: z.string().min(1, "Введите имя клиента."),
   clientPhone: z.string().optional(),
-  carBrand: z.string().min(1, "Car brand is required"),
-  carModel: z.string().min(1, "Car model is required"),
+  carBrand: z.string().min(1, "Введите марку автомобиля."),
+  carModel: z.string().min(1, "Введите модель автомобиля."),
   carPlate: z.string().optional(),
   carMileage: z.string().optional(),
   items: z.array(repairItemCreateSchema).min(1, "Нужно добавить хотя бы одну позицию."),
@@ -56,11 +66,11 @@ export const repairFormSchema = z.object({
   id: z.number().optional(),
   clientId: z.number().optional(),
   vehicleId: z.number().optional(),
-  date: z.string().min(1, "Date is required"),
-  clientName: z.string().min(1, "Client name is required"),
+  date: z.string().min(1, "Укажите дату ремонта."),
+  clientName: z.string().min(1, "Введите имя клиента."),
   clientPhone: z.string().optional(),
-  carBrand: z.string().min(1, "Car brand is required"),
-  carModel: z.string().min(1, "Car model is required"),
+  carBrand: z.string().min(1, "Введите марку автомобиля."),
+  carModel: z.string().min(1, "Введите модель автомобиля."),
   carPlate: z.string().optional(),
   carMileage: z.string().optional(),
   items: z.array(repairItemFormSchema).min(1, "Нужно добавить хотя бы одну позицию."),

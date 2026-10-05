@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { deleteRepairAction } from "@/app/actions/repairs";
 
 type Props = {
@@ -14,15 +14,16 @@ const DeleteRepairButton = ({ repairId }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const labelsData = useLocaleData();
 
   const deleteRepair = async () => {
-    if (!confirm("Удалить ремонт?")) return;
+    if (!confirm(labelsData.ru.dialogs.deleteRepair)) return;
 
     setIsLoading(true);
     const result = await deleteRepairAction(repairId);
 
     if (!result.success) {
-      setError(result.error ?? "Не удалось удалить ремонт.");
+      setError(result.error ?? labelsData.ru.errors.deleteRepair);
       setIsLoading(false);
       return;
     }

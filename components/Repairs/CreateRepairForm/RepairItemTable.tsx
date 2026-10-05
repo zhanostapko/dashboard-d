@@ -11,23 +11,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import RepairItemInput from "./RepairItemInput";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { RepairItemDto, repairItemSchema } from "@/modules/repairs/schema";
+import type { RepairItemDraft } from "./RepairItemInput";
 
-const {
-  actions,
-  addItem,
-  cancelEdit,
-  editItem,
-  name,
-  price,
-  quantity,
-  saveItem,
-  sum,
-  type,
-} = data.ru.repairs.repairForm.repairItems;
-
-type RepairItemDraftErrors = Partial<Record<keyof RepairItemDto, string>>;
+type RepairItemDraftErrors = Partial<Record<keyof RepairItemDraft, string>>;
 
 type Props = {
   handleAdd: (item: RepairItemDto) => void;
@@ -36,7 +24,7 @@ type Props = {
   items: RepairItemDto[];
 };
 
-const createInitialItem = (): RepairItemDto => ({
+const createInitialItem = (): RepairItemDraft => ({
   id: Date.now(),
   name: "",
   unit: "work",
@@ -50,19 +38,24 @@ export default function RepairItemTable({
   handleUpdate,
   items,
 }: Props) {
-  const [draftItem, setDraftItem] = useState<RepairItemDto>(createInitialItem);
+  const { actions, addItem, cancelEdit, editItem, name, price, quantity, saveItem, sum, type } = useLocaleData().ru.repairs.repairForm.repairItems;
+  const [draftItem, setDraftItem] = useState<RepairItemDraft>(createInitialItem);
   const [draftErrors, setDraftErrors] = useState<RepairItemDraftErrors>({});
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
 
-  const handleDraftChange = <Field extends keyof RepairItemDto>(
+  const handleDraftChange = <Field extends keyof RepairItemDraft>(
     field: Field,
-    value: RepairItemDto[Field]
+    value: RepairItemDraft[Field]
   ) => {
     setDraftItem((current) => ({
       ...current,
       [field]: value,
     }));
-    setDraftErrors((current) => ({ ...current, [field]: undefined }));
+    setDraftErrors((current) => {
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
   };
 
   const handleClear = () => {
@@ -72,7 +65,7 @@ export default function RepairItemTable({
   };
 
   const handleEditItem = (item: RepairItemDto) => {
-    setDraftItem(item);
+    setDraftItem({ ...item });
     setDraftErrors({});
     setEditingItemId(item.id);
   };

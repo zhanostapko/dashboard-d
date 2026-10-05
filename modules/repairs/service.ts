@@ -6,6 +6,10 @@ import { vehicleService } from "@/modules/vehicles/service";
 const CLOSED_REPAIR_ERROR = "Закрытый ремонт нельзя изменить или удалить.";
 const REPAIR_WITH_UNPAID_INVOICE_ERROR =
   "Ремонт с неоплаченным счетом нельзя закрыть.";
+const REPAIR_WITH_INVOICE_ERROR =
+  "Ремонт с привязанным счетом нельзя удалить.";
+const PAID_INVOICE_REOPEN_ERROR =
+  "Ремонт с оплаченным счетом нельзя открыть заново.";
 
 export class RepairServiceConflictError extends Error {}
 
@@ -80,6 +84,9 @@ export const repairService = {
     if (existingRepair.status === "Closed") {
       throw new RepairServiceConflictError(CLOSED_REPAIR_ERROR);
     }
+    if (existingRepair.invoice) {
+      throw new RepairServiceConflictError(REPAIR_WITH_INVOICE_ERROR);
+    }
     await repairRepository.deleteRepair(id);
     return toRepairDto(existingRepair);
   },
@@ -96,5 +103,16 @@ export const repairService = {
   },
   closeRepairForPaidInvoice: async (invoiceId: number): Promise<void> => {
     await repairRepository.closeRepairByPaidInvoice(invoiceId);
+  },
+  reopenRepair: async (id: number): Promise<RepairDto | null> => {
+    const existingRepair = await repairRepository.getRepairById(id);
+    if (!existingRepair) return null;
+    if (existingRepair.status === "Open") return toRepairDto(existingRepair);
+    if (existingRepair.invoice?.status === "Paid") {
+      throw new RepairServiceConflictError(PAID_INVOICE_REOPEN_ERROR);
+    }
+
+    const reopenedRepair = await repairRepository.reopenRepair(id);
+    return toRepairDto(reopenedRepair);
   },
 };

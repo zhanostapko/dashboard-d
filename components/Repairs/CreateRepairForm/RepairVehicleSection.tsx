@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { ClientDto } from "@/modules/clients/schema";
 import { RepairFormValues } from "@/modules/repairs/schema";
 import RepairFormSection from "./RepairFormSection";
@@ -38,6 +38,7 @@ const vehicleLabel = ({
 
 export default function RepairVehicleSection({ clients }: Props) {
   const form = useFormContext<RepairFormValues>();
+  const labelsData = useLocaleData();
   const selectedClientId = form.watch("clientId");
   const selectedVehicleId = form.watch("vehicleId");
   const selectedClient = clients.find((client) => client.id === selectedClientId);

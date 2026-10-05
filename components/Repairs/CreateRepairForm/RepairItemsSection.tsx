@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { RepairFormValues, RepairItemDto } from "@/modules/repairs/schema";
 import RepairFormSection from "./RepairFormSection";
 import RepairItemTable from "./RepairItemTable";
@@ -27,6 +27,7 @@ export default function RepairItemsSection({
   onUpdateItem,
 }: Props) {
   const form = useFormContext<RepairFormValues>();
+  const labelsData = useLocaleData();
   const { title } = labelsData.ru.repairs.repairForm.repairItems;
 
   return (

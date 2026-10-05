@@ -1,12 +1,13 @@
 import React from "react";
 import Error from "@/components/Error";
 import RepairsTable from "@/components/Repairs/RepairsTable";
-import data from "@/data/labels.json";
+import { getServerLabels } from "@/lib/i18n";
 import { requirePageUser } from "@/lib/authz";
 import { repairService } from "@/modules/repairs/service";
 
 const RepairsPage = async () => {
   await requirePageUser();
+  const labels = await getServerLabels();
 
   try {
     const repairs = await repairService.getAllRepairs();
@@ -15,7 +16,7 @@ const RepairsPage = async () => {
     console.error("Failed to load repairs:", error);
     return (
       <div className="p-6">
-        <p className="mb-4 text-red-500">{data.ru.repairs.error}</p>
+        <p className="mb-4 text-red-500">{labels.repairs.error}</p>
         <Error />
       </div>
     );

@@ -4,26 +4,31 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLocaleData } from "@/components/General/I18nProvider";
-import { closeRepairAction } from "@/app/actions/repairs";
+import { reopenRepairAction } from "@/app/actions/repairs";
 
 type Props = { repairId: number };
 
-export default function CloseRepairButton({ repairId }: Props) {
+export default function ReopenRepairButton({ repairId }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const labelsData = useLocaleData();
 
-  const handleClose = async () => {
-    if (!confirm(`${labelsData.ru.dialogs.closeRepair} ${labelsData.ru.dialogs.closeRepairDescription}`)) {
+  const handleReopen = async () => {
+    if (
+      !confirm(
+        `${labelsData.ru.dialogs.reopenRepair} ${labelsData.ru.dialogs.reopenRepairDescription}`
+      )
+    ) {
       return;
     }
 
     setLoading(true);
     setError(null);
-    const result = await closeRepairAction(repairId);
+    const result = await reopenRepairAction(repairId);
+
     if (!result.success) {
-      setError(result.error ?? labelsData.ru.errors.closeRepair);
+      setError(result.error ?? labelsData.ru.errors.reopenRepair);
       setLoading(false);
       return;
     }
@@ -33,8 +38,8 @@ export default function CloseRepairButton({ repairId }: Props) {
 
   return (
     <div className="space-y-2">
-      <Button disabled={loading} onClick={handleClose} variant="outline">
-        {loading ? labelsData.ru.repairs.loading : labelsData.ru.repairs.closeRepairBtn}
+      <Button disabled={loading} onClick={handleReopen} variant="outline">
+        {loading ? labelsData.ru.repairs.loading : labelsData.ru.common.reopenRepair}
       </Button>
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>

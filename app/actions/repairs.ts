@@ -12,6 +12,7 @@ import {
   RepairServiceConflictError,
   repairService,
 } from "@/modules/repairs/service";
+import { getServerLabels } from "@/lib/i18n";
 
 export type SaveRepairState = {
   errors: Record<string, string[]> | null;
@@ -28,6 +29,7 @@ export async function saveRepairAction(
   prevState: SaveRepairState,
   action: RepairFormValues
 ): Promise<SaveRepairState> {
+  const labels = await getServerLabels();
   const id = action.id;
   const currentUser = await getCurrentUser();
 
@@ -50,7 +52,7 @@ export async function saveRepairAction(
         return {
           ...prevState,
           errors: {
-            repair: ["Ремонт не найден."],
+            repair: [labels.errors.notFound],
           },
           success: false,
           formData: action,
@@ -64,7 +66,7 @@ export async function saveRepairAction(
           ...prevState,
           errors: {
             validation: [
-              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
+              labels.errors.validation,
             ],
           },
           success: false,
@@ -78,7 +80,7 @@ export async function saveRepairAction(
         return {
           ...prevState,
           errors: {
-            repair: ["Ремонт не найден."],
+            repair: [labels.errors.notFound],
           },
           success: false,
           formData: action,
@@ -95,7 +97,7 @@ export async function saveRepairAction(
           ...prevState,
           errors: {
             validation: [
-              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
+              labels.errors.validation,
             ],
           },
           success: false,
@@ -113,7 +115,7 @@ export async function saveRepairAction(
       return {
         success: false,
         formData: action,
-        errors: { repair: [error.message] },
+        errors: { repair: [error.message.includes("неоплачен") ? labels.errors.unpaidClose : labels.errors.closedRepair] },
       };
     }
     console.error("Server error:", error);
@@ -122,7 +124,7 @@ export async function saveRepairAction(
       success: false,
       formData: action,
       errors: {
-        db: ["На сервере произошла ошибка. Пожалуйста, попробуйте позже."],
+        db: [labels.errors.database],
       },
     };
   }
@@ -131,6 +133,7 @@ export async function saveRepairAction(
 export async function deleteRepairAction(
   repairId: number
 ): Promise<RepairActionState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -142,7 +145,7 @@ export async function deleteRepairAction(
 
   if (!Number.isInteger(repairId)) {
     return {
-      error: "Некорректный ремонт.",
+      error: labels.errors.invalid,
       success: false,
     };
   }
@@ -152,7 +155,7 @@ export async function deleteRepairAction(
 
     if (!deletedRepair) {
       return {
-        error: "Ремонт не найден.",
+        error: labels.errors.notFound,
         success: false,
       };
     }
@@ -162,10 +165,17 @@ export async function deleteRepairAction(
     return { error: null, success: true };
   } catch (error) {
     if (error instanceof RepairServiceConflictError) {
-      return { error: error.message, success: false };
+      return {
+        error: error.message.includes("привязанным счетом")
+          ? labels.errors.linkedInvoiceRepair
+          : error.message.includes("неоплачен")
+            ? labels.errors.unpaidClose
+            : labels.errors.closedRepair,
+        success: false,
+      };
     }
     return {
-      error: `Ошибка базы данных: ${(error as Error).message}`,
+      error: labels.errors.database,
       success: false,
     };
   }
@@ -174,6 +184,7 @@ export async function deleteRepairAction(
 export async function closeRepairAction(
   repairId: number
 ): Promise<RepairActionState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -181,23 +192,65 @@ export async function closeRepairAction(
   }
 
   if (!Number.isInteger(repairId)) {
-    return { error: "Некорректный ремонт.", success: false };
+    return { error: labels.errors.invalid, success: false };
   }
 
   try {
     const closedRepair = await repairService.closeRepair(repairId);
-    if (!closedRepair) return { error: "Ремонт не найден.", success: false };
+    if (!closedRepair) return { error: labels.errors.notFound, success: false };
 
     revalidatePath("/auth/repairs");
     revalidatePath(`/auth/repairs/${repairId}`);
     return { error: null, success: true };
   } catch (error) {
     if (error instanceof RepairServiceConflictError) {
-      return { error: error.message, success: false };
+      return {
+        error: error.message.includes("привязанным счетом")
+          ? labels.errors.linkedInvoiceRepair
+          : error.message.includes("неоплачен")
+            ? labels.errors.unpaidClose
+            : labels.errors.closedRepair,
+        success: false,
+      };
     }
     return {
-      error: `Ошибка базы данных: ${(error as Error).message}`,
+      error: labels.errors.database,
       success: false,
     };
+  }
+}
+
+export async function reopenRepairAction(
+  repairId: number
+): Promise<RepairActionState> {
+  const labels = await getServerLabels();
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return { error: authMessages.authenticationRequired, success: false };
+  }
+
+  if (!Number.isInteger(repairId)) {
+    return { error: labels.errors.invalid, success: false };
+  }
+
+  try {
+    const reopenedRepair = await repairService.reopenRepair(repairId);
+    if (!reopenedRepair) return { error: labels.errors.notFound, success: false };
+
+    revalidatePath("/auth/repairs");
+    revalidatePath(`/auth/repairs/${repairId}`);
+    return { error: null, success: true };
+  } catch (error) {
+    if (error instanceof RepairServiceConflictError) {
+      return {
+        error: error.message.includes("оплаченным счетом")
+          ? labels.errors.paidRepairReopen
+          : labels.errors.closedRepair,
+        success: false,
+      };
+    }
+
+    return { error: labels.errors.database, success: false };
   }
 }

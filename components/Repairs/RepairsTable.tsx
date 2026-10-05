@@ -20,10 +20,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { RepairDto } from "@/modules/repairs/schema";
 import { deleteRepairAction } from "@/app/actions/repairs";
 import { Trash2 } from "lucide-react";
+import RepairStatusSelect from "./RepairStatusSelect";
 
 type Props = {
   repairs: RepairDto[];
@@ -34,6 +35,7 @@ const RepairsTable = ({ repairs }: Props) => {
   const [deletingRepairId, setDeletingRepairId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const router = useRouter();
+  const labelsData = useLocaleData();
 
   const {
     nr,
@@ -45,8 +47,6 @@ const RepairsTable = ({ repairs }: Props) => {
     deleteRepairBtn,
     loading,
     status,
-    open,
-    closed,
   } = labelsData.ru.repairs;
 
   const deleteRepair = async () => {
@@ -58,7 +58,7 @@ const RepairsTable = ({ repairs }: Props) => {
       const result = await deleteRepairAction(repairId);
 
       if (!result.success) {
-        throw new Error(result.error ?? "Не удалось удалить ремонт.");
+        throw new Error(result.error ?? labelsData.ru.errors.deleteRepair);
       }
 
       setDeleteError(null);
@@ -85,17 +85,16 @@ const RepairsTable = ({ repairs }: Props) => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Удалить ремонт?</DialogTitle>
+            <DialogTitle>{labelsData.ru.dialogs.deleteRepair}</DialogTitle>
             <DialogDescription>
-              Ремонт для {repairToDelete?.clientName || "клиента"} будет удален
-              вместе с позициями. Это действие нельзя отменить из интерфейса.
+              {labelsData.ru.dialogs.deleteRepairDescription.replace("{client}", repairToDelete?.clientName || labelsData.ru.clients.name)}
             </DialogDescription>
           </DialogHeader>
           {deleteError && <p className="text-sm text-red-500">{deleteError}</p>}
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
-                Отмена
+                {labelsData.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
               </Button>
             </DialogClose>
             <Button
@@ -142,7 +141,9 @@ const RepairsTable = ({ repairs }: Props) => {
               <TableCell>
                 {new Date(repair.date).toLocaleDateString("en-US")}
               </TableCell>
-              <TableCell>{repair.status === "Closed" ? closed : open}</TableCell>
+              <TableCell>
+                <RepairStatusSelect repair={repair} />
+              </TableCell>
               <TableCell className="flex gap-2 justify-end">
                 <Button
                   type="button"
@@ -151,7 +152,9 @@ const RepairsTable = ({ repairs }: Props) => {
                   title={deleteRepairBtn}
                   aria-label={`${deleteRepairBtn}: ${repair.clientName}`}
                   disabled={
-                    repair.status === "Closed" || deletingRepairId === repair.id
+                    repair.status === "Closed" ||
+                    repair.invoiceId !== null ||
+                    deletingRepairId === repair.id
                   }
                   onClick={(event) => {
                     event.stopPropagation();
