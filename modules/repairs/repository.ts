@@ -17,6 +17,13 @@ export const repairRepository = {
     });
     return repair;
   },
+  getRepairsByClientId: async (clientId: number): Promise<RepairWithItems[]> => {
+    return prisma.repair.findMany({
+      where: { clientId },
+      include: { items: true, invoice: true },
+      orderBy: { date: "desc" },
+    });
+  },
   createRepair: async (
     repair: Prisma.RepairCreateInput
   ): Promise<RepairWithItems> => {

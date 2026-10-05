@@ -51,6 +51,10 @@ export const repairService = {
     }
     return toRepairDto(repair);
   },
+  getRepairsByClientId: async (clientId: number): Promise<RepairDto[]> => {
+    const repairs = await repairRepository.getRepairsByClientId(clientId);
+    return repairs.map(toRepairDto);
+  },
   createRepair: async (repair: RepairCreateDto): Promise<RepairDto> => {
     const vehicleId = await resolveVehicleIdForRepair(repair);
     const repairEntity = toRepairCreateEntity({ ...repair, vehicleId });

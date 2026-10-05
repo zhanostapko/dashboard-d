@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
+import Link from "next/link";
 import {
   FormControl,
   FormField,
@@ -194,9 +195,26 @@ export default function RepairClientSection({ clients }: Props) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{clientName}*</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
+              {selectedClientId ? (
+                <FormControl>
+                  <div className="border-input bg-muted rounded-md border px-3 py-2 font-semibold">
+                    {selectedClient ? (
+                      <Link
+                        href={`/auth/clients/${selectedClient.id}`}
+                        className="hover:underline"
+                      >
+                        {field.value || selectedClient.name}
+                      </Link>
+                    ) : (
+                      field.value || "-"
+                    )}
+                  </div>
+                </FormControl>
+              ) : (
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -208,9 +226,17 @@ export default function RepairClientSection({ clients }: Props) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>{phone}</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
+              {selectedClientId ? (
+                <FormControl>
+                  <div className="border-input bg-muted rounded-md border px-3 py-2 font-semibold">
+                    {field.value || "-"}
+                  </div>
+                </FormControl>
+              ) : (
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+              )}
               <FormMessage />
             </FormItem>
           )}

@@ -11,9 +11,14 @@ import { ClientDto } from "@/modules/clients/schema";
 type Props = {
   selectedClient?: ClientDto | null;
   onClose?: () => void;
+  onCancel?: () => void;
 };
 
-export default function CreateClientForm({ selectedClient, onClose }: Props) {
+export default function CreateClientForm({
+  selectedClient,
+  onClose,
+  onCancel,
+}: Props) {
   const router = useRouter();
   const data = useLocaleData();
   const [state, formAction, isPending] = useActionState(saveClientAction, {
@@ -123,13 +128,20 @@ export default function CreateClientForm({ selectedClient, onClose }: Props) {
 
         <p className="text-sm text-gray-400">* - {requiredField}</p>
 
-        <Button
-          disabled={isPending}
-          type="submit"
-          className="w-full bg-green-500 text-white"
-        >
-          {isPending ? loading : selectedClient ? `${saveBtn}` : `${addClientBtn}`}
-        </Button>
+        <div className={onCancel ? "flex justify-end gap-2" : undefined}>
+          {onCancel && (
+            <Button type="button" variant="outline" onClick={onCancel}>
+              {data.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
+            </Button>
+          )}
+          <Button
+            disabled={isPending}
+            type="submit"
+            className={onCancel ? undefined : "w-full bg-green-500 text-white"}
+          >
+            {isPending ? loading : selectedClient ? `${saveBtn}` : `${addClientBtn}`}
+          </Button>
+        </div>
       </form>
     </>
   );

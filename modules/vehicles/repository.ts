@@ -1,6 +1,13 @@
 import prisma from "@/lib/db";
 import { Prisma, Vehicle } from "@prisma/client";
 
+export type VehicleWithRelations = Prisma.VehicleGetPayload<{
+  include: {
+    clients: true;
+    repairs: { include: { items: true; invoice: true } };
+  };
+}>;
+
 export const vehicleRepository = {
   getAllVehicles: async (): Promise<Vehicle[]> => {
     return prisma.vehicle.findMany({
@@ -11,6 +18,23 @@ export const vehicleRepository = {
   getVehicleById: async (id: number): Promise<Vehicle | null> => {
     return prisma.vehicle.findFirst({
       where: { id, isDeleted: false },
+    });
+  },
+  getVehicleDetailsById: async (
+    id: number
+  ): Promise<VehicleWithRelations | null> => {
+    return prisma.vehicle.findFirst({
+      where: { id, isDeleted: false },
+      include: {
+        clients: {
+          where: { isDeleted: false },
+          orderBy: { name: "asc" },
+        },
+        repairs: {
+          include: { items: true, invoice: true },
+          orderBy: { date: "desc" },
+        },
+      },
     });
   },
   createVehicle: async (

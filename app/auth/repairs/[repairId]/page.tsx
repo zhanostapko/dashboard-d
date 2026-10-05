@@ -91,7 +91,16 @@ const RepairDetailPage = async ({
               {clientInformation.title}
             </h2>
             <div className="grid gap-4 md:grid-cols-3">
-              <DisplayField label={clientName} value={repair.clientName} />
+              <DisplayField
+                label={clientName}
+                value={repair.clientName}
+                plain
+                linkHref={
+                  repair.clientId
+                    ? `/auth/clients/${repair.clientId}`
+                    : undefined
+                }
+              />
               <DisplayField
                 label={status}
                 value={repair.status === "Closed" ? closed : open}
@@ -201,14 +210,30 @@ const calculateRepairTotal = (items: RepairItemDto[]) =>
 const DisplayField = ({
   label,
   value,
+  linkHref,
+  plain = false,
 }: {
   label: string;
   value: string | number | null | undefined;
+  linkHref?: string;
+  plain?: boolean;
 }) => (
   <div>
     <p className="mb-1 text-sm font-medium">{label}</p>
-    <div className="rounded border border-gray-200 bg-muted px-4 py-2 font-medium text-gray-800 shadow-sm">
-      {value || "-"}
+    <div
+      className={
+        plain
+          ? "py-2 font-semibold text-gray-800"
+          : "rounded border border-gray-200 bg-muted px-4 py-2 font-semibold text-gray-800 shadow-sm"
+      }
+    >
+      {linkHref && value ? (
+        <Link href={linkHref} className="hover:underline">
+          {value}
+        </Link>
+      ) : (
+        value || "-"
+      )}
     </div>
   </div>
 );
