@@ -41,6 +41,8 @@
       "infoTitle": "Информация о клиенте",
       "repairsTitle": "Ремонты",
       "invoicesTitle": "Счета",
+      "vehiclesTitle": "Машины",
+      "noVehicles": "Машин пока нет",
       "noRepairs": "Ремонтов пока нет",
       "noInvoices": "Счетов пока нет",
       "actions": "Действия",
@@ -163,9 +165,12 @@
         },
         "carInformation": {
           "title": "Информация об автомобиле",
+          "selectVehicle": "Машина клиента",
+          "manualVehicle": "Новая машина / вручную",
           "brand": "Марка",
           "model": "Модель",
           "plate": "Номерной знак",
+          "vin": "VIN",
           "mileage": "Пробег"
         },
         "repairItems": {

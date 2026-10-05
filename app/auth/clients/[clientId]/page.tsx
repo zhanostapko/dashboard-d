@@ -37,9 +37,12 @@ const ClientDetailPage = async ({
     email,
     infoTitle,
     name,
+    noVehicles,
     phone,
     regNr,
+    vehiclesTitle,
   } = data.ru.clients;
+  const { brand, model, plate, vin } = data.ru.repairs.repairForm.carInformation;
 
   return (
     <div className="mx-auto max-w-4xl space-y-4 p-6">
@@ -74,6 +77,44 @@ const ClientDetailPage = async ({
               <DisplayField label={bankCode} value={client.bankCode} />
               <DisplayField label={account} value={client.account} />
             </div>
+          </section>
+
+          <section className="border-t pt-6">
+            <h2 className="mb-4 text-lg font-semibold">{vehiclesTitle}</h2>
+            {client.vehicles && client.vehicles.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="px-3 py-2 text-left">{brand}</th>
+                      <th className="px-3 py-2 text-left">{model}</th>
+                      <th className="px-3 py-2 text-left">{plate}</th>
+                      <th className="px-3 py-2 text-left">{vin}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {client.vehicles.map((vehicle) => (
+                      <tr className="border-b" key={vehicle.id}>
+                        <td className="px-3 py-2 font-medium text-gray-800">
+                          {vehicle.brand}
+                        </td>
+                        <td className="px-3 py-2 font-medium text-gray-800">
+                          {vehicle.model}
+                        </td>
+                        <td className="px-3 py-2 font-medium text-gray-800">
+                          {vehicle.plate || "-"}
+                        </td>
+                        <td className="px-3 py-2 font-medium text-gray-800">
+                          {vehicle.vin || "-"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">{noVehicles}</p>
+            )}
           </section>
         </CardContent>
       </Card>

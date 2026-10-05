@@ -22,7 +22,7 @@ const baseRepairFields = {
   clientPhone: z.string().optional(),
   carBrand: z.string().min(1, "Car brand is required"),
   carModel: z.string().min(1, "Car model is required"),
-  carPlate: z.string().min(1, "Car plate is required"),
+  carPlate: z.string().optional(),
   carMileage: z.string().optional(),
   items: z.array(repairItemCreateSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 };
@@ -30,6 +30,7 @@ const baseRepairFields = {
 export const repairSchema = z.object({
   id: z.number(),
   clientId: z.number().nullable().optional(),
+  vehicleId: z.number().nullable().optional(),
   createdAt: z.string().optional(),
   ...baseRepairFields,
   items: z.array(repairItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
@@ -37,6 +38,7 @@ export const repairSchema = z.object({
 
 export const repairCreateSchema = z.object({
   clientId: z.number().optional(),
+  vehicleId: z.number().optional(),
   ...baseRepairFields,
 });
 
@@ -51,12 +53,13 @@ const repairItemFormSchema = repairItemCreateSchema.extend({
 export const repairFormSchema = z.object({
   id: z.number().optional(),
   clientId: z.number().optional(),
+  vehicleId: z.number().optional(),
   date: z.string().min(1, "Date is required"),
   clientName: z.string().min(1, "Client name is required"),
   clientPhone: z.string().optional(),
   carBrand: z.string().min(1, "Car brand is required"),
   carModel: z.string().min(1, "Car model is required"),
-  carPlate: z.string().min(1, "Car plate is required"),
+  carPlate: z.string().optional(),
   carMileage: z.string().optional(),
   items: z.array(repairItemFormSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 });

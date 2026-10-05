@@ -1,7 +1,9 @@
-import { Client, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { ClientCreateDto, ClientDto, ClientUpdateDto } from "./schema";
+import type { ClientWithVehicles } from "./repository";
+import { toVehicleDto } from "@/modules/vehicles/mappers";
 
-export const toClientDto = (client: Client): ClientDto => ({
+export const toClientDto = (client: ClientWithVehicles): ClientDto => ({
   id: client.id,
   name: client.name,
   regNr: client.regNr ?? undefined,
@@ -11,6 +13,7 @@ export const toClientDto = (client: Client): ClientDto => ({
   account: client.account ?? undefined,
   phone: client.phone ?? undefined,
   email: client.email ?? undefined,
+  vehicles: client.vehicles?.map(toVehicleDto) ?? [],
 });
 
 export const toClientCreateEntity = (

@@ -35,6 +35,7 @@ export default function RepairClientSection({ clients }: Props) {
   const handleClientSelect = (value: string) => {
     if (value === "manual") {
       form.setValue("clientId", undefined, { shouldValidate: true });
+      form.setValue("vehicleId", undefined, { shouldValidate: true });
       return;
     }
 
@@ -43,6 +44,7 @@ export default function RepairClientSection({ clients }: Props) {
     if (!client) return;
 
     form.setValue("clientId", client.id, { shouldValidate: true });
+    form.setValue("vehicleId", undefined, { shouldValidate: true });
     form.setValue("clientName", client.name ?? "", { shouldValidate: true });
     form.setValue("clientPhone", client.phone ?? "", { shouldValidate: true });
   };

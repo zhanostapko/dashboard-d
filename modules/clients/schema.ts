@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { vehicleSchema } from "@/modules/vehicles/schema";
 
 const baseClientFields = {
   name: z.string().min(1, "Name is required"),
@@ -14,6 +15,7 @@ const baseClientFields = {
 export const clientSchema = z.object({
   id: z.number(),
   ...baseClientFields,
+  vehicles: z.array(vehicleSchema).optional(),
 });
 
 export const clientCreateSchema = z.object(baseClientFields);

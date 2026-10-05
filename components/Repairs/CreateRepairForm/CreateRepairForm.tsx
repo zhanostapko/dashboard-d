@@ -60,6 +60,7 @@ const CreateRepairForm = ({
     defaultValues: {
       id: repair?.id || 0,
       clientId: repair?.clientId ?? undefined,
+      vehicleId: repair?.vehicleId ?? undefined,
       date: repair?.date ? format(new Date(repair.date), "yyyy-MM-dd") : "",
       clientName: repair?.clientName || "",
       clientPhone: repair?.clientPhone || "",
@@ -117,7 +118,7 @@ const CreateRepairForm = ({
 
           <RepairClientSection clients={clients} />
 
-          <RepairVehicleSection />
+          <RepairVehicleSection clients={clients} />
 
           <RepairItemsSection
             items={items}

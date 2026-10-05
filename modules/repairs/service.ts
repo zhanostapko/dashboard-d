@@ -1,6 +1,31 @@
 import { RepairCreateDto, RepairDto, RepairUpdateDto } from "./schema";
 import { repairRepository } from "./repository";
 import { toRepairCreateEntity, toRepairDto, toRepairUpdateEntity } from "./mappers";
+import { vehicleService } from "@/modules/vehicles/service";
+
+const resolveVehicleIdForRepair = async (
+  repair: RepairCreateDto | RepairUpdateDto
+): Promise<number | undefined> => {
+  if (repair.vehicleId) {
+    if (repair.clientId) {
+      await vehicleService.attachVehicleToClient(repair.vehicleId, repair.clientId);
+    }
+    return repair.vehicleId;
+  }
+
+  if (!repair.clientId || !repair.carBrand || !repair.carModel) {
+    return undefined;
+  }
+
+  const vehicle = await vehicleService.findOrCreateClientVehicle(repair.clientId, {
+    brand: repair.carBrand,
+    model: repair.carModel,
+    plate: repair.carPlate,
+  });
+
+  return vehicle.id;
+};
+
 
 export const repairService = {
   getAllRepairs: async (): Promise<RepairDto[]> => {
@@ -18,7 +43,8 @@ export const repairService = {
     return toRepairDto(repair);
   },
   createRepair: async (repair: RepairCreateDto): Promise<RepairDto> => {
-    const repairEntity = toRepairCreateEntity(repair);
+    const vehicleId = await resolveVehicleIdForRepair(repair);
+    const repairEntity = toRepairCreateEntity({ ...repair, vehicleId });
     const createdRepair = await repairRepository.createRepair(repairEntity);
     return toRepairDto(createdRepair);
   },
@@ -30,7 +56,8 @@ export const repairService = {
     if (!existingRepair) {
       return null;
     }
-    const repairEntity = toRepairUpdateEntity(repair);
+    const vehicleId = await resolveVehicleIdForRepair(repair);
+    const repairEntity = toRepairUpdateEntity({ ...repair, vehicleId });
     const updatedRepair = await repairRepository.updateRepair(
       id,
       repairEntity

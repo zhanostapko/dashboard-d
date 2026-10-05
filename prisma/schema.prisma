@@ -101,8 +101,22 @@ model Client {
   phone    String? 
   email    String? 
   isDeleted  Boolean @default(false)
+  vehicles Vehicle[] @relation("ClientVehicles")
   repairs  Repair[]  
   invoices Invoice[] 
+}
+
+model Vehicle {
+  id        Int      @id @default(autoincrement())
+  brand     String
+  model     String
+  plate     String?
+  vin       String?
+  isDeleted Boolean  @default(false)
+  clients   Client[] @relation("ClientVehicles")
+  repairs   Repair[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Repair {
@@ -110,6 +124,8 @@ model Repair {
   date       DateTime @default(now())
   clientId   Int?    
   client     Client?  @relation(fields: [clientId], references: [id])
+  vehicleId  Int?
+  vehicle    Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   clientName  String? 
   clientPhone String? 
   carBrand   String   @default("")

@@ -30,6 +30,7 @@ const toRepairItemDto = (item: RepairItem): RepairItemDto => ({
 export const toRepairDto = (repair: RepairWithItems): RepairDto => ({
   id: repair.id,
   clientId: repair.clientId,
+  vehicleId: repair.vehicleId,
   date: repair.date.toISOString(),
   clientName: repair.clientName ?? "",
   clientPhone: repair.clientPhone ?? "",
@@ -65,6 +66,9 @@ export const toRepairCreateEntity = (
   if (dto.clientId !== undefined) {
     data.client = { connect: { id: dto.clientId } };
   }
+  if (dto.vehicleId !== undefined) {
+    data.vehicle = { connect: { id: dto.vehicleId } };
+  }
 
   return data;
 };
@@ -77,6 +81,11 @@ export const toRepairUpdateEntity = (
   if (dto.clientId !== undefined) {
     data.client = dto.clientId
       ? { connect: { id: dto.clientId } }
+      : { disconnect: true };
+  }
+  if (dto.vehicleId !== undefined) {
+    data.vehicle = dto.vehicleId
+      ? { connect: { id: dto.vehicleId } }
       : { disconnect: true };
   }
   if (dto.date !== undefined) data.date = new Date(dto.date);
