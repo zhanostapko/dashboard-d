@@ -11,6 +11,7 @@ import {
   userService,
 } from "@/modules/users/service";
 import { authMessages } from "@/lib/auth-messages";
+import { getServerLabels } from "@/lib/i18n";
 
 type SaveUserState = {
   error: string | null;
@@ -27,6 +28,7 @@ export async function saveUserAction(
   _prevState: SaveUserState,
   payload: FormData
 ): Promise<SaveUserState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
   const id = payload.get("id") ? Number(payload.get("id")) : null;
   const email = payload.get("email") as string;
@@ -54,7 +56,7 @@ export async function saveUserAction(
     if (id) {
       if (id === currentUser.id && role !== "ADMIN") {
         return {
-          error: "Нельзя снять роль администратора со своего аккаунта.",
+          error: labels.errors.selfAdmin,
           success: null,
           user: { email, name, surname, role },
         };
@@ -74,7 +76,7 @@ export async function saveUserAction(
         const updatedUser = await userService.updateUser(id, user);
         if (!updatedUser) {
           return {
-            error: "Пользователь не найден.",
+            error: labels.errors.notFound,
             success: null,
             user: { email, name, surname, role },
           };
@@ -99,7 +101,7 @@ export async function saveUserAction(
       const createdUser = await userService.createUser(user);
       if (!createdUser) {
         return {
-          error: "Пользователь с таким email уже существует.",
+          error: labels.errors.duplicateEmail,
           success: null,
           user: { email, name, surname, role },
         };
@@ -107,7 +109,7 @@ export async function saveUserAction(
     }
 
     revalidatePath("/auth/users");
-    return { error: null, success: "User saved!", user: null };
+    return { error: null, success: labels.common.saved, user: null };
   } catch (error) {
     return {
       error: `Ошибка базы данных: ${(error as Error).message}`,
@@ -118,6 +120,7 @@ export async function saveUserAction(
 }
 
 export async function deleteUserAction(id: number): Promise<DeleteUserState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -136,14 +139,14 @@ export async function deleteUserAction(id: number): Promise<DeleteUserState> {
 
   if (!Number.isInteger(id)) {
     return {
-      error: "Некорректный пользователь.",
+      error: labels.errors.invalid,
       success: false,
     };
   }
 
   if (currentUser.id === id) {
     return {
-      error: "Нельзя удалить свой аккаунт.",
+      error: labels.errors.selfDelete,
       success: false,
     };
   }
@@ -153,7 +156,7 @@ export async function deleteUserAction(id: number): Promise<DeleteUserState> {
 
     if (!deletedUser) {
       return {
-        error: "Пользователь не найден.",
+        error: labels.errors.notFound,
         success: false,
       };
     }
@@ -163,7 +166,7 @@ export async function deleteUserAction(id: number): Promise<DeleteUserState> {
   } catch (error) {
     if (error instanceof UserServiceConflictError) {
       return {
-        error: error.message,
+        error: labels.errors.lastAdmin,
         success: false,
       };
     }

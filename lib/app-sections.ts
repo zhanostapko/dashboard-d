@@ -1,19 +1,19 @@
 export type AppSectionRole = "ADMIN" | "USER";
 
 export type AppSection = {
-  id: "users" | "invoices" | "clients" | "repairs";
+  id: "users" | "invoices" | "clients" | "vehicles" | "repairs";
   enabled: boolean;
   href: string;
-  labelKey: "users" | "invoices" | "clients" | "repairs";
+  labelKey: "users" | "invoices" | "clients" | "vehicles" | "repairs";
   requiredRole?: AppSectionRole;
 };
 
 export const appSections: AppSection[] = [
   {
-    id: "invoices",
+    id: "repairs",
     enabled: true,
-    href: "/auth/invoices",
-    labelKey: "invoices",
+    href: "/auth/repairs",
+    labelKey: "repairs",
   },
   {
     id: "clients",
@@ -22,17 +22,23 @@ export const appSections: AppSection[] = [
     labelKey: "clients",
   },
   {
+    id: "vehicles",
+    enabled: true,
+    href: "/auth/vehicles",
+    labelKey: "vehicles",
+  },
+  {
+    id: "invoices",
+    enabled: true,
+    href: "/auth/invoices",
+    labelKey: "invoices",
+  },
+  {
     id: "users",
     enabled: true,
     href: "/auth/users",
     labelKey: "users",
     requiredRole: "ADMIN",
-  },
-  {
-    id: "repairs",
-    enabled: true,
-    href: "/auth/repairs",
-    labelKey: "repairs",
   },
 ];
 

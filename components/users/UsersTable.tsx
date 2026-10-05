@@ -20,12 +20,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { deleteUserAction } from "@/app/actions/users";
 import CreateUserForm from "./CreateUserForm/CreateUserForm";
 import { useRouter } from "next/navigation";
 import { UserDto } from "@/modules/users/schema";
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 type Props = {
   currentUserId: number;
@@ -39,6 +39,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const data = useLocaleData();
 
   const {
     nr,
@@ -48,7 +49,6 @@ const UsersTable = ({ currentUserId, users }: Props) => {
     role,
     actions,
     deleteUserBtn,
-    editUserBtn,
     loading,
   } = data.ru.user;
 
@@ -61,7 +61,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
       const result = await deleteUserAction(userId);
 
       if (!result.success) {
-        throw new Error(result.error ?? "Не удалось удалить пользователя.");
+        throw new Error(result.error ?? data.ru.errors.deleteUser);
       }
       setDeleteError(null);
       setUserToDelete(null);
@@ -94,7 +94,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Удалить пользователя?</DialogTitle>
+            <DialogTitle>{data.ru.dialogs.deleteUser}</DialogTitle>
             <DialogDescription>
               Пользователь {userToDelete?.email} потеряет доступ к системе. Это
               действие нельзя отменить из интерфейса.
@@ -103,7 +103,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
-                Отмена
+                {data.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
               </Button>
             </DialogClose>
             <Button
@@ -140,7 +140,14 @@ const UsersTable = ({ currentUserId, users }: Props) => {
         </TableHeader>
         <TableBody>
           {users.map((user, index) => (
-            <TableRow key={user.id}>
+            <TableRow
+              key={user.id}
+              className="cursor-pointer"
+              onClick={() => {
+                setSelectedUser(user);
+                setIsOpen(true);
+              }}
+            >
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
@@ -151,23 +158,13 @@ const UsersTable = ({ currentUserId, users }: Props) => {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  title={editUserBtn}
-                  aria-label={`${editUserBtn}: ${user.email}`}
-                  onClick={() => {
-                    setSelectedUser(user);
-                    setIsOpen(true);
-                  }}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
                   title={deleteUserBtn}
                   aria-label={`${deleteUserBtn}: ${user.email}`}
                   disabled={deletingUserId === user.id || user.id === currentUserId}
-                  onClick={() => setUserToDelete(user)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setUserToDelete(user);
+                  }}
                 >
                   {deletingUserId === user.id ? (
                     <span className="text-xs">{loading}</span>

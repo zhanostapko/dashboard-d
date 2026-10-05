@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { getAuthErrorMessage } from "@/lib/auth-messages";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
+import { useI18n } from "@/components/General/I18nProvider";
 
 const AccessDeniedPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const message = getAuthErrorMessage(searchParams.get("error"));
+  const { labels } = useI18n();
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#050505] px-4 py-8 text-white">
@@ -17,7 +19,7 @@ const AccessDeniedPage = () => {
 
       <div className="relative flex min-h-screen items-center justify-center">
         <section className="w-full max-w-sm rounded-[24px] border border-white/12 bg-white/6 p-8 text-white shadow-[0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur-md">
-          <h1 className="text-3xl font-semibold tracking-tight">Доступ запрещен</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{labels.errors.accessDenied}</h1>
           <p className="mt-3 text-sm leading-6 text-white/68">
             {message}
           </p>
@@ -26,7 +28,7 @@ const AccessDeniedPage = () => {
             size="lg"
             className="mt-8 h-12 w-full rounded-xl bg-[#b91c1c] text-sm font-semibold text-white hover:bg-[#991b1b]"
           >
-            Назад на главный экран
+            {labels.common.backHome}
           </Button>
         </section>
       </div>

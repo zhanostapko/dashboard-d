@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
+import { useI18n } from "@/components/General/I18nProvider";
 
-const error = () => {
-  return <div>На сервере произошла ошибка, пожалуйста, попробуйте позже</div>;
+const ErrorPage = () => {
+  const { labels } = useI18n();
+  return <div>{labels.errors.server}</div>;
 };
 
-export default error;
+export default ErrorPage;

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Car, Newspaper, Users } from "lucide-react";
+import { Car, Newspaper, Users, Wrench } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Role } from "@prisma/client";
@@ -12,7 +12,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "../ui/command";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { getAvailableSections, type AppSection } from "@/lib/app-sections";
 
 type SidebarProps = {
@@ -22,12 +22,14 @@ type SidebarProps = {
 const sectionIcons: Record<AppSection["id"], React.ComponentType> = {
   clients: Users,
   invoices: Newspaper,
-  repairs: Car,
+  vehicles: Car,
+  repairs: Wrench,
   users: Users,
 };
 
 const Sidebar = ({ role }: SidebarProps) => {
   const sections = getAvailableSections(role);
+  const data = useLocaleData();
   const pathname = usePathname();
   const isSectionActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
@@ -35,7 +37,7 @@ const Sidebar = ({ role }: SidebarProps) => {
   return (
     <Command className="bg-secondary rounded-none" data-role={role}>
       <CommandList>
-        <CommandGroup heading="Menu">
+        <CommandGroup heading={data.ru.common.menu}>
           {sections.map((section) => {
             const Icon = sectionIcons[section.id];
             const label = data.ru.menu[section.labelKey];
@@ -58,7 +60,7 @@ const Sidebar = ({ role }: SidebarProps) => {
           })}
           {sections.length === 0 && (
             <CommandItem disabled className="px-3 py-2 text-muted-foreground">
-              Разделы временно недоступны
+              {data.ru.common.unavailable}
             </CommandItem>
           )}
         </CommandGroup>

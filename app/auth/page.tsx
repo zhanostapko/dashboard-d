@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
 import { requirePageUser } from "@/lib/authz";
 import { getDefaultSection } from "@/lib/app-sections";
+import { getServerLabels } from "@/lib/i18n";
 
 const page = async () => {
   const currentUser = await requirePageUser();
+  const labels = await getServerLabels();
   const defaultSection = getDefaultSection(currentUser.role);
 
   if (defaultSection) {
@@ -12,10 +14,9 @@ const page = async () => {
 
   return (
     <div className="space-y-2">
-      <h1 className="text-2xl font-semibold">Разделы временно недоступны</h1>
+      <h1 className="text-2xl font-semibold">{labels.common.unavailable}</h1>
       <p className="text-muted-foreground">
-        Сейчас активен рефакторинг users/auth/shared. Остальные разделы будут
-        включаться по одному.
+        {labels.common.unavailable}
       </p>
     </div>
   );

@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Chrome } from "lucide-react";
 import { signIn } from "next-auth/react";
 import React, { useState } from "react";
+import { useI18n } from "@/components/General/I18nProvider";
 
 const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { labels } = useI18n();
 
   const handleGoogleSignIn = async () => {
     setIsSubmitting(true);
@@ -20,9 +22,9 @@ const LoginPage = () => {
 
       <div className="relative flex min-h-screen items-center justify-center px-4 py-8">
         <section className="w-full max-w-sm rounded-[24px] border border-white/12 bg-white/6 p-8 text-white shadow-[0_24px_80px_rgba(0,0,0,0.42)] backdrop-blur-md">
-          <h1 className="text-3xl font-semibold tracking-tight">С возвращением</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{labels.errors.welcome}</h1>
           <p className="mt-3 text-sm leading-6 text-white/68">
-            Войдите с помощью одобренного Google-аккаунта.
+            {labels.errors.loginGoogle}
           </p>
 
           <Button
@@ -32,7 +34,7 @@ const LoginPage = () => {
             className="mt-8 h-12 w-full rounded-xl bg-[#b91c1c] text-sm font-semibold text-white hover:bg-[#991b1b]"
           >
             <Chrome className="h-4 w-4" />
-            {isSubmitting ? "Перенаправление..." : "Войти через Google"}
+            {isSubmitting ? labels.errors.redirecting : labels.errors.loginGoogle}
           </Button>
         </section>
       </div>

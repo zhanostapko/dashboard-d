@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Role } from "@prisma/client";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { UserDto } from "@/modules/users/schema";
 
 type Props = {
@@ -21,6 +21,7 @@ type Props = {
 };
 
 export default function CreateUserForm({ selectedUser, onClose }: Props) {
+  const data = useLocaleData();
   const [role, setRole] = useState<Role>(selectedUser?.role || Role.USER);
   const [state, formAction, isPending] = useActionState(saveUserAction, {
     error: null,
