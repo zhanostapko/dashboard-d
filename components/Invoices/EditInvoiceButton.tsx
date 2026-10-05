@@ -2,10 +2,8 @@
 import React from "react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceDto, InvoiceItemDto } from "@/modules/invoices/schema";
-
-const editLabel = data.ru.invoices.invoiceForm.editInvoiceButton;
 
 type Props = {
   invoice: InvoiceDto & {
@@ -15,6 +13,8 @@ type Props = {
 
 const EditInvoiceButton = ({ invoice }: Props) => {
   const router = useRouter();
+  const data = useLocaleData();
+  const editLabel = data.ru.invoices.invoiceForm.editInvoiceButton;
 
   return (
     <Button

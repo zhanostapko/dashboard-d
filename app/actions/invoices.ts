@@ -12,6 +12,7 @@ import {
   InvoiceServiceConflictError,
   invoiceService,
 } from "@/modules/invoices/service";
+import { getServerLabels } from "@/lib/i18n";
 
 export type SaveInvoiceState = {
   errors: Record<string, string[]> | null;
@@ -28,6 +29,7 @@ export async function saveInvoiceAction(
   prevState: SaveInvoiceState,
   action: InvoiceFormValues
 ): Promise<SaveInvoiceState> {
+  const labels = await getServerLabels();
   const id = action.id;
   const currentUser = await getCurrentUser();
 
@@ -50,7 +52,7 @@ export async function saveInvoiceAction(
         return {
           ...prevState,
           errors: {
-            invoice: ["Счет не найден."],
+            invoice: [labels.errors.notFound],
           },
           success: false,
           formData: action,
@@ -61,7 +63,7 @@ export async function saveInvoiceAction(
         return {
           ...prevState,
           errors: {
-            invoice: ["Оплаченный счет нельзя редактировать."],
+            invoice: [labels.errors.paidEdit],
           },
           success: false,
           formData: action,
@@ -74,7 +76,7 @@ export async function saveInvoiceAction(
           ...prevState,
           errors: {
             validation: [
-              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
+              labels.errors.validation,
             ],
           },
           success: false,
@@ -89,7 +91,7 @@ export async function saveInvoiceAction(
         return {
           ...prevState,
           errors: {
-            invoice: ["Счет не найден."],
+            invoice: [labels.errors.notFound],
           },
           success: false,
           formData: action,
@@ -104,7 +106,7 @@ export async function saveInvoiceAction(
           ...prevState,
           errors: {
             validation: [
-              "Произошла ошибка валидации. Пожалуйста, проверьте данные и попробуйте снова.",
+              labels.errors.validation,
             ],
           },
           success: false,
@@ -122,7 +124,7 @@ export async function saveInvoiceAction(
         success: false,
         formData: action,
         errors: {
-          invoice: [error.message],
+          invoice: [error.message.includes("оплач") ? labels.errors.paidEdit : error.message.includes("уже есть") ? labels.errors.alreadyInvoiced : labels.errors.closedInvoice],
         },
       };
     }
@@ -133,7 +135,7 @@ export async function saveInvoiceAction(
       success: false,
       formData: action,
       errors: {
-        db: ["На сервере произошла ошибка. Пожалуйста, попробуйте позже."],
+        db: [labels.errors.database],
       },
     };
   }
@@ -142,6 +144,7 @@ export async function saveInvoiceAction(
 export async function markInvoicePaidAction(
   invoiceId: number
 ): Promise<InvoiceActionState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -153,7 +156,7 @@ export async function markInvoicePaidAction(
 
   if (!Number.isInteger(invoiceId)) {
     return {
-      error: "Некорректный счет.",
+      error: labels.errors.invalid,
       success: false,
     };
   }
@@ -166,7 +169,7 @@ export async function markInvoicePaidAction(
 
     if (!updatedInvoice) {
       return {
-        error: "Счет не найден.",
+        error: labels.errors.notFound,
         success: false,
       };
     }
@@ -181,13 +184,13 @@ export async function markInvoicePaidAction(
   } catch (error) {
     if (error instanceof InvoiceServiceConflictError) {
       return {
-        error: error.message,
+        error: error.message.includes("оплач") ? labels.errors.paidInvoice : labels.errors.closedInvoice,
         success: false,
       };
     }
 
     return {
-      error: `Ошибка базы данных: ${(error as Error).message}`,
+      error: labels.errors.database,
       success: false,
     };
   }
@@ -196,6 +199,7 @@ export async function markInvoicePaidAction(
 export async function deleteInvoiceAction(
   invoiceId: number
 ): Promise<InvoiceActionState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -207,7 +211,7 @@ export async function deleteInvoiceAction(
 
   if (!Number.isInteger(invoiceId)) {
     return {
-      error: "Некорректный счет.",
+      error: labels.errors.invalid,
       success: false,
     };
   }
@@ -217,7 +221,7 @@ export async function deleteInvoiceAction(
 
     if (!deletedInvoice) {
       return {
-        error: "Счет не найден.",
+        error: labels.errors.notFound,
         success: false,
       };
     }
@@ -228,13 +232,13 @@ export async function deleteInvoiceAction(
   } catch (error) {
     if (error instanceof InvoiceServiceConflictError) {
       return {
-        error: error.message,
+        error: error.message.includes("оплач") ? labels.errors.paidInvoice : labels.errors.closedInvoice,
         success: false,
       };
     }
 
     return {
-      error: `Ошибка базы данных: ${(error as Error).message}`,
+      error: labels.errors.database,
       success: false,
     };
   }

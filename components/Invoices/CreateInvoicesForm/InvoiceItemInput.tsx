@@ -3,11 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceItemDto } from "@/modules/invoices/schema";
-
-const { name, price, quantity, sum, type } =
-  data.ru.invoices.invoiceForm.invoiceItems;
 
 type InvoiceItemDraftErrors = Partial<Record<keyof InvoiceItemDto, string>>;
 
@@ -27,6 +24,7 @@ export default function InvoiceItemInput({
   onChange,
   onClear,
 }: Props) {
+  const { name, price, quantity, sum, type } = useLocaleData().ru.invoices.invoiceForm.invoiceItems;
   const hasErrors = Object.keys(errors).length > 0;
 
   return (

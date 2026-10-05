@@ -5,7 +5,7 @@ import { saveClientAction } from "@/app/actions/clients";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { ClientDto } from "@/modules/clients/schema";
 
 type Props = {
@@ -15,6 +15,7 @@ type Props = {
 
 export default function CreateClientForm({ selectedClient, onClose }: Props) {
   const router = useRouter();
+  const data = useLocaleData();
   const [state, formAction, isPending] = useActionState(saveClientAction, {
     error: null,
     success: null,

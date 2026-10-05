@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceDto } from "@/modules/invoices/schema";
 import { markInvoicePaidAction } from "@/app/actions/invoices";
 
@@ -22,6 +22,7 @@ const InvoicesTable = ({ data }: Props) => {
   const [loadingInvoiceId, setLoadingInvoiceId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const labelsData = useLocaleData();
 
   const {
     addInvoiceBtn,
@@ -48,7 +49,7 @@ const InvoicesTable = ({ data }: Props) => {
     const result = await markInvoicePaidAction(invoiceId);
 
     if (!result.success) {
-      setError(result.error ?? "Не удалось обновить счет.");
+      setError(result.error ?? labelsData.ru.errors.updateInvoice);
       setLoadingInvoiceId(null);
       return;
     }

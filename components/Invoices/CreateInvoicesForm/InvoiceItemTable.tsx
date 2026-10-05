@@ -11,11 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import InvoiceItemInput from "./InvoiceItemInput";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceItemDto, invoiceItemSchema } from "@/modules/invoices/schema";
-
-const { actions, addItem, cancelEdit, editItem, name, price, quantity, saveItem, sum, type } =
-  data.ru.invoices.invoiceForm.invoiceItems;
 
 type InvoiceItemDraftErrors = Partial<Record<keyof InvoiceItemDto, string>>;
 
@@ -41,6 +38,7 @@ export default function InvoiceItemTable({
   handleUpdate,
   items,
 }: Props) {
+  const { actions, addItem, cancelEdit, editItem, name, price, quantity, saveItem, sum, type } = useLocaleData().ru.invoices.invoiceForm.invoiceItems;
   const [draftItem, setDraftItem] = useState<InvoiceItemDto>(createInitialItem);
   const [draftErrors, setDraftErrors] = useState<InvoiceItemDraftErrors>({});
   const [editingItemId, setEditingItemId] = useState<number | null>(null);

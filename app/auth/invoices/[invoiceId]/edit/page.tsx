@@ -1,7 +1,7 @@
 import FormPageShell from "@/components/General/FormPageShell";
 import CreateInvoiceForm from "@/components/Invoices/CreateInvoicesForm/CreateInvoiceForm";
 import Error from "@/components/Error";
-import data from "@/data/labels.json";
+import { getServerLabels } from "@/lib/i18n";
 import { invoiceService } from "@/modules/invoices/service";
 import { redirect } from "next/navigation";
 
@@ -10,6 +10,7 @@ const EditInvoicePage = async ({
 }: {
   params: Promise<{ invoiceId: string }>;
 }) => {
+  const data = await getServerLabels();
   const { invoiceId } = await params;
   const invoice = await invoiceService.getInvoice(Number(invoiceId));
 
@@ -23,9 +24,9 @@ const EditInvoicePage = async ({
 
   return (
     <FormPageShell
-      title={data.ru.invoices.editPageTitle}
+      title={data.invoices.editPageTitle}
       backHref="/auth/invoices"
-      backLabel={data.ru.invoices.backToInvoices}
+      backLabel={data.invoices.backToInvoices}
     >
       <CreateInvoiceForm invoice={invoice} editMode />
     </FormPageShell>

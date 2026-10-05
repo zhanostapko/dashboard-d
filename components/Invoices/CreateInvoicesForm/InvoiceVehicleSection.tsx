@@ -9,12 +9,13 @@ import {
   FormMessage,
 } from "../../ui/form";
 import { Input } from "../../ui/input";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceFormValues } from "@/modules/invoices/schema";
 import InvoiceFormSection from "./InvoiceFormSection";
 
 export default function InvoiceVehicleSection() {
   const form = useFormContext<InvoiceFormValues>();
+  const labelsData = useLocaleData();
   const { brand, mileage, model, plate, title } =
     labelsData.ru.invoices.invoiceForm.carInformation;
 

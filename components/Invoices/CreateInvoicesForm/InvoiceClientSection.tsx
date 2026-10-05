@@ -16,12 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceFormValues } from "@/modules/invoices/schema";
 import InvoiceFormSection from "./InvoiceFormSection";
 
 export default function InvoiceClientSection() {
   const form = useFormContext<InvoiceFormValues>();
+  const labelsData = useLocaleData();
   const {
     account,
     address,

@@ -9,6 +9,7 @@ import {
   clientUpdateSchema,
 } from "@/modules/clients/schema";
 import { clientService } from "@/modules/clients/service";
+import { getServerLabels } from "@/lib/i18n";
 
 type SaveClientState = {
   error: string | null;
@@ -28,6 +29,7 @@ export async function saveClientAction(
   _prevState: SaveClientState,
   payload: FormData
 ): Promise<SaveClientState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
   const id = payload.get("id") ? Number(payload.get("id")) : null;
   const name = getFormValue(payload, "name");
@@ -49,7 +51,7 @@ export async function saveClientAction(
 
   if (id !== null && !Number.isInteger(id)) {
     return {
-      error: "Некорректный клиент.",
+      error: labels.errors.invalid,
       success: null,
       client: { name, regNr, address, bank, bankCode, account, phone, email },
     };
@@ -80,7 +82,7 @@ export async function saveClientAction(
       const updatedClient = await clientService.updateClient(id, client);
       if (!updatedClient) {
         return {
-          error: "Can't find client",
+          error: labels.errors.notFound,
           success: null,
           client: { name, regNr, address, bank, bankCode, account, phone, email },
         };
@@ -112,7 +114,7 @@ export async function saveClientAction(
     if (id) {
       revalidatePath(`/auth/clients/${id}`);
     }
-    return { error: null, success: "Client saved!", client: null };
+    return { error: null, success: labels.common.saved, client: null };
   } catch (error) {
     return {
       error: `Database error: ${(error as Error).message}`,
@@ -125,6 +127,7 @@ export async function saveClientAction(
 export async function deleteClientAction(
   id: number
 ): Promise<DeleteClientState> {
+  const labels = await getServerLabels();
   const currentUser = await getCurrentUser();
 
   if (!currentUser) {
@@ -136,7 +139,7 @@ export async function deleteClientAction(
 
   if (!Number.isInteger(id)) {
     return {
-      error: "Некорректный клиент.",
+      error: labels.errors.invalid,
       success: false,
     };
   }
@@ -146,7 +149,7 @@ export async function deleteClientAction(
 
     if (!deletedClient) {
       return {
-        error: "Клиент не найден.",
+        error: labels.errors.notFound,
         success: false,
       };
     }

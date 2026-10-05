@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceFormValues, InvoiceItemDto } from "@/modules/invoices/schema";
 import InvoiceFormSection from "./InvoiceFormSection";
 import InvoiceItemTable from "./InvoiceItemTable";
@@ -27,6 +27,7 @@ export default function InvoiceItemsSection({
   onUpdateItem,
 }: Props) {
   const form = useFormContext<InvoiceFormValues>();
+  const labelsData = useLocaleData();
   const { title } = labelsData.ru.invoices.invoiceForm.invoiceItems;
 
   return (

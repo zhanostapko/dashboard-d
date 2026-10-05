@@ -7,47 +7,21 @@ import React from "react";
 import { format } from "date-fns";
 import DeleteInvoiceButton from "@/components/Invoices/DeleteInvoiceButton";
 import Error from "@/components/Error";
-import data from "@/data/labels.json";
+import { getServerLabels } from "@/lib/i18n";
 import { invoiceService } from "@/modules/invoices/service";
 import Link from "next/link";
-
-const { total, invoiceForm, date, notFound, noItems, backToInvoices } =
-  data.ru.invoices;
-
-const { formInvoiceNumber, clientInformation, carInformation, invoiceItems } =
-  invoiceForm;
-
-const {
-  clientName,
-  account,
-  address,
-  phone,
-  email,
-  bank,
-  bankCode,
-  cash,
-  clientRegistrationNumber,
-  nonCash,
-  paymentType,
-  title,
-} = clientInformation;
-
-const { brand, mileage, model, plate, title: carTitle } = carInformation;
-
-const {
-  name,
-  price,
-  quantity,
-  sum,
-  title: invoiceItemsTitle,
-  type,
-} = invoiceItems;
 
 const InvoiceDetailPage = async ({
   params,
 }: {
   params: Promise<{ invoiceId: string }>;
 }) => {
+  const data = await getServerLabels();
+  const { total, invoiceForm, date, notFound, noItems, backToInvoices } = data.invoices;
+  const { formInvoiceNumber, clientInformation, carInformation, invoiceItems } = invoiceForm;
+  const { clientName, account, address, phone, email, bank, bankCode, cash, clientRegistrationNumber, nonCash, paymentType, title } = clientInformation;
+  const { brand, mileage, model, plate, title: carTitle } = carInformation;
+  const { name, price, quantity, sum, title: invoiceItemsTitle, type } = invoiceItems;
   let invoice;
   const { invoiceId } = await params;
   try {

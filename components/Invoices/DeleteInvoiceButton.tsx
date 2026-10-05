@@ -3,11 +3,8 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { InvoiceWithDetails } from "@/types/invoice";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { deleteInvoiceAction } from "@/app/actions/invoices";
-
-const deleteLabel = data.ru.invoices.invoiceForm.deleteInvoiceButton;
-const deletingLabel = data.ru.invoices.deleting;
 
 type Props = {
   invoice: InvoiceWithDetails;
@@ -17,13 +14,16 @@ const DeleteInvoiceButton = ({ invoice }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const data = useLocaleData();
+  const deleteLabel = data.ru.invoices.invoiceForm.deleteInvoiceButton;
+  const deletingLabel = data.ru.invoices.deleting;
 
   const deleteInvoice = async (invoiceId: number) => {
     setIsLoading(true);
     const result = await deleteInvoiceAction(invoiceId);
 
     if (!result.success) {
-      setError(result.error ?? "Не удалось удалить счет.");
+      setError(result.error ?? data.ru.errors.deleteInvoice);
       setIsLoading(false);
       return;
     }

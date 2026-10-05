@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "../../ui/form";
 import { Input } from "../../ui/input";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceFormValues } from "@/modules/invoices/schema";
 import InvoiceFormSection from "./InvoiceFormSection";
 
@@ -25,6 +25,7 @@ export default function InvoiceMainSection({
   invoiceNumber,
 }: Props) {
   const form = useFormContext<InvoiceFormValues>();
+  const labelsData = useLocaleData();
   const { formInvoiceNumber } = labelsData.ru.invoices.invoiceForm;
 
   return (

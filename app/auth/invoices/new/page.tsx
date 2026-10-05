@@ -2,7 +2,7 @@ import FormPageShell from "@/components/General/FormPageShell";
 import CreateInvoiceForm, {
   InvoicePrefill,
 } from "@/components/Invoices/CreateInvoicesForm/CreateInvoiceForm";
-import data from "@/data/labels.json";
+import { getServerLabels } from "@/lib/i18n";
 import { repairService } from "@/modules/repairs/service";
 import { clientService } from "@/modules/clients/service";
 
@@ -11,6 +11,7 @@ const NewInvoicePage = async ({
 }: {
   searchParams?: Promise<{ repairId?: string }>;
 }) => {
+  const data = await getServerLabels();
   const query = await searchParams;
   const repairId = Number(query?.repairId);
   let prefill: InvoicePrefill | undefined;
@@ -53,9 +54,9 @@ const NewInvoicePage = async ({
 
   return (
     <FormPageShell
-      title={data.ru.invoices.createPageTitle}
+      title={data.invoices.createPageTitle}
       backHref="/auth/invoices"
-      backLabel={data.ru.invoices.backToInvoices}
+      backLabel={data.invoices.backToInvoices}
     >
       <CreateInvoiceForm prefill={prefill} />
     </FormPageShell>

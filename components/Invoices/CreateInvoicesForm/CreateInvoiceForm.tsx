@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { Button } from "../../ui/button";
 import { Form } from "../../ui/form";
 import ErrorState from "@/components/Error";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { saveInvoiceAction, SaveInvoiceState } from "@/app/actions/invoices";
 import {
   InvoiceDto,
@@ -61,6 +61,7 @@ const initialState: SaveInvoiceState = {
 
 const CreateInvoiceForm = ({ invoice, editMode = false, prefill }: Props) => {
   const router = useRouter();
+  const labelsData = useLocaleData();
   const [state, formAction, isSubmitting] = useActionState(
     saveInvoiceAction,
     initialState
@@ -98,7 +99,7 @@ const CreateInvoiceForm = ({ invoice, editMode = false, prefill }: Props) => {
       carPlate: invoice?.carPlate || prefill?.carPlate || "",
       carMileage: invoice?.carMileage || prefill?.carMileage || "",
       paymentType: invoice?.paymentType || "NonCash",
-      items: invoice?.items || [],
+      items: invoice?.items || prefill?.items || [],
       total: invoice?.total || 0,
     },
   });

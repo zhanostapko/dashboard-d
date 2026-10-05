@@ -20,13 +20,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import data from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { useRouter } from "next/navigation";
 import { ClientDto } from "@/modules/clients/schema";
-import Link from "next/link";
 import CreateClientForm from "./CreateClientForm/CreateClientForm";
 import { deleteClientAction } from "@/app/actions/clients";
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 type Props = {
   clients: ClientDto[];
@@ -39,6 +38,7 @@ const ClientsTable = ({ clients }: Props) => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const data = useLocaleData();
 
   const {
     nr,
@@ -48,7 +48,6 @@ const ClientsTable = ({ clients }: Props) => {
     phone,
     actions,
     deleteClientBtn,
-    editClientBtn,
     addClientBtn,
     loading,
   } = data.ru.clients;
@@ -62,7 +61,7 @@ const ClientsTable = ({ clients }: Props) => {
       const result = await deleteClientAction(clientId);
 
       if (!result.success) {
-        throw new Error(result.error ?? "Не удалось удалить клиента.");
+        throw new Error(result.error ?? data.ru.errors.deleteClient);
       }
 
       setDeleteError(null);
@@ -100,17 +99,16 @@ const ClientsTable = ({ clients }: Props) => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Удалить клиента?</DialogTitle>
+            <DialogTitle>{data.ru.dialogs.deleteClient}</DialogTitle>
             <DialogDescription>
-              Клиент {clientToDelete?.name} будет скрыт из справочника. Уже
-              созданные счета и ремонты сохранят свои данные.
+              Клиент {clientToDelete?.name} будет скрыт из справочника. Уже созданные счета и ремонты сохранят свои данные.
             </DialogDescription>
           </DialogHeader>
           {deleteError && <p className="text-sm text-red-500">{deleteError}</p>}
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
-                Отмена
+                {data.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
               </Button>
             </DialogClose>
             <Button
@@ -149,16 +147,16 @@ const ClientsTable = ({ clients }: Props) => {
         </TableHeader>
         <TableBody>
           {clients.map((client, index) => (
-            <TableRow key={client.id}>
+            <TableRow
+              key={client.id}
+              className="cursor-pointer"
+              onClick={() => {
+                setSelectedClient(client);
+                setIsOpen(true);
+              }}
+            >
               <TableCell className="font-medium">{index + 1}</TableCell>
-              <TableCell>
-                <Link
-                  href={`/auth/clients/${client.id}`}
-                  className="text-blue-600 hover:underline"
-                >
-                  {client.name}
-                </Link>
-              </TableCell>
+              <TableCell>{client.name}</TableCell>
               <TableCell>{client.regNr || "-"}</TableCell>
               <TableCell>{client.phone || "-"}</TableCell>
               <TableCell>{client.email || "-"}</TableCell>
@@ -167,23 +165,13 @@ const ClientsTable = ({ clients }: Props) => {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  title={editClientBtn}
-                  aria-label={`${editClientBtn}: ${client.name}`}
-                  onClick={() => {
-                    setSelectedClient(client);
-                    setIsOpen(true);
-                  }}
-                >
-                  <Pencil className="size-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
                   title={deleteClientBtn}
                   aria-label={`${deleteClientBtn}: ${client.name}`}
                   disabled={deletingClientId === client.id}
-                  onClick={() => setClientToDelete(client)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setClientToDelete(client);
+                  }}
                 >
                   {deletingClientId === client.id ? (
                     <span className="text-xs">{loading}</span>
