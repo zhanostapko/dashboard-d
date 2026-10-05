@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useLocaleData } from "@/components/General/I18nProvider";
+import TableSearch from "@/components/General/TableSearch";
 import { InvoiceDto } from "@/modules/invoices/schema";
 import { markInvoicePaidAction } from "@/app/actions/invoices";
 
@@ -21,6 +22,7 @@ type Props = {
 const InvoicesTable = ({ data }: Props) => {
   const [loadingInvoiceId, setLoadingInvoiceId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const labelsData = useLocaleData();
 
@@ -40,6 +42,22 @@ const InvoicesTable = ({ data }: Props) => {
     noInvoicesFound,
     sending,
   } = labelsData.ru.invoices;
+  const { clearSearch, noResults, search } = labelsData.ru.common;
+  const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
+  const filteredInvoices = (data ?? []).filter((invoice) =>
+    [
+      invoice.number,
+      invoice.clientName,
+      invoice.carPlate,
+      invoice.date,
+      invoice.status,
+      invoice.total,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLocaleLowerCase()
+      .includes(normalizedSearch)
+  );
   const statusChangeHandler = async (
     event: React.MouseEvent<HTMLButtonElement>,
     invoiceId: number
@@ -67,6 +85,12 @@ const InvoicesTable = ({ data }: Props) => {
         + {addInvoiceBtn}
       </Button>
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+      <TableSearch
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder={search}
+        clearLabel={clearSearch}
+      />
 
       <Table>
         <TableHeader>
@@ -82,12 +106,14 @@ const InvoicesTable = ({ data }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.length === 0 && (
+          {filteredInvoices.length === 0 && (
             <TableRow className="text-center">
-              <TableCell colSpan={8}>{noInvoicesFound}</TableCell>
+              <TableCell colSpan={8}>
+                {searchTerm ? noResults : noInvoicesFound}
+              </TableCell>
             </TableRow>
           )}
-          {data?.map((invoice, index) => (
+          {filteredInvoices.map((invoice, index) => (
             <TableRow
               className="cursor-pointer"
               key={invoice.id}

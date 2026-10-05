@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useLocaleData } from "@/components/General/I18nProvider";
+import TableSearch from "@/components/General/TableSearch";
 import { useRouter } from "next/navigation";
 import { ClientDto } from "@/modules/clients/schema";
 import CreateClientForm from "./CreateClientForm/CreateClientForm";
@@ -37,6 +38,7 @@ const ClientsTable = ({ clients }: Props) => {
   const [deletingClientId, setDeletingClientId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const data = useLocaleData();
 
@@ -51,6 +53,15 @@ const ClientsTable = ({ clients }: Props) => {
     addClientBtn,
     loading,
   } = data.ru.clients;
+  const { clearSearch, noResults, search } = data.ru.common;
+  const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
+  const filteredClients = clients.filter((client) =>
+    [client.name, client.regNr, client.address, client.phone, client.email]
+      .filter(Boolean)
+      .join(" ")
+      .toLocaleLowerCase()
+      .includes(normalizedSearch)
+  );
 
   const deleteClient = async () => {
     if (!clientToDelete) return;
@@ -134,6 +145,12 @@ const ClientsTable = ({ clients }: Props) => {
       {deleteError && !clientToDelete && (
         <p className="mb-4 text-sm text-red-500">{deleteError}</p>
       )}
+      <TableSearch
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder={search}
+        clearLabel={clearSearch}
+      />
       <Table>
         <TableHeader>
           <TableRow>
@@ -146,14 +163,17 @@ const ClientsTable = ({ clients }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {clients.map((client, index) => (
+          {filteredClients.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center">
+                {searchTerm ? noResults : data.ru.clients.noClients}
+              </TableCell>
+            </TableRow>
+          ) : filteredClients.map((client, index) => (
             <TableRow
               key={client.id}
               className="cursor-pointer"
-              onClick={() => {
-                setSelectedClient(client);
-                setIsOpen(true);
-              }}
+              onClick={() => router.push(`/auth/clients/${client.id}`)}
             >
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{client.name}</TableCell>

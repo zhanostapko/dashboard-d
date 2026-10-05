@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import { useLocaleData } from "@/components/General/I18nProvider";
+import TableSearch from "@/components/General/TableSearch";
 import { RepairDto } from "@/modules/repairs/schema";
 import { deleteRepairAction } from "@/app/actions/repairs";
 import { Trash2 } from "lucide-react";
@@ -34,6 +35,7 @@ const RepairsTable = ({ repairs }: Props) => {
   const [repairToDelete, setRepairToDelete] = useState<RepairDto | null>(null);
   const [deletingRepairId, setDeletingRepairId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const labelsData = useLocaleData();
 
@@ -47,7 +49,28 @@ const RepairsTable = ({ repairs }: Props) => {
     deleteRepairBtn,
     loading,
     status,
+    open,
+    closed,
   } = labelsData.ru.repairs;
+  const { clearSearch, noResults, search } = labelsData.ru.common;
+  const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
+  const filteredRepairs = repairs.filter((repair) =>
+    [
+      repair.id,
+      repair.clientName,
+      repair.clientPhone,
+      repair.carBrand,
+      repair.carModel,
+      repair.carPlate,
+      repair.date,
+      repair.status,
+      repair.status === "Closed" ? closed : open,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLocaleLowerCase()
+      .includes(normalizedSearch)
+  );
 
   const deleteRepair = async () => {
     if (!repairToDelete) return;
@@ -117,6 +140,12 @@ const RepairsTable = ({ repairs }: Props) => {
       {deleteError && !repairToDelete && (
         <p className="mb-4 text-sm text-red-500">{deleteError}</p>
       )}
+      <TableSearch
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder={search}
+        clearLabel={clearSearch}
+      />
       <Table>
         <TableHeader>
           <TableRow>
@@ -129,7 +158,13 @@ const RepairsTable = ({ repairs }: Props) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {repairs.map((repair, index) => (
+          {filteredRepairs.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center">
+                {noResults}
+              </TableCell>
+            </TableRow>
+          ) : filteredRepairs.map((repair, index) => (
             <TableRow
               key={repair.id}
               className="cursor-pointer"

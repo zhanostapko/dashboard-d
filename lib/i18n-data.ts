@@ -5,8 +5,8 @@ export type Locale = (typeof locales)[number];
 
 type Labels = typeof source.ru & {
   menu: { users: string; invoices: string; clients: string; vehicles: string; repairs: string };
-  vehicles: { createTitle: string; addBtn: string; loading: string; noVehicles: string };
-  common: { language: string; russian: string; english: string; latvian: string; account: string; logout: string; menu: string; unavailable: string; close: string; backHome: string; saved: string; reopenRepair: string };
+  vehicles: { createTitle: string; addBtn: string; loading: string; noVehicles: string; detailsTitle: string; ownersTitle: string; noOwners: string; backToVehicles: string };
+  common: { language: string; russian: string; english: string; latvian: string; account: string; logout: string; menu: string; unavailable: string; close: string; backHome: string; saved: string; reopenRepair: string; search: string; noResults: string; clearSearch: string };
   dialogs: { deleteUser: string; deleteClient: string; deleteInvoice: string; deleteRepair: string; deleteRepairDescription: string; closeRepair: string; closeRepairDescription: string; reopenRepair: string; reopenRepairDescription: string };
   errors: Record<string, string>;
 };
@@ -25,9 +25,9 @@ const menu = {
 } as const;
 
 const vehicles = {
-  ru: { createTitle: "Добавить машину", addBtn: "Добавить машину", loading: "Загрузка...", noVehicles: "Машин пока нет" },
-  en: { createTitle: "Add vehicle", addBtn: "Add vehicle", loading: "Loading...", noVehicles: "No vehicles yet" },
-  lv: { createTitle: "Pievienot transportlīdzekli", addBtn: "Pievienot transportlīdzekli", loading: "Ielādē...", noVehicles: "Transportlīdzekļu vēl nav" },
+  ru: { createTitle: "Добавить машину", addBtn: "Добавить машину", loading: "Загрузка...", noVehicles: "Машин пока нет", detailsTitle: "Машина", ownersTitle: "Владельцы", noOwners: "Владельцев пока нет", backToVehicles: "Назад" },
+  en: { createTitle: "Add vehicle", addBtn: "Add vehicle", loading: "Loading...", noVehicles: "No vehicles yet", detailsTitle: "Vehicle", ownersTitle: "Owners", noOwners: "No owners yet", backToVehicles: "Back" },
+  lv: { createTitle: "Pievienot transportlīdzekli", addBtn: "Pievienot transportlīdzekli", loading: "Ielādē...", noVehicles: "Transportlīdzekļu vēl nav", detailsTitle: "Transportlīdzeklis", ownersTitle: "Īpašnieki", noOwners: "Īpašnieku vēl nav", backToVehicles: "Atpakaļ" },
 } as const;
 
 function translate(value: unknown, dictionary: Record<string, string>): unknown {
@@ -38,9 +38,9 @@ function translate(value: unknown, dictionary: Record<string, string>): unknown 
 }
 
 const common = {
-  ru: { language: "Язык", russian: "Русский", english: "Английский", latvian: "Латышский", account: "Мой аккаунт", logout: "Выйти", menu: "Меню", unavailable: "Разделы временно недоступны", close: "Закрыть", backHome: "Назад на главный экран", saved: "Сохранено", reopenRepair: "Открыть ремонт" },
-  en: { language: "Language", russian: "Russian", english: "English", latvian: "Latvian", account: "My account", logout: "Log out", menu: "Menu", unavailable: "Sections are temporarily unavailable", close: "Close", backHome: "Back to home", saved: "Saved", reopenRepair: "Reopen repair" },
-  lv: { language: "Valoda", russian: "Krievu", english: "Angļu", latvian: "Latviešu", account: "Mans konts", logout: "Iziet", menu: "Izvēlne", unavailable: "Sadaļas īslaicīgi nav pieejamas", close: "Aizvērt", backHome: "Atpakaļ uz sākumu", saved: "Saglabāts", reopenRepair: "Atvērt remontu" },
+  ru: { language: "Язык", russian: "Русский", english: "Английский", latvian: "Латышский", account: "Мой аккаунт", logout: "Выйти", menu: "Меню", unavailable: "Разделы временно недоступны", close: "Закрыть", backHome: "Назад на главный экран", saved: "Сохранено", reopenRepair: "Открыть ремонт", search: "Поиск...", noResults: "Ничего не найдено", clearSearch: "Очистить поиск" },
+  en: { language: "Language", russian: "Russian", english: "English", latvian: "Latvian", account: "My account", logout: "Log out", menu: "Menu", unavailable: "Sections are temporarily unavailable", close: "Close", backHome: "Back to home", saved: "Saved", reopenRepair: "Reopen repair", search: "Search...", noResults: "Nothing found", clearSearch: "Clear search" },
+  lv: { language: "Valoda", russian: "Krievu", english: "Angļu", latvian: "Latviešu", account: "Mans konts", logout: "Iziet", menu: "Izvēlne", unavailable: "Sadaļas īslaicīgi nav pieejamas", close: "Aizvērt", backHome: "Atpakaļ uz sākumu", saved: "Saglabāts", reopenRepair: "Atvērt remontu", search: "Meklēt...", noResults: "Nekas nav atrasts", clearSearch: "Notīrīt meklēšanu" },
 } as const;
 const dialogs = {
   ru: { deleteUser: "Удалить пользователя?", deleteClient: "Удалить клиента?", deleteInvoice: "Удалить счет?", deleteRepair: "Удалить ремонт?", deleteRepairDescription: "Ремонт для {client} будет удален без возможности восстановления.", closeRepair: "Закрыть ремонт?", closeRepairDescription: "После закрытия ремонт нельзя будет изменить.", reopenRepair: "Открыть ремонт заново?", reopenRepairDescription: "Ремонт снова станет доступен для изменения." },
