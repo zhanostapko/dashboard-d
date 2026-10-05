@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { attachVehicleToClientAction } from "@/app/actions/vehicles";
-import labelsData from "@/data/labels.json";
+import { useLocaleData } from "@/components/General/I18nProvider";
 import { VehicleDto } from "@/modules/vehicles/schema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,7 @@ export default function AttachVehicleToClient({
   const [query, setQuery] = useState("");
   const [loadingVehicleId, setLoadingVehicleId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const labelsData = useLocaleData();
   const {
     attachVehicle: attachVehicleLabel,
     searchVehicle,
@@ -63,7 +64,7 @@ export default function AttachVehicleToClient({
     const result = await attachVehicleToClientAction(vehicleId, clientId);
 
     if (!result.success) {
-      setError(result.error ?? "Не удалось прикрепить машину.");
+      setError(result.error ?? labelsData.ru.errors.attachVehicle);
       setLoadingVehicleId(null);
       return;
     }

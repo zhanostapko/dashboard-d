@@ -27,6 +27,12 @@ export const vehicleService = {
     const vehicle = await vehicleRepository.getVehicleById(id);
     return vehicle ? toVehicleDto(vehicle) : null;
   },
+  createVehicle: async (vehicle: VehicleCreateDto): Promise<VehicleDto> => {
+    const normalizedVehicle = normalizeVehicle(vehicle);
+    const vehicleEntity = toVehicleCreateEntity(normalizedVehicle);
+    const createdVehicle = await vehicleRepository.createVehicle(vehicleEntity);
+    return toVehicleDto(createdVehicle);
+  },
   attachVehicleToClient: async (
     vehicleId: number,
     clientId: number

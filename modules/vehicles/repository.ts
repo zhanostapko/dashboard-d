@@ -13,6 +13,11 @@ export const vehicleRepository = {
       where: { id, isDeleted: false },
     });
   },
+  createVehicle: async (
+    vehicle: Prisma.VehicleCreateInput
+  ): Promise<Vehicle> => {
+    return prisma.vehicle.create({ data: vehicle });
+  },
   getVehiclesByClientId: async (clientId: number): Promise<Vehicle[]> => {
     return prisma.vehicle.findMany({
       where: {

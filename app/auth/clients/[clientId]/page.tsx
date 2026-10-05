@@ -3,7 +3,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import data from "@/data/labels.json";
+import { getServerLabels } from "@/lib/i18n";
 import AttachVehicleToClient from "@/components/Clients/AttachVehicleToClient";
 import { requirePageUser } from "@/lib/authz";
 import { clientService } from "@/modules/clients/service";
@@ -15,6 +15,7 @@ const ClientDetailPage = async ({
   params: Promise<{ clientId: string }>;
 }) => {
   await requirePageUser();
+  const data = await getServerLabels();
 
   const { clientId } = await params;
   const id = Number(clientId);
@@ -46,8 +47,8 @@ const ClientDetailPage = async ({
     phone,
     regNr,
     vehiclesTitle,
-  } = data.ru.clients;
-  const { brand, model, plate, vin } = data.ru.repairs.repairForm.carInformation;
+  } = data.clients;
+  const { brand, model, plate, vin } = data.repairs.repairForm.carInformation;
 
   return (
     <div className="mx-auto max-w-4xl space-y-4 p-6">
