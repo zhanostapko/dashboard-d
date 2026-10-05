@@ -15,6 +15,10 @@ const normalizeVehicle = (vehicle: VehicleCreateDto): VehicleCreateDto => ({
 });
 
 export const vehicleService = {
+  getAllVehicles: async (): Promise<VehicleDto[]> => {
+    const vehicles = await vehicleRepository.getAllVehicles();
+    return vehicles.map(toVehicleDto);
+  },
   getVehiclesByClientId: async (clientId: number): Promise<VehicleDto[]> => {
     const vehicles = await vehicleRepository.getVehiclesByClientId(clientId);
     return vehicles.map(toVehicleDto);

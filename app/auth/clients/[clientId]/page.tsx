@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import data from "@/data/labels.json";
+import AttachVehicleToClient from "@/components/Clients/AttachVehicleToClient";
 import { requirePageUser } from "@/lib/authz";
 import { clientService } from "@/modules/clients/service";
+import { vehicleService } from "@/modules/vehicles/service";
 
 const ClientDetailPage = async ({
   params,
@@ -21,7 +23,10 @@ const ClientDetailPage = async ({
     notFound();
   }
 
-  const client = await clientService.getClientById(id);
+  const [client, allVehicles] = await Promise.all([
+    clientService.getClientById(id),
+    vehicleService.getAllVehicles(),
+  ]);
 
   if (!client) {
     notFound();
@@ -80,7 +85,18 @@ const ClientDetailPage = async ({
           </section>
 
           <section className="border-t pt-6">
-            <h2 className="mb-4 text-lg font-semibold">{vehiclesTitle}</h2>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">{vehiclesTitle}</h2>
+              {allVehicles.length > (client.vehicles?.length ?? 0) && (
+                <AttachVehicleToClient
+                  attachedVehicleIds={(client.vehicles ?? []).map(
+                    (vehicle) => vehicle.id
+                  )}
+                  clientId={client.id}
+                  vehicles={allVehicles}
+                />
+              )}
+            </div>
             {client.vehicles && client.vehicles.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse text-sm">

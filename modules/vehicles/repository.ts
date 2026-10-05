@@ -2,6 +2,12 @@ import prisma from "@/lib/db";
 import { Prisma, Vehicle } from "@prisma/client";
 
 export const vehicleRepository = {
+  getAllVehicles: async (): Promise<Vehicle[]> => {
+    return prisma.vehicle.findMany({
+      where: { isDeleted: false },
+      orderBy: [{ brand: "asc" }, { model: "asc" }, { plate: "asc" }],
+    });
+  },
   getVehicleById: async (id: number): Promise<Vehicle | null> => {
     return prisma.vehicle.findFirst({
       where: { id, isDeleted: false },
