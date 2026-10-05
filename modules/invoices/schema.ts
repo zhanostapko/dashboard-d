@@ -15,6 +15,7 @@ export const invoiceItemSchema = invoiceItemCreateSchema.extend({
 const baseInvoiceFields = {
   number: z.string().min(1, "Invoice number is required"),
   date: z.string().min(1, "Date is required"),
+  repairId: z.number().optional(),
   supplierId: z.number().optional(),
   status: z.enum(["Paid", "Unpaid"]).default("Unpaid"),
   clientName: z.string().min(1, "Client name is required"),
@@ -54,6 +55,7 @@ export const invoiceSchema = z.object({
   id: z.number(),
   createdAt: z.string().optional(),
   ...baseInvoiceFields,
+  repairId: z.number().nullable().optional(),
   items: z.array(invoiceItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 });
 
@@ -74,6 +76,7 @@ const invoiceItemFormSchema = invoiceItemCreateSchema.extend({
 
 export const invoiceFormSchema = z.object({
   id: z.number().optional(),
+  repairId: z.number().optional(),
   number: z.string().min(1, "Invoice number is required"),
   date: z.string().min(1, "Date is required"),
   supplierId: z.number().optional(),

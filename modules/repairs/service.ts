@@ -3,6 +3,12 @@ import { repairRepository } from "./repository";
 import { toRepairCreateEntity, toRepairDto, toRepairUpdateEntity } from "./mappers";
 import { vehicleService } from "@/modules/vehicles/service";
 
+const CLOSED_REPAIR_ERROR = "Закрытый ремонт нельзя изменить или удалить.";
+const REPAIR_WITH_UNPAID_INVOICE_ERROR =
+  "Ремонт с неоплаченным счетом нельзя закрыть.";
+
+export class RepairServiceConflictError extends Error {}
+
 const resolveVehicleIdForRepair = async (
   repair: RepairCreateDto | RepairUpdateDto
 ): Promise<number | undefined> => {
@@ -25,7 +31,6 @@ const resolveVehicleIdForRepair = async (
 
   return vehicle.id;
 };
-
 
 export const repairService = {
   getAllRepairs: async (): Promise<RepairDto[]> => {
@@ -56,6 +61,9 @@ export const repairService = {
     if (!existingRepair) {
       return null;
     }
+    if (existingRepair.status === "Closed") {
+      throw new RepairServiceConflictError(CLOSED_REPAIR_ERROR);
+    }
     const vehicleId = await resolveVehicleIdForRepair(repair);
     const repairEntity = toRepairUpdateEntity({ ...repair, vehicleId });
     const updatedRepair = await repairRepository.updateRepair(
@@ -69,7 +77,24 @@ export const repairService = {
     if (!existingRepair) {
       return null;
     }
+    if (existingRepair.status === "Closed") {
+      throw new RepairServiceConflictError(CLOSED_REPAIR_ERROR);
+    }
     await repairRepository.deleteRepair(id);
     return toRepairDto(existingRepair);
+  },
+  closeRepair: async (id: number): Promise<RepairDto | null> => {
+    const existingRepair = await repairRepository.getRepairById(id);
+    if (!existingRepair) return null;
+    if (existingRepair.status === "Closed") return toRepairDto(existingRepair);
+    if (existingRepair.invoice && existingRepair.invoice.status !== "Paid") {
+      throw new RepairServiceConflictError(REPAIR_WITH_UNPAID_INVOICE_ERROR);
+    }
+
+    const closedRepair = await repairRepository.closeRepair(id);
+    return toRepairDto(closedRepair);
+  },
+  closeRepairForPaidInvoice: async (invoiceId: number): Promise<void> => {
+    await repairRepository.closeRepairByPaidInvoice(invoiceId);
   },
 };

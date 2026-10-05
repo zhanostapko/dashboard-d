@@ -32,6 +32,25 @@ type Props = {
     items: InvoiceItemDto[];
   };
   editMode?: boolean;
+  prefill?: InvoicePrefill;
+};
+
+export type InvoicePrefill = {
+  repairId: number;
+  date: string;
+  clientName: string;
+  clientRegNr: string;
+  clientAddress: string;
+  clientBank: string;
+  clientBankCode: string;
+  clientAccount: string;
+  clientPhone: string;
+  clientEmail: string;
+  carBrand: string;
+  carModel: string;
+  carPlate: string;
+  carMileage: string;
+  items: InvoiceItemDto[];
 };
 
 const initialState: SaveInvoiceState = {
@@ -40,14 +59,16 @@ const initialState: SaveInvoiceState = {
   formData: null,
 };
 
-const CreateInvoiceForm = ({ invoice, editMode = false }: Props) => {
+const CreateInvoiceForm = ({ invoice, editMode = false, prefill }: Props) => {
   const router = useRouter();
   const [state, formAction, isSubmitting] = useActionState(
     saveInvoiceAction,
     initialState
   );
   const [total, setTotal] = useState(invoice?.total || 0);
-  const [items, setItems] = useState<InvoiceItemDto[]>(invoice?.items || []);
+  const [items, setItems] = useState<InvoiceItemDto[]>(
+    invoice?.items || prefill?.items || []
+  );
   const [validatedTotal, setValidatedTotal] = useState(false);
 
   const { invoiceForm, date, total: totalLabel } = labelsData.ru.invoices;
@@ -57,20 +78,25 @@ const CreateInvoiceForm = ({ invoice, editMode = false }: Props) => {
     resolver: zodResolver(invoiceFormSchema),
     defaultValues: {
       id: invoice?.id || 0,
+      repairId: invoice?.repairId ?? prefill?.repairId,
       number: invoice?.number || "AUTO",
-      date: invoice?.date ? format(new Date(invoice.date), "yyyy-MM-dd") : "",
-      clientName: invoice?.clientName || "",
-      clientRegNr: invoice?.clientRegNr || "",
-      clientAddress: invoice?.clientAddress || "",
-      clientBank: invoice?.clientBank || "",
-      clientBankCode: invoice?.clientBankCode || "",
-      clientAccount: invoice?.clientAccount || "",
-      clientEmail: invoice?.clientEmail || "",
-      clientPhone: invoice?.clientPhone || "",
-      carBrand: invoice?.carBrand || "",
-      carModel: invoice?.carModel || "",
-      carPlate: invoice?.carPlate || "",
-      carMileage: invoice?.carMileage || "",
+      date: invoice?.date
+        ? format(new Date(invoice.date), "yyyy-MM-dd")
+        : prefill?.date
+          ? format(new Date(prefill.date), "yyyy-MM-dd")
+          : "",
+      clientName: invoice?.clientName || prefill?.clientName || "",
+      clientRegNr: invoice?.clientRegNr || prefill?.clientRegNr || "",
+      clientAddress: invoice?.clientAddress || prefill?.clientAddress || "",
+      clientBank: invoice?.clientBank || prefill?.clientBank || "",
+      clientBankCode: invoice?.clientBankCode || prefill?.clientBankCode || "",
+      clientAccount: invoice?.clientAccount || prefill?.clientAccount || "",
+      clientEmail: invoice?.clientEmail || prefill?.clientEmail || "",
+      clientPhone: invoice?.clientPhone || prefill?.clientPhone || "",
+      carBrand: invoice?.carBrand || prefill?.carBrand || "",
+      carModel: invoice?.carModel || prefill?.carModel || "",
+      carPlate: invoice?.carPlate || prefill?.carPlate || "",
+      carMileage: invoice?.carMileage || prefill?.carMileage || "",
       paymentType: invoice?.paymentType || "NonCash",
       items: invoice?.items || [],
       total: invoice?.total || 0,

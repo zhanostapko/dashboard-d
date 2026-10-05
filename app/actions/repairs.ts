@@ -8,7 +8,10 @@ import {
   RepairFormValues,
   repairUpdateSchema,
 } from "@/modules/repairs/schema";
-import { repairService } from "@/modules/repairs/service";
+import {
+  RepairServiceConflictError,
+  repairService,
+} from "@/modules/repairs/service";
 
 export type SaveRepairState = {
   errors: Record<string, string[]> | null;
@@ -106,6 +109,13 @@ export async function saveRepairAction(
 
     return { errors: null, success: true, formData: null };
   } catch (error) {
+    if (error instanceof RepairServiceConflictError) {
+      return {
+        success: false,
+        formData: action,
+        errors: { repair: [error.message] },
+      };
+    }
     console.error("Server error:", error);
 
     return {
@@ -151,6 +161,40 @@ export async function deleteRepairAction(
     revalidatePath(`/auth/repairs/${repairId}`);
     return { error: null, success: true };
   } catch (error) {
+    if (error instanceof RepairServiceConflictError) {
+      return { error: error.message, success: false };
+    }
+    return {
+      error: `Ошибка базы данных: ${(error as Error).message}`,
+      success: false,
+    };
+  }
+}
+
+export async function closeRepairAction(
+  repairId: number
+): Promise<RepairActionState> {
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return { error: authMessages.authenticationRequired, success: false };
+  }
+
+  if (!Number.isInteger(repairId)) {
+    return { error: "Некорректный ремонт.", success: false };
+  }
+
+  try {
+    const closedRepair = await repairService.closeRepair(repairId);
+    if (!closedRepair) return { error: "Ремонт не найден.", success: false };
+
+    revalidatePath("/auth/repairs");
+    revalidatePath(`/auth/repairs/${repairId}`);
+    return { error: null, success: true };
+  } catch (error) {
+    if (error instanceof RepairServiceConflictError) {
+      return { error: error.message, success: false };
+    }
     return {
       error: `Ошибка базы данных: ${(error as Error).message}`,
       success: false,

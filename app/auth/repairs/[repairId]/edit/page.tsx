@@ -30,6 +30,10 @@ const EditRepairPage = async ({
     redirect("/auth/repairs");
   }
 
+  if (repair.status === "Closed") {
+    redirect(`/auth/repairs/${repair.id}`);
+  }
+
   return (
     <FormPageShell
       title={labelsData.ru.repairs.editPageTitle}

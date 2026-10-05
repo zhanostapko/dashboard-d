@@ -7,7 +7,7 @@ import {
 } from "./schema";
 
 export type RepairWithItems = Prisma.RepairGetPayload<{
-  include: { items: true };
+  include: { items: true; invoice: true };
 }>;
 
 const normalizeRepairItemType = (
@@ -31,6 +31,8 @@ export const toRepairDto = (repair: RepairWithItems): RepairDto => ({
   id: repair.id,
   clientId: repair.clientId,
   vehicleId: repair.vehicleId,
+  invoiceId: repair.invoice?.id ?? null,
+  status: repair.status,
   date: repair.date.toISOString(),
   clientName: repair.clientName ?? "",
   clientPhone: repair.clientPhone ?? "",

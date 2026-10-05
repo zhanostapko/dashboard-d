@@ -44,6 +44,9 @@ const RepairsTable = ({ repairs }: Props) => {
     addRepairBtn,
     deleteRepairBtn,
     loading,
+    status,
+    open,
+    closed,
   } = labelsData.ru.repairs;
 
   const deleteRepair = async () => {
@@ -122,6 +125,7 @@ const RepairsTable = ({ repairs }: Props) => {
             <TableHead>{clientName}</TableHead>
             <TableHead>{carPlate}</TableHead>
             <TableHead>{date}</TableHead>
+            <TableHead>{status}</TableHead>
             <TableHead className="text-right">{actions}</TableHead>
           </TableRow>
         </TableHeader>
@@ -138,6 +142,7 @@ const RepairsTable = ({ repairs }: Props) => {
               <TableCell>
                 {new Date(repair.date).toLocaleDateString("en-US")}
               </TableCell>
+              <TableCell>{repair.status === "Closed" ? closed : open}</TableCell>
               <TableCell className="flex gap-2 justify-end">
                 <Button
                   type="button"
@@ -145,7 +150,9 @@ const RepairsTable = ({ repairs }: Props) => {
                   size="icon"
                   title={deleteRepairBtn}
                   aria-label={`${deleteRepairBtn}: ${repair.clientName}`}
-                  disabled={deletingRepairId === repair.id}
+                  disabled={
+                    repair.status === "Closed" || deletingRepairId === repair.id
+                  }
                   onClick={(event) => {
                     event.stopPropagation();
                     setRepairToDelete(repair);

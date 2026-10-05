@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DeleteRepairButton from "@/components/Repairs/DeleteRepairButton";
 import EditRepairButton from "@/components/Repairs/EditRepairButton";
+import CloseRepairButton from "@/components/Repairs/CloseRepairButton";
 import labelsData from "@/data/labels.json";
 import { requirePageUser } from "@/lib/authz";
 import { RepairItemDto } from "@/modules/repairs/schema";
@@ -38,6 +39,11 @@ const RepairDetailPage = async ({
     detailsTitle,
     noItems,
     repairForm,
+    status,
+    open,
+    closed,
+    createInvoiceBtn,
+    invoiceAttached,
   } = labelsData.ru.repairs;
   const { carInformation, clientInformation, repairItems } = repairForm;
   const total = calculateRepairTotal(repair.items);
@@ -56,9 +62,21 @@ const RepairDetailPage = async ({
             <CardTitle>
               {detailsTitle} #{repair.id}
             </CardTitle>
-            <div className="flex gap-2">
-              <EditRepairButton repairId={repair.id} />
-              <DeleteRepairButton repairId={repair.id} />
+            <div className="flex flex-wrap justify-end gap-2">
+              {repair.status === "Open" && (
+                <>
+                  {!repair.invoiceId && (
+                    <Button asChild variant="outline">
+                      <Link href={`/auth/invoices/new?repairId=${repair.id}`}>
+                        {createInvoiceBtn}
+                      </Link>
+                    </Button>
+                  )}
+                  <CloseRepairButton repairId={repair.id} />
+                  <EditRepairButton repairId={repair.id} />
+                  <DeleteRepairButton repairId={repair.id} />
+                </>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -70,6 +88,10 @@ const RepairDetailPage = async ({
             <div className="grid gap-4 md:grid-cols-3">
               <DisplayField label={clientName} value={repair.clientName} />
               <DisplayField
+                label={status}
+                value={repair.status === "Closed" ? closed : open}
+              />
+              <DisplayField
                 label={clientInformation.phone}
                 value={repair.clientPhone}
               />
@@ -78,6 +100,15 @@ const RepairDetailPage = async ({
                 value={new Date(repair.date).toLocaleDateString("en-US")}
               />
             </div>
+            {repair.invoiceId && (
+              <div className="mt-4">
+                <Button asChild variant="link" className="h-auto p-0">
+                  <Link href={`/auth/invoices/${repair.invoiceId}`}>
+                    {invoiceAttached}: #{repair.invoiceId}
+                  </Link>
+                </Button>
+              </div>
+            )}
           </section>
 
           <section className="border-t pt-6">

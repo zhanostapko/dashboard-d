@@ -173,6 +173,10 @@ export async function markInvoicePaidAction(
 
     revalidatePath("/auth/invoices");
     revalidatePath(`/auth/invoices/${invoiceId}`);
+    if (updatedInvoice.repairId) {
+      revalidatePath("/auth/repairs");
+      revalidatePath(`/auth/repairs/${updatedInvoice.repairId}`);
+    }
     return { error: null, success: true };
   } catch (error) {
     if (error instanceof InvoiceServiceConflictError) {

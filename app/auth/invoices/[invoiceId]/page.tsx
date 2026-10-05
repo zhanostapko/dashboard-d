@@ -78,6 +78,14 @@ const InvoiceDetailPage = async ({
             <h2 className="text-2xl font-bold mb-1">
               {formInvoiceNumber} {invoice.number}
             </h2>
+            {invoice.repairId && (
+              <Link
+                className="text-sm text-primary underline-offset-4 hover:underline"
+                href={`/auth/repairs/${invoice.repairId}`}
+              >
+                Ремонт #{invoice.repairId}
+              </Link>
+            )}
             <div className="flex gap-2 justify-between">
               <GeneratePDFButtonLazy invoice={invoice} />
               <div className="flex gap-2">

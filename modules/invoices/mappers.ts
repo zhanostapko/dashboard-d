@@ -35,6 +35,7 @@ const toInvoiceItemDto = (item: InvoiceItem): InvoiceItemDto => ({
 
 export const toInvoiceDto = (invoice: InvoiceWithItems): InvoiceDto => ({
   id: invoice.id,
+  repairId: invoice.repairId,
   number: invoice.number ?? "",
   date: invoice.date.toISOString(),
   status: invoice.status,
@@ -61,6 +62,7 @@ export const toInvoiceDetailsDto = (
   invoice: InvoiceWithItemsAndSupplier
 ): InvoiceDetailsDto => ({
   id: invoice.id,
+  repairId: invoice.repairId,
   number: invoice.number ?? "",
   date: invoice.date.toISOString(),
   status: invoice.status,
@@ -104,6 +106,7 @@ export const toInvoiceCreateEntity = (
   return {
     number: dto.number,
     date: new Date(dto.date),
+    repair: dto.repairId ? { connect: { id: dto.repairId } } : undefined,
     status: dto.status ?? "Unpaid",
     supplier: { connect: { id: dto.supplierId } },
     clientName: dto.clientName,
@@ -138,6 +141,11 @@ export const toInvoiceUpdateEntity = (
   const data: Prisma.InvoiceUpdateInput = {};
 
   if (dto.number !== undefined) data.number = dto.number;
+  if (dto.repairId !== undefined) {
+    data.repair = dto.repairId
+      ? { connect: { id: dto.repairId } }
+      : { disconnect: true };
+  }
   if (dto.date !== undefined) data.date = new Date(dto.date);
   if (dto.supplierId !== undefined) {
     data.supplier = { connect: { id: dto.supplierId } };

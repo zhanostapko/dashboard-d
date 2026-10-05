@@ -31,6 +31,8 @@ export const repairSchema = z.object({
   id: z.number(),
   clientId: z.number().nullable().optional(),
   vehicleId: z.number().nullable().optional(),
+  invoiceId: z.number().nullable().optional(),
+  status: z.enum(["Open", "Closed"]),
   createdAt: z.string().optional(),
   ...baseRepairFields,
   items: z.array(repairItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
