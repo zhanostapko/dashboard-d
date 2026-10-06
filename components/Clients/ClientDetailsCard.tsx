@@ -15,7 +15,6 @@ const ClientDetailsCard = ({ client }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const data = useLocaleData();
   const labels = data.ru.clients;
-  const cancelLabel = data.ru.invoices.invoiceForm.invoiceItems.cancelEdit;
 
   if (isEditing) {
     return (

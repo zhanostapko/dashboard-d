@@ -26,7 +26,7 @@ import { useRouter } from "next/navigation";
 import { ClientDto } from "@/modules/clients/schema";
 import CreateClientForm from "./CreateClientForm/CreateClientForm";
 import { deleteClientAction } from "@/app/actions/clients";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {
   clients: ClientDto[];
@@ -159,7 +159,7 @@ const ClientsTable = ({ clients }: Props) => {
             <TableHead>{regNr}</TableHead>
             <TableHead>{phone}</TableHead>
             <TableHead>{email}</TableHead>
-            <TableHead className="text-right">{actions}</TableHead>
+            <TableHead className="w-[96px] text-right">{actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -180,25 +180,42 @@ const ClientsTable = ({ clients }: Props) => {
               <TableCell>{client.regNr || "-"}</TableCell>
               <TableCell>{client.phone || "-"}</TableCell>
               <TableCell>{client.email || "-"}</TableCell>
-              <TableCell className="flex gap-2 justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  title={deleteClientBtn}
-                  aria-label={`${deleteClientBtn}: ${client.name}`}
-                  disabled={deletingClientId === client.id}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setClientToDelete(client);
-                  }}
-                >
-                  {deletingClientId === client.id ? (
-                    <span className="text-xs">{loading}</span>
-                  ) : (
-                    <Trash2 className="size-4 text-destructive" />
-                  )}
-                </Button>
+              <TableCell className="w-[96px]">
+                <div className="flex justify-end gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    title={data.ru.clients.editClientBtn}
+                    aria-label={`${data.ru.clients.editClientBtn}: ${client.name}`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedClient(client);
+                      setIsOpen(true);
+                    }}
+                  >
+                    <Pencil className="size-4" />
+                    <span className="sr-only">{data.ru.clients.editClientBtn}</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    title={deleteClientBtn}
+                    aria-label={`${deleteClientBtn}: ${client.name}`}
+                    disabled={deletingClientId === client.id}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setClientToDelete(client);
+                    }}
+                  >
+                    {deletingClientId === client.id ? (
+                      <span className="text-xs">{loading}</span>
+                    ) : (
+                      <Trash2 className="size-4 text-destructive" />
+                    )}
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}

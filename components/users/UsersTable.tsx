@@ -25,7 +25,7 @@ import { deleteUserAction } from "@/app/actions/users";
 import CreateUserForm from "./CreateUserForm/CreateUserForm";
 import { useRouter } from "next/navigation";
 import { UserDto } from "@/modules/users/schema";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 type Props = {
   currentUserId: number;
@@ -137,7 +137,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
             <TableHead>{baseRate}</TableHead>
             <TableHead>{firstName}</TableHead>
             <TableHead>{lastName}</TableHead>
-            <TableHead className="text-right">{actions}</TableHead>
+            <TableHead className="w-[96px] text-right">{actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -156,25 +156,42 @@ const UsersTable = ({ currentUserId, users }: Props) => {
               <TableCell>{user.baseRate.toFixed(2)}%</TableCell>
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.surname}</TableCell>
-              <TableCell className="flex gap-2 justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  title={deleteUserBtn}
-                  aria-label={`${deleteUserBtn}: ${user.email}`}
-                  disabled={deletingUserId === user.id || user.id === currentUserId}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setUserToDelete(user);
-                  }}
-                >
-                  {deletingUserId === user.id ? (
-                    <span className="text-xs">{loading}</span>
-                  ) : (
-                    <Trash2 className="size-4 text-destructive" />
-                  )}
-                </Button>
+              <TableCell className="w-[96px]">
+                <div className="flex justify-end gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    title={data.ru.user.editUserBtn}
+                    aria-label={`${data.ru.user.editUserBtn}: ${user.email}`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setSelectedUser(user);
+                      setIsOpen(true);
+                    }}
+                  >
+                    <Pencil className="size-4" />
+                    <span className="sr-only">{data.ru.user.editUserBtn}</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    title={deleteUserBtn}
+                    aria-label={`${deleteUserBtn}: ${user.email}`}
+                    disabled={deletingUserId === user.id || user.id === currentUserId}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setUserToDelete(user);
+                    }}
+                  >
+                    {deletingUserId === user.id ? (
+                      <span className="text-xs">{loading}</span>
+                    ) : (
+                      <Trash2 className="size-4 text-destructive" />
+                    )}
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
