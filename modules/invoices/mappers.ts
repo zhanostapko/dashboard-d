@@ -39,6 +39,7 @@ export const toInvoiceDto = (invoice: InvoiceWithItems): InvoiceDto => ({
   number: invoice.number ?? "",
   date: invoice.date.toISOString(),
   status: invoice.status,
+  paidAt: invoice.paidAt?.toISOString() ?? null,
   supplierId: invoice.supplierId,
   clientName: invoice.clientName ?? "",
   clientRegNr: invoice.clientRegNr ?? "",
@@ -66,6 +67,7 @@ export const toInvoiceDetailsDto = (
   number: invoice.number ?? "",
   date: invoice.date.toISOString(),
   status: invoice.status,
+  paidAt: invoice.paidAt?.toISOString() ?? null,
   supplierId: invoice.supplierId,
   supplier: {
     id: invoice.supplier!.id,
@@ -108,6 +110,7 @@ export const toInvoiceCreateEntity = (
     date: new Date(dto.date),
     repair: dto.repairId ? { connect: { id: dto.repairId } } : undefined,
     status: dto.status ?? "Unpaid",
+    paidAt: dto.status === "Paid" ? new Date() : null,
     supplier: { connect: { id: dto.supplierId } },
     clientName: dto.clientName,
     clientRegNr: dto.clientRegNr,

@@ -26,6 +26,24 @@ export const repairItemSchema = repairItemCreateSchema.extend({
   id: z.number(),
 });
 
+export const repairWorkerInputSchema = z.object({
+  userId: z.number().int().positive(),
+  rate: z
+    .number({ invalid_type_error: "Ставка должна быть числом." })
+    .min(0, "Ставка не может быть меньше 0%.")
+    .max(100, "Ставка не может быть больше 100%."),
+});
+
+export const repairWorkerSchema = repairWorkerInputSchema.extend({
+  id: z.number(),
+  name: z.string(),
+  surname: z.string().nullable(),
+  baseRate: z.number(),
+  commission: z.number(),
+});
+
+export const repairWorkersSchema = z.array(repairWorkerInputSchema);
+
 const baseRepairFields = {
   date: z.string().min(1, "Укажите дату ремонта."),
   clientName: z.string().min(1, "Введите имя клиента."),
@@ -43,9 +61,13 @@ export const repairSchema = z.object({
   vehicleId: z.number().nullable().optional(),
   invoiceId: z.number().nullable().optional(),
   status: z.enum(["Open", "Closed"]),
+  paymentStatus: z.enum(["Paid", "Unpaid"]),
+  paidAt: z.string().nullable(),
+  closedAt: z.string().nullable(),
   createdAt: z.string().optional(),
   ...baseRepairFields,
   items: z.array(repairItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
+  workers: z.array(repairWorkerSchema),
 });
 
 export const repairCreateSchema = z.object({
@@ -80,6 +102,8 @@ export type RepairFormValues = z.infer<typeof repairFormSchema>;
 export type RepairItemType = z.infer<typeof repairItemTypeSchema>;
 export type RepairItemCreateDto = z.infer<typeof repairItemCreateSchema>;
 export type RepairItemDto = z.infer<typeof repairItemSchema>;
+export type RepairWorkerInput = z.infer<typeof repairWorkerInputSchema>;
+export type RepairWorkerDto = z.infer<typeof repairWorkerSchema>;
 export type RepairDto = z.infer<typeof repairSchema>;
 export type RepairCreateDto = z.infer<typeof repairCreateSchema>;
 export type RepairUpdateDto = z.infer<typeof repairUpdateSchema>;

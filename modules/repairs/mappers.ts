@@ -5,9 +5,10 @@ import {
   RepairItemDto,
   RepairUpdateDto,
 } from "./schema";
+import { calculateWorkerCommission } from "./commission";
 
 export type RepairWithItems = Prisma.RepairGetPayload<{
-  include: { items: true; invoice: true };
+  include: { items: true; invoice: true; workers: { include: { user: true } } };
 }>;
 
 const normalizeRepairItemType = (
@@ -33,6 +34,9 @@ export const toRepairDto = (repair: RepairWithItems): RepairDto => ({
   vehicleId: repair.vehicleId,
   invoiceId: repair.invoice?.id ?? null,
   status: repair.status,
+  paymentStatus: repair.paymentStatus,
+  paidAt: repair.paidAt?.toISOString() ?? null,
+  closedAt: repair.closedAt?.toISOString() ?? null,
   date: repair.date.toISOString(),
   clientName: repair.clientName ?? "",
   clientPhone: repair.clientPhone ?? "",
@@ -42,6 +46,22 @@ export const toRepairDto = (repair: RepairWithItems): RepairDto => ({
   carMileage: repair.carMileage ?? "",
   createdAt: repair.createdAt.toISOString(),
   items: repair.items?.map(toRepairItemDto) ?? [],
+  workers: repair.workers?.map((worker) => ({
+    id: worker.id,
+    userId: worker.userId,
+    name: worker.user.name,
+    surname: worker.user.surname,
+    baseRate: toMoneyNumber(worker.user.baseRate),
+    rate: toMoneyNumber(worker.rate),
+    commission: calculateWorkerCommission(
+      repair.items.map((item) => ({
+        unit: normalizeRepairItemType(item.unit),
+        quantity: item.quantity,
+        price: toMoneyNumber(item.price),
+      })),
+      toMoneyNumber(worker.rate)
+    ),
+  })) ?? [],
 });
 
 export const toRepairCreateEntity = (

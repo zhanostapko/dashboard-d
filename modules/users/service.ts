@@ -4,6 +4,8 @@ import { UserCreateDto, UserDto, UserUpdateDto } from "./schema";
 
 const LAST_ADMIN_ERROR =
   "В системе должен оставаться хотя бы один администратор.";
+const USER_ASSIGNED_TO_REPAIR_ERROR =
+  "Нельзя удалить пользователя, назначенного на ремонт.";
 
 export class UserServiceConflictError extends Error {}
 
@@ -69,6 +71,10 @@ export const userService = {
       if (adminCount <= 1) {
         throw new UserServiceConflictError(LAST_ADMIN_ERROR);
       }
+    }
+
+    if (await userRepository.countRepairWorkerAssignments(id)) {
+      throw new UserServiceConflictError(USER_ASSIGNED_TO_REPAIR_ERROR);
     }
 
     await userRepository.deleteUser(existingUser.id);

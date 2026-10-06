@@ -74,7 +74,7 @@ export const invoiceService = {
           invoiceEntity
         );
         if (createdInvoice.status === "Paid" && createdInvoice.repairId) {
-          await repairService.closeRepairForPaidInvoice(createdInvoice.repairId);
+          await repairService.markRepairPaidForInvoice(createdInvoice.id);
         }
         return toInvoiceDto(createdInvoice);
       } catch (error) {
@@ -125,12 +125,15 @@ export const invoiceService = {
     }
 
     const invoiceEntity = toInvoiceUpdateEntity(invoice);
+    if (invoice.status === "Paid") {
+      invoiceEntity.paidAt = new Date();
+    }
     const updatedInvoice = await invoiceRepository.updateInvoice(
       id,
       invoiceEntity
     );
     if (updatedInvoice.status === "Paid" && updatedInvoice.repairId) {
-      await repairService.closeRepairForPaidInvoice(updatedInvoice.repairId);
+      await repairService.markRepairPaidForInvoice(updatedInvoice.id);
     }
     return toInvoiceDto(updatedInvoice);
   },

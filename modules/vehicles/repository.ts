@@ -4,7 +4,7 @@ import { Prisma, Vehicle } from "@prisma/client";
 export type VehicleWithRelations = Prisma.VehicleGetPayload<{
   include: {
     clients: true;
-    repairs: { include: { items: true; invoice: true } };
+    repairs: { include: { items: true; invoice: true; workers: { include: { user: true } } } };
   };
 }>;
 
@@ -31,7 +31,7 @@ export const vehicleRepository = {
           orderBy: { name: "asc" },
         },
         repairs: {
-          include: { items: true, invoice: true },
+          include: { items: true, invoice: true, workers: { include: { user: true } } },
           orderBy: { date: "desc" },
         },
       },

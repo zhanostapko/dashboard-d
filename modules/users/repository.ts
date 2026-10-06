@@ -13,6 +13,8 @@ export const userRepository = {
     const user = await prisma.user.findUnique({ where: { id } });
     return user;
   },
+  getUsersByIds: async (ids: number[]): Promise<User[]> =>
+    prisma.user.findMany({ where: { id: { in: ids } } }),
   updateUser: async (id: number, user: Prisma.UserUpdateInput) => {
     const updatedUser = await prisma.user.update({ data: user, where: { id } });
 
@@ -33,4 +35,6 @@ export const userRepository = {
 
     return user;
   },
+  countRepairWorkerAssignments: async (id: number): Promise<number> =>
+    prisma.repairWorker.count({ where: { userId: id } }),
 };

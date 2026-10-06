@@ -35,12 +35,13 @@ export async function saveUserAction(
   const name = payload.get("name") as string;
   const surname = payload.get("surname") as string;
   const role = (payload.get("role") as "USER" | "ADMIN") || "USER";
+  const baseRate = Number(payload.get("baseRate") ?? 0);
 
   if (!currentUser) {
     return {
       error: authMessages.authenticationRequired,
       success: null,
-      user: { email, name, surname, role },
+      user: { email, name, surname, role, baseRate },
     };
   }
 
@@ -48,7 +49,7 @@ export async function saveUserAction(
     return {
       error: authMessages.forbidden,
       success: null,
-      user: { email, name, surname, role },
+      user: { email, name, surname, role, baseRate },
     };
   }
 
@@ -58,17 +59,17 @@ export async function saveUserAction(
         return {
           error: labels.errors.selfAdmin,
           success: null,
-          user: { email, name, surname, role },
+          user: { email, name, surname, role, baseRate },
         };
       }
 
-      const user = { id, name, surname, role };
+      const user = { id, name, surname, role, baseRate };
       const parsed = await userUpdateSchema.safeParseAsync(user);
       if (parsed && !parsed.success) {
         return {
           error: parsed.error.issues.map((issue) => issue.message).join(", "),
           success: null,
-          user: { email, name, surname, role },
+          user: { email, name, surname, role, baseRate },
         };
       }
 
@@ -78,24 +79,24 @@ export async function saveUserAction(
           return {
             error: labels.errors.notFound,
             success: null,
-            user: { email, name, surname, role },
+            user: { email, name, surname, role, baseRate },
           };
         }
       } catch (error) {
         return {
           error: (error as Error).message,
           success: null,
-          user: { email, name, surname, role },
+          user: { email, name, surname, role, baseRate },
         };
       }
     } else {
-      const user = { email, name, surname, role };
+      const user = { email, name, surname, role, baseRate };
       const parsed = await userCreateSchema.safeParseAsync(user);
       if (parsed && !parsed.success) {
         return {
           error: parsed.error.issues.map((issue) => issue.message).join(", "),
           success: null,
-          user: { email, name, surname, role },
+          user: { email, name, surname, role, baseRate },
         };
       }
       const createdUser = await userService.createUser(user);
@@ -103,7 +104,7 @@ export async function saveUserAction(
         return {
           error: labels.errors.duplicateEmail,
           success: null,
-          user: { email, name, surname, role },
+          user: { email, name, surname, role, baseRate },
         };
       }
     }
@@ -114,7 +115,7 @@ export async function saveUserAction(
     return {
       error: `Ошибка базы данных: ${(error as Error).message}`,
       success: null,
-      user: { email, name, surname, role },
+      user: { email, name, surname, role, baseRate },
     };
   }
 }
@@ -166,7 +167,9 @@ export async function deleteUserAction(id: number): Promise<DeleteUserState> {
   } catch (error) {
     if (error instanceof UserServiceConflictError) {
       return {
-        error: labels.errors.lastAdmin,
+        error: error.message.includes("назначенного")
+          ? error.message
+          : labels.errors.lastAdmin,
         success: false,
       };
     }

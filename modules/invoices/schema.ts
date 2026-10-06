@@ -55,6 +55,7 @@ export const invoiceSchema = z.object({
   id: z.number(),
   createdAt: z.string().optional(),
   ...baseInvoiceFields,
+  paidAt: z.string().nullable(),
   repairId: z.number().nullable().optional(),
   items: z.array(invoiceItemSchema).min(1, "Нужно добавить хотя бы одну позицию."),
 });
@@ -63,7 +64,9 @@ export const invoiceDetailsSchema = invoiceSchema.extend({
   supplier: supplierSchema,
 });
 
-export const invoiceCreateSchema = z.object(baseInvoiceFields);
+export const invoiceCreateSchema = z.object({
+  ...baseInvoiceFields,
+});
 
 export const invoiceUpdateSchema = invoiceCreateSchema.partial().extend({
   id: z.number(),
