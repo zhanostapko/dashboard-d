@@ -7,8 +7,11 @@ import DeleteRepairButton from "@/components/Repairs/DeleteRepairButton";
 import EditRepairButton from "@/components/Repairs/EditRepairButton";
 import CloseRepairButton from "@/components/Repairs/CloseRepairButton";
 import ReopenRepairButton from "@/components/Repairs/ReopenRepairButton";
+import RepairPaymentButton from "@/components/Repairs/RepairPaymentButton";
+import RepairWorkersEditor from "@/components/Repairs/RepairWorkersEditor";
 import { getServerLabels } from "@/lib/i18n";
 import { requirePageUser } from "@/lib/authz";
+import { userService } from "@/modules/users/service";
 import { RepairItemDto } from "@/modules/repairs/schema";
 import { repairService } from "@/modules/repairs/service";
 
@@ -17,7 +20,7 @@ const RepairDetailPage = async ({
 }: {
   params: Promise<{ repairId: string }>;
 }) => {
-  await requirePageUser();
+  const currentUser = await requirePageUser();
   const labelsData = await getServerLabels();
 
   const { repairId } = await params;
@@ -32,6 +35,8 @@ const RepairDetailPage = async ({
   if (!repair) {
     notFound();
   }
+
+  const users = currentUser.role === "ADMIN" ? await userService.getAllUsers() : [];
 
   const {
     backToRepairs,
@@ -79,7 +84,7 @@ const RepairDetailPage = async ({
                   {!repair.invoiceId && <DeleteRepairButton repairId={repair.id} />}
                 </>
               )}
-              {repair.status === "Closed" && !repair.invoiceId && (
+              {repair.status === "Closed" && (
                 <ReopenRepairButton repairId={repair.id} />
               )}
             </div>
@@ -106,12 +111,28 @@ const RepairDetailPage = async ({
                 value={repair.status === "Closed" ? closed : open}
               />
               <DisplayField
+                label={labelsData.invoices.status}
+                value={
+                  repair.paymentStatus === "Paid"
+                    ? labelsData.invoices.paid
+                    : labelsData.invoices.unpaid
+                }
+              />
+              <DisplayField
                 label={clientInformation.phone}
                 value={repair.clientPhone}
               />
               <DisplayField
                 label={date}
                 value={new Date(repair.date).toLocaleDateString("en-US")}
+              />
+              <DisplayField
+                label={labelsData.earnings.closedAt}
+                value={repair.closedAt ? new Date(repair.closedAt).toLocaleDateString("en-US") : "-"}
+              />
+              <DisplayField
+                label={labelsData.invoices.paid}
+                value={repair.paidAt ? new Date(repair.paidAt).toLocaleDateString("en-US") : "-"}
               />
             </div>
             {repair.invoiceId && (
@@ -123,7 +144,18 @@ const RepairDetailPage = async ({
                 </Button>
               </div>
             )}
+            {currentUser.role === "ADMIN" && repair.paymentStatus === "Unpaid" && (
+              <div className="mt-4">
+                <RepairPaymentButton repairId={repair.id} />
+              </div>
+            )}
           </section>
+
+          <RepairWorkersEditor
+            repair={repair}
+            users={users}
+            canManage={currentUser.role === "ADMIN"}
+          />
 
           <section className="border-t pt-6">
             <h2 className="mb-4 text-lg font-semibold">

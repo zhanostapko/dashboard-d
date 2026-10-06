@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Car, Newspaper, Users, Wrench } from "lucide-react";
+import { Car, HandCoins, Newspaper, Users, Wrench } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Role } from "@prisma/client";
@@ -25,6 +25,7 @@ const sectionIcons: Record<AppSection["id"], React.ComponentType> = {
   vehicles: Car,
   repairs: Wrench,
   users: Users,
+  earnings: HandCoins,
 };
 
 const Sidebar = ({ role }: SidebarProps) => {

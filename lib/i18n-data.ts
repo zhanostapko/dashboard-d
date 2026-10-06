@@ -3,13 +3,21 @@ import source from "@/data/labels.json";
 export const locales = ["ru", "en", "lv"] as const;
 export type Locale = (typeof locales)[number];
 
-type Labels = typeof source.ru & {
-  menu: { users: string; invoices: string; clients: string; vehicles: string; repairs: string };
+export type Labels = typeof source.ru & {
+  user: typeof source.ru.user & { baseRate: string };
+  menu: { users: string; invoices: string; clients: string; vehicles: string; repairs: string; earnings: string };
+  earnings: { title: string; from: string; to: string; worker: string; allWorkers: string; show: string; totalWork: string; totalCommission: string; workerSummary: string; repairDetails: string; closedAt: string; rate: string; commission: string; noResults: string; loading: string; unknownWorker: string };
   vehicles: { createTitle: string; addBtn: string; loading: string; noVehicles: string; detailsTitle: string; ownersTitle: string; noOwners: string; backToVehicles: string };
   common: { language: string; russian: string; english: string; latvian: string; account: string; logout: string; menu: string; unavailable: string; close: string; backHome: string; saved: string; reopenRepair: string; search: string; noResults: string; clearSearch: string };
   dialogs: { deleteUser: string; deleteClient: string; deleteInvoice: string; deleteRepair: string; deleteRepairDescription: string; closeRepair: string; closeRepairDescription: string; reopenRepair: string; reopenRepairDescription: string };
   errors: Record<string, string>;
 };
+
+const user = {
+  ru: { baseRate: "Базовая ставка" },
+  en: { baseRate: "Base rate" },
+  lv: { baseRate: "Pamatlikme" },
+} as const;
 
 const en: Record<string, string> = {
   "Нр.": "No.", "Эмайл": "Email", "Имя": "First name", "Роль": "Role", "Фамилия": "Last name", "Действия": "Actions", "Добавить": "Add", "Редактировать": "Edit", "Удалить": "Delete", "Создать пользователя": "Create user", "Обязательное поле": "Required field", "Редактировать пользователя": "Edit user", "Сохранить": "Save", "Не удалось загрузить пользователей. Пожалуйста, попробуйте позже.": "Could not load users. Please try again later.", "Админ": "Admin", "Пользователь": "User", "Выберите роль": "Select a role", "Загрузка...": "Loading...", "Пользователи": "Users", "Счета": "Invoices", "Клиенты": "Clients", "Ремонты": "Repairs", "№": "No.", "Название": "Name", "Рег. номер": "Registration no.", "Адрес": "Address", "Банк": "Bank", "Код банка": "Bank code", "Счет": "Account", "Телефон": "Phone", "Email": "Email", "Клиент": "Client", "Информация о клиенте": "Client information", "Машины": "Vehicles", "Машин пока нет": "No vehicles yet", "Прикрепить существующую машину": "Attach existing vehicle", "Поиск по марке, модели, номеру или VIN": "Search by make, model, plate or VIN", "Подходящих машин не найдено": "No matching vehicles found", "Прикрепление...": "Attaching...", "Ремонтов пока нет": "No repairs yet", "Счетов пока нет": "No invoices yet", "Добавить клиента": "Add client", "Создать клиента": "Create client", "Редактировать клиента": "Edit client", "Назад": "Back", "Поиск клиента": "Search clients", "Очистить": "Clear", "Клиенты не найдены": "No clients found", "Не удалось загрузить клиентов.": "Could not load clients.", "Счёт №": "Invoice no.", "Имя клиента": "Client name", "Номер авто": "Vehicle plate", "Дата": "Date", "Статус": "Status", "Сумма": "Total", "Оплачено": "Paid", "Не оплачено": "Unpaid", "Счета не найдены": "No invoices found", "Отправка...": "Sending...", "Создать счет": "Create invoice", "Редактировать счет": "Edit invoice", "Счет не найден": "Invoice not found", "Позиции не добавлены": "No items added", "Удаление...": "Deleting...", "Сохранение...": "Saving...", "Номер счета": "Invoice number", "Регистрационный номер": "Registration number", "Электронная почта": "Email address", "Тип оплаты": "Payment type", "Наличные": "Cash", "Безналичные": "Bank transfer", "Информация об автомобиле": "Vehicle information", "Марка": "Make", "Модель": "Model", "Номерной знак": "License plate", "Пробег": "Mileage", "Позиции счета": "Invoice items", "Наименование": "Name", "Тип": "Type", "Количество": "Quantity", "Цена": "Price", "Редактировать позицию": "Edit item", "Сохранить позицию": "Save item", "Отмена": "Cancel", "Добавить позицию": "Add item", "Создать": "Create", "Номер ремонта": "Repair number", "Ремонт": "Repair", "Ремонт не найден": "Repair not found", "Добавить ремонт": "Add repair", "Закрыть ремонт": "Close repair", "Открыт": "Open", "Закрыт": "Closed", "Счет привязан": "Invoice attached", "Создать ремонт": "Create repair", "Редактировать ремонт": "Edit repair", "Не удалось загрузить ремонты.": "Could not load repairs.", "Машина клиента": "Client vehicle", "Новая машина / вручную": "New vehicle / manual", "VIN": "VIN", "Позиции ремонта": "Repair items", "Работа": "Labor", "Материалы": "Materials"
@@ -19,9 +27,15 @@ const lv: Record<string, string> = {
 };
 
 const menu = {
-  ru: { users: "Пользователи", invoices: "Счета", clients: "Клиенты", vehicles: "Машины", repairs: "Ремонты" },
-  en: { users: "Users", invoices: "Invoices", clients: "Clients", vehicles: "Vehicles", repairs: "Repairs" },
-  lv: { users: "Lietotāji", invoices: "Rēķini", clients: "Klienti", vehicles: "Transportlīdzekļi", repairs: "Remonti" },
+  ru: { users: "Пользователи", invoices: "Счета", clients: "Клиенты", vehicles: "Машины", repairs: "Ремонты", earnings: "Заработок" },
+  en: { users: "Users", invoices: "Invoices", clients: "Clients", vehicles: "Vehicles", repairs: "Repairs", earnings: "Earnings" },
+  lv: { users: "Lietotāji", invoices: "Rēķini", clients: "Klienti", vehicles: "Transportlīdzekļi", repairs: "Remonti", earnings: "Peļņa" },
+} as const;
+
+const earnings = {
+  ru: { title: "Заработок мастеров", from: "С даты", to: "По дату", worker: "Мастер", allWorkers: "Все мастера", show: "Показать", totalWork: "Сумма работ", totalCommission: "Общее начисление", workerSummary: "По мастерам", repairDetails: "По ремонтам", closedAt: "Дата закрытия", rate: "Ставка", commission: "Начисление", noResults: "Закрытых ремонтов не найдено", loading: "Загрузка...", unknownWorker: "Работник" },
+  en: { title: "Worker earnings", from: "From", to: "To", worker: "Worker", allWorkers: "All workers", show: "Show", totalWork: "Work total", totalCommission: "Total commission", workerSummary: "By worker", repairDetails: "By repair", closedAt: "Closed at", rate: "Rate", commission: "Commission", noResults: "No closed repairs found", loading: "Loading...", unknownWorker: "Worker" },
+  lv: { title: "Meistaru peļņa", from: "No datuma", to: "Līdz datumam", worker: "Meistars", allWorkers: "Visi meistari", show: "Rādīt", totalWork: "Darbu summa", totalCommission: "Kopējā komisija", workerSummary: "Pēc meistara", repairDetails: "Pēc remonta", closedAt: "Aizvēršanas datums", rate: "Likme", commission: "Komisija", noResults: "Aizvērtie remonti nav atrasti", loading: "Ielādē...", unknownWorker: "Meistars" },
 } as const;
 
 const vehicles = {
@@ -54,9 +68,9 @@ const errors = {
 } as const;
 
 export const labels = {
-  ru: { ...source.ru, menu: menu.ru, vehicles: vehicles.ru, common: common.ru, dialogs: dialogs.ru, errors: errors.ru },
-  en: { ...translate(source.ru, en) as typeof source.ru, menu: menu.en, vehicles: vehicles.en, common: common.en, dialogs: dialogs.en, errors: errors.en },
-  lv: { ...translate(source.ru, lv) as typeof source.ru, menu: menu.lv, vehicles: vehicles.lv, common: common.lv, dialogs: dialogs.lv, errors: errors.lv },
+  ru: { ...source.ru, user: { ...source.ru.user, ...user.ru }, menu: menu.ru, earnings: earnings.ru, vehicles: vehicles.ru, common: common.ru, dialogs: dialogs.ru, errors: errors.ru },
+  en: { ...translate(source.ru, en) as typeof source.ru, user: { ...translate(source.ru.user, en) as typeof source.ru.user, ...user.en }, menu: menu.en, earnings: earnings.en, vehicles: vehicles.en, common: common.en, dialogs: dialogs.en, errors: errors.en },
+  lv: { ...translate(source.ru, lv) as typeof source.ru, user: { ...translate(source.ru.user, lv) as typeof source.ru.user, ...user.lv }, menu: menu.lv, earnings: earnings.lv, vehicles: vehicles.lv, common: common.lv, dialogs: dialogs.lv, errors: errors.lv },
 } as Record<Locale, Labels>;
 
 export function getLabels(locale: Locale): Labels { return labels[locale]; }

@@ -47,6 +47,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
     lastName,
     email,
     role,
+    baseRate,
     actions,
     deleteUserBtn,
     loading,
@@ -133,6 +134,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
             <TableHead className="w-[100px]">{nr}</TableHead>
             <TableHead>{email}</TableHead>
             <TableHead>{role}</TableHead>
+            <TableHead>{baseRate}</TableHead>
             <TableHead>{firstName}</TableHead>
             <TableHead>{lastName}</TableHead>
             <TableHead className="text-right">{actions}</TableHead>
@@ -151,6 +153,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
+              <TableCell>{user.baseRate.toFixed(2)}%</TableCell>
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.surname}</TableCell>
               <TableCell className="flex gap-2 justify-end">

@@ -116,6 +116,20 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
             </SelectContent>
           </Select>
         </div>
+        <div>
+          <Label className="mb-2" htmlFor="baseRate">
+            {data.ru.user.baseRate}%
+          </Label>
+          <Input
+            name="baseRate"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            defaultValue={state?.user?.baseRate ?? selectedUser?.baseRate ?? 0}
+            required
+          />
+        </div>
         <p className="text-sm text-gray-400">* - {requiredField}</p>
 
         <Button
