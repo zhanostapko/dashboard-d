@@ -17,6 +17,8 @@ const WORKER_RATE_SUM_ERROR =
   "Сумма ставок работников не может превышать 100%.";
 const DUPLICATE_WORKER_ERROR = "Один пользователь не может быть назначен дважды.";
 const WORKER_NOT_FOUND_ERROR = "Работник не найден.";
+const REPAIR_PAYMENT_VIA_INVOICE_ERROR =
+  "Ремонт с привязанным счетом нужно оплачивать через счет.";
 
 export class RepairServiceConflictError extends Error {}
 
@@ -112,6 +114,9 @@ export const repairService = {
     const existingRepair = await repairRepository.getRepairById(id);
     if (!existingRepair) return null;
     if (existingRepair.paymentStatus === "Paid") return toRepairDto(existingRepair);
+    if (existingRepair.invoice) {
+      throw new RepairServiceConflictError(REPAIR_PAYMENT_VIA_INVOICE_ERROR);
+    }
 
     const paidRepair = await repairRepository.markRepairPaid(id);
     return toRepairDto(paidRepair);

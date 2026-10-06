@@ -15,9 +15,10 @@ import { RepairDto } from "@/modules/repairs/schema";
 
 type Props = {
   repair: RepairDto;
+  canReopen: boolean;
 };
 
-export default function RepairStatusSelect({ repair }: Props) {
+export default function RepairStatusSelect({ repair, canReopen }: Props) {
   const router = useRouter();
   const labelsData = useLocaleData();
   const [status, setStatus] = useState<RepairDto["status"]>(repair.status);
@@ -31,11 +32,20 @@ export default function RepairStatusSelect({ repair }: Props) {
 
   const handleStatusChange = async (nextStatus: RepairDto["status"]) => {
     if (nextStatus === status) return;
+    if (nextStatus === "Open" && !canReopen) return;
 
+    const { dialogs } = labelsData.ru;
+    const invoiceWarning =
+      nextStatus === "Open" && repair.invoiceId
+        ? `\n\n${dialogs.reopenRepairInvoiceWarning.replace(
+            "{invoiceId}",
+            String(repair.invoiceId),
+          )}`
+        : "";
     const confirmed = window.confirm(
       nextStatus === "Closed"
-        ? `${labelsData.ru.dialogs.closeRepair} ${labelsData.ru.dialogs.closeRepairDescription}`
-        : `${labelsData.ru.dialogs.reopenRepair} ${labelsData.ru.dialogs.reopenRepairDescription}`,
+        ? `${dialogs.closeRepair} ${dialogs.closeRepairDescription}`
+        : `${dialogs.reopenRepair} ${dialogs.reopenRepairDescription}${invoiceWarning}`,
     );
 
     if (!confirmed) return;
@@ -74,7 +84,7 @@ export default function RepairStatusSelect({ repair }: Props) {
         onValueChange={(value) =>
           handleStatusChange(value as RepairDto["status"])
         }
-        disabled={loading}
+        disabled={loading || (status === "Closed" && !canReopen)}
       >
         <SelectTrigger
           className="w-full"

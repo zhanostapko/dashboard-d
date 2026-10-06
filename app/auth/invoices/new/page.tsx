@@ -5,12 +5,15 @@ import CreateInvoiceForm, {
 import { getServerLabels } from "@/lib/i18n";
 import { repairService } from "@/modules/repairs/service";
 import { clientService } from "@/modules/clients/service";
+import { requirePageRole } from "@/lib/authz";
+import { Role } from "@prisma/client";
 
 const NewInvoicePage = async ({
   searchParams,
 }: {
   searchParams?: Promise<{ repairId?: string }>;
 }) => {
+  await requirePageRole(Role.ADMIN);
   const data = await getServerLabels();
   const query = await searchParams;
   const repairId = Number(query?.repairId);

@@ -10,12 +10,14 @@ import Error from "@/components/Error";
 import { getServerLabels } from "@/lib/i18n";
 import { invoiceService } from "@/modules/invoices/service";
 import Link from "next/link";
+import { requirePageUser } from "@/lib/authz";
 
 const InvoiceDetailPage = async ({
   params,
 }: {
   params: Promise<{ invoiceId: string }>;
 }) => {
+  const currentUser = await requirePageUser();
   const data = await getServerLabels();
   const { total, invoiceForm, date, notFound, noItems, backToInvoices } = data.invoices;
   const { formInvoiceNumber, clientInformation, carInformation, invoiceItems } = invoiceForm;
@@ -72,8 +74,12 @@ const InvoiceDetailPage = async ({
           </div>
           <div className="flex flex-wrap justify-end gap-2">
             <GeneratePDFButtonLazy invoice={invoice} />
-            <EditInvoiceButton invoice={invoice} />
-            <DeleteInvoiceButton invoice={invoice} />
+            {currentUser.role === "ADMIN" && (
+              <>
+                <EditInvoiceButton invoice={invoice} />
+                <DeleteInvoiceButton invoice={invoice} />
+              </>
+            )}
           </div>
         </div>
 

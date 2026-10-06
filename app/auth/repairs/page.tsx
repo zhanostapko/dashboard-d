@@ -11,7 +11,15 @@ const RepairsPage = async () => {
 
   try {
     const repairs = await repairService.getAllRepairs();
-    return <RepairsTable repairs={repairs} canManagePayment={currentUser.role === "ADMIN"} />;
+    const isAdmin = currentUser.role === "ADMIN";
+
+    return (
+      <RepairsTable
+        repairs={repairs}
+        canManagePayment
+        canReopen={isAdmin}
+      />
+    );
   } catch (error) {
     console.error("Failed to load repairs:", error);
     return (

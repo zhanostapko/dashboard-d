@@ -15,9 +15,10 @@ import { InvoiceDto } from "@/modules/invoices/schema";
 
 type Props = {
   invoice: Pick<InvoiceDto, "id" | "status">;
+  canManage: boolean;
 };
 
-export default function InvoicePaymentSelect({ invoice }: Props) {
+export default function InvoicePaymentSelect({ invoice, canManage }: Props) {
   const router = useRouter();
   const labels = useLocaleData().ru;
   const [status, setStatus] = useState(invoice.status);
@@ -64,7 +65,7 @@ export default function InvoicePaymentSelect({ invoice }: Props) {
         onValueChange={(value) =>
           handleStatusChange(value as InvoiceDto["status"])
         }
-        disabled={loading || status === "Paid"}
+        disabled={!canManage || loading || status === "Paid"}
       >
         <SelectTrigger className="w-full" aria-label={labels.invoices.status}>
           <SelectValue />

@@ -17,9 +17,10 @@ import InvoicePaymentSelect from "./InvoicePaymentSelect";
 
 type Props = {
   data: InvoiceDto[];
+  canManage: boolean;
 };
 
-const InvoicesTable = ({ data }: Props) => {
+const InvoicesTable = ({ data, canManage }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const labelsData = useLocaleData();
@@ -53,12 +54,14 @@ const InvoicesTable = ({ data }: Props) => {
   );
   return (
     <>
-      <Button
-        onClick={() => router.push("/auth/invoices/new")}
-        className="mb-4"
-      >
-        + {addInvoiceBtn}
-      </Button>
+      {canManage && (
+        <Button
+          onClick={() => router.push("/auth/invoices/new")}
+          className="mb-4"
+        >
+          + {addInvoiceBtn}
+        </Button>
+      )}
       <TableSearch
         value={searchTerm}
         onChange={setSearchTerm}
@@ -104,7 +107,7 @@ const InvoicesTable = ({ data }: Props) => {
                 }
               </TableCell>
               <TableCell>
-                <InvoicePaymentSelect invoice={invoice} />
+                <InvoicePaymentSelect invoice={invoice} canManage={canManage} />
               </TableCell>
               <TableCell>{invoice.total}</TableCell>
             </TableRow>

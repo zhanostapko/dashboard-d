@@ -32,9 +32,10 @@ import EditRepairButton from "./EditRepairButton";
 type Props = {
   repairs: RepairDto[];
   canManagePayment: boolean;
+  canReopen: boolean;
 };
 
-const RepairsTable = ({ repairs, canManagePayment }: Props) => {
+const RepairsTable = ({ repairs, canManagePayment, canReopen }: Props) => {
   const [repairToDelete, setRepairToDelete] = useState<RepairDto | null>(null);
   const [deletingRepairId, setDeletingRepairId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -188,7 +189,10 @@ const RepairsTable = ({ repairs, canManagePayment }: Props) => {
                 </TableCell>
                 <TableCell>
                   <div className="inline-flex w-full gap-2">
-                    <RepairStatusSelect repair={repair} />
+                    <RepairStatusSelect
+                      repair={repair}
+                      canReopen={canReopen}
+                    />
                     <RepairPaymentSelect
                       repair={repair}
                       canManage={canManagePayment}

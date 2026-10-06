@@ -14,7 +14,7 @@ import {
 import { RepairDto } from "@/modules/repairs/schema";
 
 type Props = {
-  repair: Pick<RepairDto, "id" | "paymentStatus">;
+  repair: Pick<RepairDto, "id" | "paymentStatus" | "invoiceId">;
   canManage?: boolean;
 };
 
@@ -70,7 +70,12 @@ export default function RepairPaymentSelect({
         onValueChange={(value) =>
           handlePaymentChange(value as RepairDto["paymentStatus"])
         }
-        disabled={!canManage || loading || paymentStatus === "Paid"}
+        disabled={
+          !canManage ||
+          repair.invoiceId !== null ||
+          loading ||
+          paymentStatus === "Paid"
+        }
       >
         <SelectTrigger className="w-full" aria-label={labels.invoices.status}>
           <SelectValue />

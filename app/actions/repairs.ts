@@ -232,11 +232,9 @@ export async function reopenRepairAction(
   repairId: number
 ): Promise<RepairActionState> {
   const labels = await getServerLabels();
-  const currentUser = await getCurrentUser();
+  const guard = await requireAdmin();
 
-  if (!currentUser) {
-    return { error: authMessages.authenticationRequired, success: false };
-  }
+  if (guard.error) return { error: guard.error, success: false };
 
   if (!Number.isInteger(repairId)) {
     return { error: labels.errors.invalid, success: false };
@@ -301,9 +299,11 @@ export async function markRepairPaidAction(
   repairId: number
 ): Promise<RepairActionState> {
   const labels = await getServerLabels();
-  const guard = await requireAdmin();
+  const currentUser = await getCurrentUser();
 
-  if (guard.error) return { error: guard.error, success: false };
+  if (!currentUser) {
+    return { error: authMessages.authenticationRequired, success: false };
+  }
   if (!Number.isInteger(repairId)) {
     return { error: labels.errors.invalid, success: false };
   }
@@ -315,7 +315,10 @@ export async function markRepairPaidAction(
     revalidatePath("/auth/repairs");
     revalidatePath(`/auth/repairs/${repairId}`);
     return { error: null, success: true };
-  } catch {
+  } catch (error) {
+    if (error instanceof RepairServiceConflictError) {
+      return { error: error.message, success: false };
+    }
     return { error: labels.errors.database, success: false };
   }
 }

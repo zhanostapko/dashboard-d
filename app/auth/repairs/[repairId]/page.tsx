@@ -72,7 +72,7 @@ const RepairDetailPage = async ({
             <div className="flex flex-wrap justify-end gap-2">
               {repair.status === "Open" && (
                 <>
-                  {!repair.invoiceId && (
+                  {currentUser.role === "ADMIN" && !repair.invoiceId && (
                     <Button asChild variant="outline">
                       <Link href={`/auth/invoices/new?repairId=${repair.id}`}>
                         {createInvoiceBtn}
@@ -84,11 +84,14 @@ const RepairDetailPage = async ({
                   {!repair.invoiceId && <DeleteRepairButton repairId={repair.id} />}
                 </>
               )}
-              {currentUser.role === "ADMIN" && repair.paymentStatus === "Unpaid" && (
+              {repair.paymentStatus === "Unpaid" && !repair.invoiceId && (
                 <RepairPaymentButton repairId={repair.id} />
               )}
-              {repair.status === "Closed" && (
-                <ReopenRepairButton repairId={repair.id} />
+              {repair.status === "Closed" && currentUser.role === "ADMIN" && (
+                <ReopenRepairButton
+                  repairId={repair.id}
+                  invoiceId={repair.invoiceId}
+                />
               )}
             </div>
           </div>

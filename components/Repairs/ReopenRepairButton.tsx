@@ -6,18 +6,29 @@ import { Button } from "@/components/ui/button";
 import { useLocaleData } from "@/components/General/I18nProvider";
 import { reopenRepairAction } from "@/app/actions/repairs";
 
-type Props = { repairId: number };
+type Props = {
+  repairId: number;
+  invoiceId?: number | null;
+};
 
-export default function ReopenRepairButton({ repairId }: Props) {
+export default function ReopenRepairButton({ repairId, invoiceId }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const labelsData = useLocaleData();
 
   const handleReopen = async () => {
+    const { dialogs } = labelsData.ru;
+    const invoiceWarning = invoiceId
+      ? `\n\n${dialogs.reopenRepairInvoiceWarning.replace(
+          "{invoiceId}",
+          String(invoiceId),
+        )}`
+      : "";
+
     if (
       !confirm(
-        `${labelsData.ru.dialogs.reopenRepair} ${labelsData.ru.dialogs.reopenRepairDescription}`
+        `${dialogs.reopenRepair} ${dialogs.reopenRepairDescription}${invoiceWarning}`,
       )
     ) {
       return;

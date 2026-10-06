@@ -25,21 +25,28 @@ type InvoiceActionState = {
   success: boolean;
 };
 
+const requireAdmin = async () => {
+  const user = await getCurrentUser();
+  if (!user) return { user: null, error: authMessages.authenticationRequired };
+  if (user.role !== "ADMIN") return { user: null, error: authMessages.forbidden };
+  return { user, error: null };
+};
+
 export async function saveInvoiceAction(
   prevState: SaveInvoiceState,
   action: InvoiceFormValues
 ): Promise<SaveInvoiceState> {
   const labels = await getServerLabels();
   const id = action.id;
-  const currentUser = await getCurrentUser();
+  const guard = await requireAdmin();
 
-  if (!currentUser) {
+  if (guard.error) {
     return {
       ...prevState,
       success: false,
       formData: action,
       errors: {
-        auth: [authMessages.authenticationRequired],
+        auth: [guard.error],
       },
     };
   }
@@ -145,11 +152,11 @@ export async function markInvoicePaidAction(
   invoiceId: number
 ): Promise<InvoiceActionState> {
   const labels = await getServerLabels();
-  const currentUser = await getCurrentUser();
+  const guard = await requireAdmin();
 
-  if (!currentUser) {
+  if (guard.error) {
     return {
-      error: authMessages.authenticationRequired,
+      error: guard.error,
       success: false,
     };
   }
@@ -200,11 +207,11 @@ export async function deleteInvoiceAction(
   invoiceId: number
 ): Promise<InvoiceActionState> {
   const labels = await getServerLabels();
-  const currentUser = await getCurrentUser();
+  const guard = await requireAdmin();
 
-  if (!currentUser) {
+  if (guard.error) {
     return {
-      error: authMessages.authenticationRequired,
+      error: guard.error,
       success: false,
     };
   }
