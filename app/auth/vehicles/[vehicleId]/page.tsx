@@ -6,6 +6,7 @@ import ClickableTableRow from "@/components/General/ClickableTableRow";
 import { getServerLabels } from "@/lib/i18n";
 import { requirePageUser } from "@/lib/authz";
 import { vehicleService } from "@/modules/vehicles/service";
+import VehicleActions from "@/components/Vehicles/VehicleActions";
 
 const VehicleDetailPage = async ({
   params,
@@ -37,9 +38,12 @@ const VehicleDetailPage = async ({
 
       <Card>
         <CardHeader>
-          <CardTitle>
-            {detailsTitle}: {vehicle.brand} {vehicle.model}
-          </CardTitle>
+          <div className="flex items-center justify-between gap-4">
+            <CardTitle>
+              {detailsTitle}: {vehicle.brand} {vehicle.model}
+            </CardTitle>
+            <VehicleActions vehicle={vehicle} redirectAfterDelete />
+          </div>
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-4">
           <DisplayField label={brand} value={vehicle.brand} />

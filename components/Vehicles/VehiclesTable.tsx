@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { VehicleDto } from "@/modules/vehicles/schema";
 import CreateVehicleForm from "./CreateVehicleForm";
+import VehicleActions from "./VehicleActions";
 
 type Props = {
   vehicles: VehicleDto[];
@@ -53,19 +54,20 @@ export default function VehiclesTable({ vehicles }: Props) {
         placeholder={search}
         clearLabel={clearSearch}
       />
-      <Table>
+      <Table className="w-full">
         <TableHeader>
           <TableRow>
             <TableHead>{brand}</TableHead>
             <TableHead>{model}</TableHead>
             <TableHead>{plate}</TableHead>
             <TableHead>{vin}</TableHead>
+            <TableHead className="w-[96px]" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredVehicles.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={4} className="text-center">
+              <TableCell colSpan={5} className="text-center">
                 {searchTerm ? noResults : data.ru.vehicles.noVehicles}
               </TableCell>
             </TableRow>
@@ -80,6 +82,9 @@ export default function VehiclesTable({ vehicles }: Props) {
                 <TableCell>{vehicle.model}</TableCell>
                 <TableCell>{vehicle.plate || "-"}</TableCell>
                 <TableCell>{vehicle.vin || "-"}</TableCell>
+                <TableCell className="w-[96px] text-right">
+                  <VehicleActions vehicle={vehicle} iconOnly />
+                </TableCell>
               </TableRow>
             ))
           )}

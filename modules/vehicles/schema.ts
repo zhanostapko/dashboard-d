@@ -15,8 +15,13 @@ export const vehicleSchema = z.object({
 
 export const vehicleCreateSchema = z.object(baseVehicleFields);
 
+export const vehicleUpdateSchema = vehicleCreateSchema.extend({
+  id: z.number().int().positive(),
+});
+
 export type VehicleDto = z.infer<typeof vehicleSchema>;
 export type VehicleCreateDto = z.infer<typeof vehicleCreateSchema>;
+export type VehicleUpdateDto = z.infer<typeof vehicleUpdateSchema>;
 export type VehicleOwnerDto = { id: number; name: string };
 export type VehicleDetailDto = VehicleDto & {
   owners: VehicleOwnerDto[];

@@ -3,7 +3,12 @@ import {
   toVehicleDetailDto,
   toVehicleDto,
 } from "./mappers";
-import { VehicleCreateDto, VehicleDetailDto, VehicleDto } from "./schema";
+import {
+  VehicleCreateDto,
+  VehicleDetailDto,
+  VehicleDto,
+  VehicleUpdateDto,
+} from "./schema";
 import { vehicleRepository } from "./repository";
 
 const normalizeOptionalText = (value: string | null | undefined) => {
@@ -42,6 +47,24 @@ export const vehicleService = {
     const vehicleEntity = toVehicleCreateEntity(normalizedVehicle);
     const createdVehicle = await vehicleRepository.createVehicle(vehicleEntity);
     return toVehicleDto(createdVehicle);
+  },
+  updateVehicle: async (vehicle: VehicleUpdateDto): Promise<VehicleDto | null> => {
+    const existingVehicle = await vehicleRepository.getVehicleById(vehicle.id);
+    if (!existingVehicle) return null;
+
+    const normalizedVehicle = normalizeVehicle(vehicle);
+    const updatedVehicle = await vehicleRepository.updateVehicle(
+      vehicle.id,
+      toVehicleCreateEntity(normalizedVehicle),
+    );
+    return toVehicleDto(updatedVehicle);
+  },
+  deleteVehicle: async (id: number): Promise<VehicleDto | null> => {
+    const existingVehicle = await vehicleRepository.getVehicleById(id);
+    if (!existingVehicle) return null;
+
+    const deletedVehicle = await vehicleRepository.deleteVehicle(id);
+    return toVehicleDto(deletedVehicle);
   },
   attachVehicleToClient: async (
     vehicleId: number,

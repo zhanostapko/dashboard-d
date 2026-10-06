@@ -5,7 +5,11 @@ import { authMessages } from "@/lib/auth-messages";
 import { getCurrentUser } from "@/lib/authz";
 import { vehicleService } from "@/modules/vehicles/service";
 import { getServerLabels } from "@/lib/i18n";
-import { VehicleDto, vehicleCreateSchema } from "@/modules/vehicles/schema";
+import {
+  VehicleDto,
+  vehicleCreateSchema,
+  vehicleUpdateSchema,
+} from "@/modules/vehicles/schema";
 
 type AttachVehicleState = {
   error: string | null;
@@ -30,6 +34,7 @@ export async function saveVehicleAction(
   const model = getFormValue(payload, "model");
   const plate = getFormValue(payload, "plate");
   const vin = getFormValue(payload, "vin");
+  const vehicleId = Number(payload.get("vehicleId") ?? 0);
   const vehicle = { brand, model, plate, vin };
   const currentUser = await getCurrentUser();
 
@@ -41,18 +46,36 @@ export async function saveVehicleAction(
     };
   }
 
-  const parsed = await vehicleCreateSchema.safeParseAsync(vehicle);
-  if (!parsed.success) {
-    return {
-      error: parsed.error.issues.map((issue) => issue.message).join(", "),
-      success: null,
-      vehicle,
-    };
-  }
-
   try {
-    await vehicleService.createVehicle(parsed.data);
+    if (vehicleId > 0) {
+      const parsed = await vehicleUpdateSchema.safeParseAsync({
+        ...vehicle,
+        id: vehicleId,
+      });
+      if (!parsed.success) {
+        return {
+          error: parsed.error.issues.map((issue) => issue.message).join(", "),
+          success: null,
+          vehicle,
+        };
+      }
+      const updatedVehicle = await vehicleService.updateVehicle(parsed.data);
+      if (!updatedVehicle) {
+        return { error: labels.errors.notFound, success: null, vehicle };
+      }
+    } else {
+      const parsed = await vehicleCreateSchema.safeParseAsync(vehicle);
+      if (!parsed.success) {
+        return {
+          error: parsed.error.issues.map((issue) => issue.message).join(", "),
+          success: null,
+          vehicle,
+        };
+      }
+      await vehicleService.createVehicle(parsed.data);
+    }
     revalidatePath("/auth/vehicles");
+    if (vehicleId > 0) revalidatePath(`/auth/vehicles/${vehicleId}`);
     revalidatePath("/auth/clients");
     revalidatePath("/auth/repairs/new");
     return { error: null, success: labels.common.saved, vehicle: null };
@@ -61,6 +84,39 @@ export async function saveVehicleAction(
       error: labels.errors.database ?? `Database error: ${(error as Error).message}`,
       success: null,
       vehicle,
+    };
+  }
+}
+
+export async function deleteVehicleAction(
+  vehicleId: number,
+): Promise<AttachVehicleState> {
+  const labels = await getServerLabels();
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return { error: authMessages.authenticationRequired, success: false };
+  }
+
+  if (!Number.isInteger(vehicleId) || vehicleId <= 0) {
+    return { error: labels.errors.invalid, success: false };
+  }
+
+  try {
+    const deletedVehicle = await vehicleService.deleteVehicle(vehicleId);
+    if (!deletedVehicle) {
+      return { error: labels.errors.notFound, success: false };
+    }
+
+    revalidatePath("/auth/vehicles");
+    revalidatePath("/auth/clients");
+    revalidatePath("/auth/repairs/new");
+    revalidatePath(`/auth/vehicles/${vehicleId}`);
+    return { error: null, success: true };
+  } catch (error) {
+    return {
+      error: labels.errors.deleteVehicle ?? `Database error: ${(error as Error).message}`,
+      success: false,
     };
   }
 }

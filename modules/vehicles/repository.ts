@@ -42,6 +42,18 @@ export const vehicleRepository = {
   ): Promise<Vehicle> => {
     return prisma.vehicle.create({ data: vehicle });
   },
+  updateVehicle: async (
+    id: number,
+    vehicle: Prisma.VehicleUpdateInput
+  ): Promise<Vehicle> => {
+    return prisma.vehicle.update({ where: { id }, data: vehicle });
+  },
+  deleteVehicle: async (id: number): Promise<Vehicle> => {
+    return prisma.vehicle.update({
+      where: { id },
+      data: { isDeleted: true },
+    });
+  },
   getVehiclesByClientId: async (clientId: number): Promise<Vehicle[]> => {
     return prisma.vehicle.findMany({
       where: {
