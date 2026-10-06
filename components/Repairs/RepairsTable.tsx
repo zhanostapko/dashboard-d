@@ -26,12 +26,15 @@ import { RepairDto } from "@/modules/repairs/schema";
 import { deleteRepairAction } from "@/app/actions/repairs";
 import { Trash2 } from "lucide-react";
 import RepairStatusSelect from "./RepairStatusSelect";
+import RepairPaymentSelect from "./RepairPaymentSelect";
+import EditRepairButton from "./EditRepairButton";
 
 type Props = {
   repairs: RepairDto[];
+  canManagePayment: boolean;
 };
 
-const RepairsTable = ({ repairs }: Props) => {
+const RepairsTable = ({ repairs, canManagePayment }: Props) => {
   const [repairToDelete, setRepairToDelete] = useState<RepairDto | null>(null);
   const [deletingRepairId, setDeletingRepairId] = useState<number | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -65,11 +68,15 @@ const RepairsTable = ({ repairs }: Props) => {
       repair.date,
       repair.status,
       repair.status === "Closed" ? closed : open,
+      repair.paymentStatus,
+      repair.paymentStatus === "Paid"
+        ? labelsData.ru.invoices.paid
+        : labelsData.ru.invoices.unpaid,
     ]
       .filter(Boolean)
       .join(" ")
       .toLocaleLowerCase()
-      .includes(normalizedSearch)
+      .includes(normalizedSearch),
   );
 
   const deleteRepair = async () => {
@@ -110,7 +117,10 @@ const RepairsTable = ({ repairs }: Props) => {
           <DialogHeader>
             <DialogTitle>{labelsData.ru.dialogs.deleteRepair}</DialogTitle>
             <DialogDescription>
-              {labelsData.ru.dialogs.deleteRepairDescription.replace("{client}", repairToDelete?.clientName || labelsData.ru.clients.name)}
+              {labelsData.ru.dialogs.deleteRepairDescription.replace(
+                "{client}",
+                repairToDelete?.clientName || labelsData.ru.clients.name,
+              )}
             </DialogDescription>
           </DialogHeader>
           {deleteError && <p className="text-sm text-red-500">{deleteError}</p>}
@@ -126,15 +136,14 @@ const RepairsTable = ({ repairs }: Props) => {
               disabled={deletingRepairId === repairToDelete?.id}
               onClick={deleteRepair}
             >
-              {deletingRepairId === repairToDelete?.id ? loading : deleteRepairBtn}
+              {deletingRepairId === repairToDelete?.id
+                ? loading
+                : deleteRepairBtn}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Button
-        onClick={() => router.push("/auth/repairs/new")}
-        className="mb-4"
-      >
+      <Button onClick={() => router.push("/auth/repairs/new")} className="mb-4">
         + {addRepairBtn}
       </Button>
       {deleteError && !repairToDelete && (
@@ -154,7 +163,7 @@ const RepairsTable = ({ repairs }: Props) => {
             <TableHead>{carPlate}</TableHead>
             <TableHead>{date}</TableHead>
             <TableHead>{status}</TableHead>
-            <TableHead className="text-right">{actions}</TableHead>
+            <TableHead className="w-[96px] text-right">{actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -164,47 +173,60 @@ const RepairsTable = ({ repairs }: Props) => {
                 {noResults}
               </TableCell>
             </TableRow>
-          ) : filteredRepairs.map((repair, index) => (
-            <TableRow
-              key={repair.id}
-              className="cursor-pointer"
-              onClick={() => router.push(`/auth/repairs/${repair.id}`)}
-            >
-              <TableCell className="font-medium">{index + 1}</TableCell>
-              <TableCell>{repair.clientName}</TableCell>
-              <TableCell>{repair.carPlate}</TableCell>
-              <TableCell>
-                {new Date(repair.date).toLocaleDateString("en-US")}
-              </TableCell>
-              <TableCell>
-                <RepairStatusSelect repair={repair} />
-              </TableCell>
-              <TableCell className="flex gap-2 justify-end">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  title={deleteRepairBtn}
-                  aria-label={`${deleteRepairBtn}: ${repair.clientName}`}
-                  disabled={
-                    repair.status === "Closed" ||
-                    repair.invoiceId !== null ||
-                    deletingRepairId === repair.id
-                  }
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    setRepairToDelete(repair);
-                  }}
-                >
-                  {deletingRepairId === repair.id ? (
-                    <span className="text-xs">{loading}</span>
-                  ) : (
-                    <Trash2 className="size-4 text-destructive" />
-                  )}
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          ) : (
+            filteredRepairs.map((repair, index) => (
+              <TableRow
+                key={repair.id}
+                className="cursor-pointer"
+                onClick={() => router.push(`/auth/repairs/${repair.id}`)}
+              >
+                <TableCell className="font-medium">{index + 1}</TableCell>
+                <TableCell>{repair.clientName}</TableCell>
+                <TableCell>{repair.carPlate}</TableCell>
+                <TableCell>
+                  {new Date(repair.date).toLocaleDateString("en-US")}
+                </TableCell>
+                <TableCell>
+                  <div className="inline-flex w-full gap-2">
+                    <RepairStatusSelect repair={repair} />
+                    <RepairPaymentSelect
+                      repair={repair}
+                      canManage={canManagePayment}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell className="w-[96px]">
+                  <div className="flex justify-end gap-1">
+                    {repair.status === "Open" && (
+                      <EditRepairButton repairId={repair.id} iconOnly />
+                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      title={deleteRepairBtn}
+                      aria-label={`${deleteRepairBtn}: ${repair.clientName}`}
+                      disabled={
+                        repair.status === "Closed" ||
+                        repair.invoiceId !== null ||
+                        deletingRepairId === repair.id
+                      }
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setRepairToDelete(repair);
+                      }}
+                    >
+                      {deletingRepairId === repair.id ? (
+                        <span className="text-xs">{loading}</span>
+                      ) : (
+                        <Trash2 className="size-4 text-destructive" />
+                      )}
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </>

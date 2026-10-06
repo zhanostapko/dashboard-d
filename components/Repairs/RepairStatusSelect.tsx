@@ -35,7 +35,7 @@ export default function RepairStatusSelect({ repair }: Props) {
     const confirmed = window.confirm(
       nextStatus === "Closed"
         ? `${labelsData.ru.dialogs.closeRepair} ${labelsData.ru.dialogs.closeRepairDescription}`
-        : `${labelsData.ru.dialogs.reopenRepair} ${labelsData.ru.dialogs.reopenRepairDescription}`
+        : `${labelsData.ru.dialogs.reopenRepair} ${labelsData.ru.dialogs.reopenRepairDescription}`,
     );
 
     if (!confirmed) return;
@@ -53,7 +53,7 @@ export default function RepairStatusSelect({ repair }: Props) {
         result.error ??
           (nextStatus === "Closed"
             ? labelsData.ru.errors.closeRepair
-            : labelsData.ru.errors.reopenRepair)
+            : labelsData.ru.errors.reopenRepair),
       );
       setLoading(false);
       return;
@@ -66,7 +66,7 @@ export default function RepairStatusSelect({ repair }: Props) {
 
   return (
     <div
-      className="flex min-w-[130px] flex-col gap-1"
+      className="flex min-w-[130px] flex-col flex-1 gap-1"
       onClick={(event) => event.stopPropagation()}
     >
       <Select
@@ -76,7 +76,10 @@ export default function RepairStatusSelect({ repair }: Props) {
         }
         disabled={loading}
       >
-        <SelectTrigger className="w-full" aria-label={labelsData.ru.repairs.status}>
+        <SelectTrigger
+          className="w-full"
+          aria-label={labelsData.ru.repairs.status}
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -84,7 +87,9 @@ export default function RepairStatusSelect({ repair }: Props) {
           <SelectItem value="Closed">{closed}</SelectItem>
         </SelectContent>
       </Select>
-      {loading && <span className="text-xs text-muted-foreground">{loadingLabel}</span>}
+      {loading && (
+        <span className="text-xs text-muted-foreground">{loadingLabel}</span>
+      )}
       {error && <span className="text-xs text-red-500">{error}</span>}
     </div>
   );

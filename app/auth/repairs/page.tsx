@@ -6,12 +6,12 @@ import { requirePageUser } from "@/lib/authz";
 import { repairService } from "@/modules/repairs/service";
 
 const RepairsPage = async () => {
-  await requirePageUser();
+  const currentUser = await requirePageUser();
   const labels = await getServerLabels();
 
   try {
     const repairs = await repairService.getAllRepairs();
-    return <RepairsTable repairs={repairs} />;
+    return <RepairsTable repairs={repairs} canManagePayment={currentUser.role === "ADMIN"} />;
   } catch (error) {
     console.error("Failed to load repairs:", error);
     return (

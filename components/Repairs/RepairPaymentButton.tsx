@@ -13,6 +13,14 @@ export default function RepairPaymentButton({ repairId }: { repairId: number }) 
   const [error, setError] = useState<string | null>(null);
 
   const markPaid = async () => {
+    if (
+      !window.confirm(
+        `${labels.dialogs.payRepair} ${labels.dialogs.payRepairDescription}`
+      )
+    ) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
     const result = await markRepairPaidAction(repairId);

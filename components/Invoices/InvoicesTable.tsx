@@ -13,22 +13,19 @@ import { useRouter } from "next/navigation";
 import { useLocaleData } from "@/components/General/I18nProvider";
 import TableSearch from "@/components/General/TableSearch";
 import { InvoiceDto } from "@/modules/invoices/schema";
-import { markInvoicePaidAction } from "@/app/actions/invoices";
+import InvoicePaymentSelect from "./InvoicePaymentSelect";
 
 type Props = {
   data: InvoiceDto[];
 };
 
 const InvoicesTable = ({ data }: Props) => {
-  const [loadingInvoiceId, setLoadingInvoiceId] = useState<number | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const labelsData = useLocaleData();
 
   const {
     addInvoiceBtn,
-    actions,
     carPlate,
     clientName,
     date,
@@ -36,11 +33,7 @@ const InvoicesTable = ({ data }: Props) => {
     status,
     nr,
     total,
-    unpaid,
-    paid,
-    paidBtn,
     noInvoicesFound,
-    sending,
   } = labelsData.ru.invoices;
   const { clearSearch, noResults, search } = labelsData.ru.common;
   const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
@@ -58,24 +51,6 @@ const InvoicesTable = ({ data }: Props) => {
       .toLocaleLowerCase()
       .includes(normalizedSearch)
   );
-  const statusChangeHandler = async (
-    event: React.MouseEvent<HTMLButtonElement>,
-    invoiceId: number
-  ) => {
-    event?.stopPropagation();
-    setLoadingInvoiceId(invoiceId);
-    const result = await markInvoicePaidAction(invoiceId);
-
-    if (!result.success) {
-      setError(result.error ?? labelsData.ru.errors.updateInvoice);
-      setLoadingInvoiceId(null);
-      return;
-    }
-    setError(null);
-    setLoadingInvoiceId(null);
-    router.refresh();
-  };
-
   return (
     <>
       <Button
@@ -84,7 +59,6 @@ const InvoicesTable = ({ data }: Props) => {
       >
         + {addInvoiceBtn}
       </Button>
-      {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
       <TableSearch
         value={searchTerm}
         onChange={setSearchTerm}
@@ -102,13 +76,12 @@ const InvoicesTable = ({ data }: Props) => {
             <TableHead>{date}</TableHead>
             <TableHead>{status}</TableHead>
             <TableHead>{total}</TableHead>
-            <TableHead className="text-right">{actions}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredInvoices.length === 0 && (
             <TableRow className="text-center">
-              <TableCell colSpan={8}>
+              <TableCell colSpan={7}>
                 {searchTerm ? noResults : noInvoicesFound}
               </TableCell>
             </TableRow>
@@ -130,21 +103,10 @@ const InvoicesTable = ({ data }: Props) => {
                   ) /* or any format */
                 }
               </TableCell>
-              <TableCell>{invoice.status === "Paid" ? paid : unpaid}</TableCell>
-              <TableCell>{invoice.total}</TableCell>
-              <TableCell className="flex gap-4 justify-end">
-                <Button
-                  disabled={
-                    invoice.status === "Paid" || loadingInvoiceId === invoice.id
-                  }
-                  onClick={(event) => statusChangeHandler(event, invoice.id)}
-                  variant="outline"
-                >
-                  {loadingInvoiceId === invoice.id
-                    ? sending
-                    : `${paidBtn}`}
-                </Button>
+              <TableCell>
+                <InvoicePaymentSelect invoice={invoice} />
               </TableCell>
+              <TableCell>{invoice.total}</TableCell>
             </TableRow>
           ))}
         </TableBody>

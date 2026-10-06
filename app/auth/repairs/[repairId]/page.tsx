@@ -84,6 +84,9 @@ const RepairDetailPage = async ({
                   {!repair.invoiceId && <DeleteRepairButton repairId={repair.id} />}
                 </>
               )}
+              {currentUser.role === "ADMIN" && repair.paymentStatus === "Unpaid" && (
+                <RepairPaymentButton repairId={repair.id} />
+              )}
               {repair.status === "Closed" && (
                 <ReopenRepairButton repairId={repair.id} />
               )}
@@ -142,11 +145,6 @@ const RepairDetailPage = async ({
                     {invoiceAttached}: #{repair.invoiceId}
                   </Link>
                 </Button>
-              </div>
-            )}
-            {currentUser.role === "ADMIN" && repair.paymentStatus === "Unpaid" && (
-              <div className="mt-4">
-                <RepairPaymentButton repairId={repair.id} />
               </div>
             )}
           </section>
