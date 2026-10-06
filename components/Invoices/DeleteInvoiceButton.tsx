@@ -35,6 +35,7 @@ const DeleteInvoiceButton = ({ invoice }: Props) => {
     <div className="space-y-2">
       <Button
         disabled={isLoading || invoice.status === "Paid"}
+        variant="destructive"
         onClick={() => {
           deleteInvoice(invoice.id);
         }}

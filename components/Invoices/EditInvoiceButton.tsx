@@ -23,7 +23,6 @@ const EditInvoiceButton = ({ invoice }: Props) => {
         if (invoice.status === "Paid") return;
         router.push(`/auth/invoices/${invoice.id}/edit`);
       }}
-      className="mb-4"
     >
       {editLabel}
     </Button>

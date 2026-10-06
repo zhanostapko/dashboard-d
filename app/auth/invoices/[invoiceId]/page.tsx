@@ -47,9 +47,9 @@ const InvoiceDetailPage = async ({
       </div>
       <Card className="p-6">
         <CardContent className="space-y-6">
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-2xl font-bold mb-1">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold">
               {formInvoiceNumber} {invoice.number}
             </h2>
             {invoice.repairId && (
@@ -60,23 +60,20 @@ const InvoiceDetailPage = async ({
                 Ремонт #{invoice.repairId}
               </Link>
             )}
-            <div className="flex gap-2 justify-between">
-              <GeneratePDFButtonLazy invoice={invoice} />
-              <div className="flex gap-2">
-                <EditInvoiceButton invoice={invoice} />
-                <DeleteInvoiceButton invoice={invoice} />
+            <div>
+              <label className="mb-1 block text-sm font-semibold">{date}*</label>
+              <div className="flex min-w-[250px] items-center rounded-md border bg-white px-3 py-2 shadow-sm">
+                <span className="font-medium text-gray-800">
+                  {format(new Date(invoice.date), "MM/dd/yyyy")}
+                </span>
+                <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
               </div>
             </div>
           </div>
-
-          <div className="flex flex-col">
-            <label className="font-semibold text-sm mb-1">{date}*</label>
-            <div className="flex items-center border rounded-md px-3 py-2 min-w-[250px] bg-white shadow-sm">
-              <span className="text-gray-800 font-medium">
-                {format(new Date(invoice.date), "MM/dd/yyyy")}
-              </span>
-              <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
-            </div>
+          <div className="flex flex-wrap justify-end gap-2">
+            <GeneratePDFButtonLazy invoice={invoice} />
+            <EditInvoiceButton invoice={invoice} />
+            <DeleteInvoiceButton invoice={invoice} />
           </div>
         </div>
 
