@@ -98,7 +98,7 @@ export default function RepairWorkersEditor({ repair, users, canManage }: Props)
     <section className="border-t pt-6">
       <h2 className="mb-4 text-lg font-semibold">{labels.earnings.workerSummary}</h2>
       {repair.workers.length === 0 && !canManage ? (
-        <p className="text-sm text-muted-foreground">{labels.earnings.noResults}</p>
+        <p className="text-sm text-muted-foreground">{labels.earnings.noWorkersAssigned}</p>
       ) : (
         <div className="space-y-3">
           {workers.map((worker) => {
