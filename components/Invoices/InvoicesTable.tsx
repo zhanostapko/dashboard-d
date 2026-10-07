@@ -14,6 +14,7 @@ import { useLocaleData } from "@/components/General/I18nProvider";
 import TableSearch from "@/components/General/TableSearch";
 import { InvoiceDto } from "@/modules/invoices/schema";
 import InvoicePaymentSelect from "./InvoicePaymentSelect";
+import InvoiceActions from "./InvoiceActions";
 
 type Props = {
   data: InvoiceDto[];
@@ -35,6 +36,7 @@ const InvoicesTable = ({ data, canManage }: Props) => {
     nr,
     total,
     noInvoicesFound,
+    actions,
   } = labelsData.ru.invoices;
   const { clearSearch, noResults, search } = labelsData.ru.common;
   const normalizedSearch = searchTerm.trim().toLocaleLowerCase();
@@ -79,12 +81,15 @@ const InvoicesTable = ({ data, canManage }: Props) => {
             <TableHead>{date}</TableHead>
             <TableHead>{status}</TableHead>
             <TableHead>{total}</TableHead>
+            {canManage && (
+              <TableHead className="w-[96px] text-right">{actions}</TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
           {filteredInvoices.length === 0 && (
             <TableRow className="text-center">
-              <TableCell colSpan={7}>
+              <TableCell colSpan={canManage ? 8 : 7}>
                 {searchTerm ? noResults : noInvoicesFound}
               </TableCell>
             </TableRow>
@@ -110,6 +115,11 @@ const InvoicesTable = ({ data, canManage }: Props) => {
                 <InvoicePaymentSelect invoice={invoice} canManage={canManage} />
               </TableCell>
               <TableCell>{invoice.total}</TableCell>
+              {canManage && (
+                <TableCell className="w-[96px]">
+                  <InvoiceActions invoice={invoice} />
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
