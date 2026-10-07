@@ -25,7 +25,7 @@ import { deleteUserAction } from "@/app/actions/users";
 import CreateUserForm from "./CreateUserForm/CreateUserForm";
 import { useRouter } from "next/navigation";
 import { UserDto } from "@/modules/users/schema";
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 type Props = {
   currentUserId: number;
@@ -157,22 +157,10 @@ const UsersTable = ({ currentUserId, users }: Props) => {
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.surname}</TableCell>
               <TableCell className="w-[96px]">
-                <div className="flex justify-end gap-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    title={data.ru.user.editUserBtn}
-                    aria-label={`${data.ru.user.editUserBtn}: ${user.email}`}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setSelectedUser(user);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <Pencil className="size-4" />
-                    <span className="sr-only">{data.ru.user.editUserBtn}</span>
-                  </Button>
+                <div
+                  className="flex justify-end gap-1"
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <Button
                     type="button"
                     variant="ghost"
