@@ -90,6 +90,8 @@ const UsersTable = ({ currentUserId, users }: Props) => {
         onOpenChange={(open) => {
           if (!open) {
             setUserToDelete(null);
+            setDeleteError(null);
+            setDeletingUserId(null);
           }
         }}
       >
@@ -101,6 +103,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
               действие нельзя отменить из интерфейса.
             </DialogDescription>
           </DialogHeader>
+          {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
           <DialogFooter>
             <DialogClose asChild>
               <Button type="button" variant="outline">
@@ -127,7 +130,6 @@ const UsersTable = ({ currentUserId, users }: Props) => {
       >
         + {data.ru.user.createUser}
       </Button>
-      {deleteError && <p className="mb-4 text-sm text-red-500">{deleteError}</p>}
       <Table>
         <TableHeader>
           <TableRow>
@@ -170,6 +172,7 @@ const UsersTable = ({ currentUserId, users }: Props) => {
                     disabled={deletingUserId === user.id || user.id === currentUserId}
                     onClick={(event) => {
                       event.stopPropagation();
+                      setDeleteError(null);
                       setUserToDelete(user);
                     }}
                   >
