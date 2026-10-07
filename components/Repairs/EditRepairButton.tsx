@@ -2,9 +2,9 @@
 
 import React from "react";
 import { Pencil } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLocaleData } from "@/components/General/I18nProvider";
+import { useNavigationProgress } from "@/components/General/NavigationProgress";
 
 type Props = {
   repairId: number;
@@ -12,7 +12,7 @@ type Props = {
 };
 
 const EditRepairButton = ({ repairId, iconOnly = false }: Props) => {
-  const router = useRouter();
+  const { navigate } = useNavigationProgress();
   const labelsData = useLocaleData();
 
   return (
@@ -24,7 +24,7 @@ const EditRepairButton = ({ repairId, iconOnly = false }: Props) => {
       aria-label={labelsData.ru.repairs.editRepairBtn}
       onClick={(event) => {
         event.stopPropagation();
-        router.push(`/auth/repairs/${repairId}/edit`);
+        navigate(`/auth/repairs/${repairId}/edit`);
       }}
     >
       {iconOnly ? (

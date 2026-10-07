@@ -28,6 +28,7 @@ import { Trash2 } from "lucide-react";
 import RepairStatusSelect from "./RepairStatusSelect";
 import RepairPaymentSelect from "./RepairPaymentSelect";
 import EditRepairButton from "./EditRepairButton";
+import { useNavigationProgress } from "@/components/General/NavigationProgress";
 
 type Props = {
   repairs: RepairDto[];
@@ -41,6 +42,7 @@ const RepairsTable = ({ repairs, canManagePayment, canReopen }: Props) => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const { navigate } = useNavigationProgress();
   const labelsData = useLocaleData();
 
   const {
@@ -144,7 +146,7 @@ const RepairsTable = ({ repairs, canManagePayment, canReopen }: Props) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Button onClick={() => router.push("/auth/repairs/new")} className="mb-4">
+      <Button onClick={() => navigate("/auth/repairs/new")} className="mb-4">
         + {addRepairBtn}
       </Button>
       {deleteError && !repairToDelete && (
@@ -179,7 +181,7 @@ const RepairsTable = ({ repairs, canManagePayment, canReopen }: Props) => {
               <TableRow
                 key={repair.id}
                 className="cursor-pointer"
-                onClick={() => router.push(`/auth/repairs/${repair.id}`)}
+                onClick={() => navigate(`/auth/repairs/${repair.id}`)}
               >
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{repair.clientName}</TableCell>

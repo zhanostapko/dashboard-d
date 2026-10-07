@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
 import { useLocaleData } from "@/components/General/I18nProvider";
 import { InvoiceDto, InvoiceItemDto } from "@/modules/invoices/schema";
+import { useNavigationProgress } from "@/components/General/NavigationProgress";
 
 type Props = {
   invoice: InvoiceDto & {
@@ -12,7 +12,7 @@ type Props = {
 };
 
 const EditInvoiceButton = ({ invoice }: Props) => {
-  const router = useRouter();
+  const { navigate } = useNavigationProgress();
   const data = useLocaleData();
   const editLabel = data.ru.invoices.invoiceForm.editInvoiceButton;
 
@@ -21,7 +21,7 @@ const EditInvoiceButton = ({ invoice }: Props) => {
       disabled={invoice.status === "Paid"}
       onClick={() => {
         if (invoice.status === "Paid") return;
-        router.push(`/auth/invoices/${invoice.id}/edit`);
+        navigate(`/auth/invoices/${invoice.id}/edit`);
       }}
     >
       {editLabel}

@@ -17,6 +17,7 @@ import {
 import { VehicleDto } from "@/modules/vehicles/schema";
 import CreateVehicleForm from "./CreateVehicleForm";
 import VehicleActions from "./VehicleActions";
+import { useNavigationProgress } from "@/components/General/NavigationProgress";
 
 type Props = {
   vehicles: VehicleDto[];
@@ -26,6 +27,7 @@ export default function VehiclesTable({ vehicles }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const { navigate } = useNavigationProgress();
   const data = useLocaleData();
   const { brand, model, plate, vin } = data.ru.repairs.repairForm.carInformation;
   const { clearSearch, noResults, search } = data.ru.common;
@@ -76,7 +78,7 @@ export default function VehiclesTable({ vehicles }: Props) {
               <TableRow
                 key={vehicle.id}
                 className="cursor-pointer"
-                onClick={() => router.push(`/auth/vehicles/${vehicle.id}`)}
+                onClick={() => navigate(`/auth/vehicles/${vehicle.id}`)}
               >
                 <TableCell className="font-medium">{vehicle.brand}</TableCell>
                 <TableCell>{vehicle.model}</TableCell>

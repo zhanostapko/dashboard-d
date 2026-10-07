@@ -27,6 +27,7 @@ import { ClientDto } from "@/modules/clients/schema";
 import CreateClientForm from "./CreateClientForm/CreateClientForm";
 import { deleteClientAction } from "@/app/actions/clients";
 import { Pencil, Trash2 } from "lucide-react";
+import { useNavigationProgress } from "@/components/General/NavigationProgress";
 
 type Props = {
   clients: ClientDto[];
@@ -40,6 +41,7 @@ const ClientsTable = ({ clients }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const { navigate } = useNavigationProgress();
   const data = useLocaleData();
 
   const {
@@ -173,7 +175,7 @@ const ClientsTable = ({ clients }: Props) => {
             <TableRow
               key={client.id}
               className="cursor-pointer"
-              onClick={() => router.push(`/auth/clients/${client.id}`)}
+              onClick={() => navigate(`/auth/clients/${client.id}`)}
             >
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{client.name}</TableCell>

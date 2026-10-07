@@ -15,6 +15,7 @@ import TableSearch from "@/components/General/TableSearch";
 import { InvoiceDto } from "@/modules/invoices/schema";
 import InvoicePaymentSelect from "./InvoicePaymentSelect";
 import InvoiceActions from "./InvoiceActions";
+import { useNavigationProgress } from "@/components/General/NavigationProgress";
 
 type Props = {
   data: InvoiceDto[];
@@ -24,6 +25,7 @@ type Props = {
 const InvoicesTable = ({ data, canManage }: Props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const { navigate } = useNavigationProgress();
   const labelsData = useLocaleData();
 
   const {
@@ -58,7 +60,7 @@ const InvoicesTable = ({ data, canManage }: Props) => {
     <>
       {canManage && (
         <Button
-          onClick={() => router.push("/auth/invoices/new")}
+          onClick={() => navigate("/auth/invoices/new")}
           className="mb-4"
         >
           + {addInvoiceBtn}
@@ -98,7 +100,7 @@ const InvoicesTable = ({ data, canManage }: Props) => {
             <TableRow
               className="cursor-pointer"
               key={invoice.id}
-              onClick={() => router.push(`/auth/invoices/${invoice.id}`)}
+              onClick={() => navigate(`/auth/invoices/${invoice.id}`)}
             >
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>{invoice.number}</TableCell>

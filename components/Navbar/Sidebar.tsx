@@ -36,8 +36,8 @@ const Sidebar = ({ role }: SidebarProps) => {
     pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <Command className="bg-secondary rounded-none" data-role={role}>
-      <CommandList>
+    <Command className="h-full min-h-full rounded-none bg-secondary" data-role={role}>
+      <CommandList className="max-h-none flex-1">
         <CommandGroup heading={data.ru.common.menu}>
           {sections.map((section) => {
             const Icon = sectionIcons[section.id];
