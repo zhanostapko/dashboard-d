@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { useNavigationProgress } from "./NavigationProgress";
 
 type ClickableTableRowProps = {
   href: string;
@@ -12,9 +12,8 @@ const ClickableTableRow = ({
   href,
   children,
 }: ClickableTableRowProps) => {
-  const router = useRouter();
-
-  const navigate = () => router.push(href);
+  const { navigate: navigateTo } = useNavigationProgress();
+  const navigate = () => navigateTo(href);
 
   return (
     <tr

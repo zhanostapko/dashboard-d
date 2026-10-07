@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar/Navbar";
 import Sidebar from "@/components/Navbar/Sidebar";
 import { requirePageUser } from "@/lib/authz";
+import { NavigationProgressProvider } from "@/components/General/NavigationProgress";
 
 import React from "react";
 
@@ -14,15 +15,17 @@ const MainPage = async ({ children }: Props) => {
   const user = await requirePageUser();
 
   return (
-    <div>
-      <Navbar />
-      <main className="flex">
-        <div className="hidden md:block h-[100vh] w-[300px]">
-          <Sidebar role={user.role} />
-        </div>
-        <div className="p-5 w-full md:max-w-[1140px]">{children}</div>
-      </main>
-    </div>
+    <NavigationProgressProvider>
+      <div>
+        <Navbar />
+        <main className="flex">
+          <div className="hidden md:block h-[100vh] w-[300px]">
+            <Sidebar role={user.role} />
+          </div>
+          <div className="p-5 w-full md:max-w-[1140px]">{children}</div>
+        </main>
+      </div>
+    </NavigationProgressProvider>
   );
 };
 

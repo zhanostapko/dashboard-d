@@ -8,6 +8,7 @@ import { useLocaleData } from "@/components/General/I18nProvider";
 import { Button } from "@/components/ui/button";
 import { InvoiceDto } from "@/modules/invoices/schema";
 import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
+import { useNavigationProgress } from "@/components/General/NavigationProgress";
 
 type Props = {
   invoice: InvoiceDto;
@@ -15,6 +16,7 @@ type Props = {
 
 export default function InvoiceActions({ invoice }: Props) {
   const router = useRouter();
+  const { navigate } = useNavigationProgress();
   const labels = useLocaleData().ru;
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -48,7 +50,7 @@ export default function InvoiceActions({ invoice }: Props) {
         size="icon"
         title={labels.invoices.invoiceForm.editInvoiceButton}
         aria-label={`${labels.invoices.invoiceForm.editInvoiceButton}: ${invoice.number}`}
-        onClick={() => router.push(`/auth/invoices/${invoice.id}/edit`)}
+        onClick={() => navigate(`/auth/invoices/${invoice.id}/edit`)}
       >
         <Pencil className="size-4" />
         <span className="sr-only">
