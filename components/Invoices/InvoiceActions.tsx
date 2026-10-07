@@ -7,6 +7,7 @@ import { deleteInvoiceAction } from "@/app/actions/invoices";
 import { useLocaleData } from "@/components/General/I18nProvider";
 import { Button } from "@/components/ui/button";
 import { InvoiceDto } from "@/modules/invoices/schema";
+import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
 type Props = {
   invoice: InvoiceDto;
@@ -16,13 +17,12 @@ export default function InvoiceActions({ invoice }: Props) {
   const router = useRouter();
   const labels = useLocaleData().ru;
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (invoice.status === "Paid") return null;
 
   const deleteInvoice = async () => {
-    if (!window.confirm(labels.dialogs.deleteInvoice)) return;
-
     setIsDeleting(true);
     setError(null);
     const result = await deleteInvoiceAction(invoice.id);
@@ -33,6 +33,7 @@ export default function InvoiceActions({ invoice }: Props) {
       return;
     }
 
+    setDeleteOpen(false);
     router.refresh();
   };
 
@@ -61,7 +62,7 @@ export default function InvoiceActions({ invoice }: Props) {
         title={labels.invoices.invoiceForm.deleteInvoiceButton}
         aria-label={`${labels.invoices.invoiceForm.deleteInvoiceButton}: ${invoice.number}`}
         disabled={isDeleting}
-        onClick={deleteInvoice}
+        onClick={() => setDeleteOpen(true)}
       >
         {isDeleting ? (
           <span className="text-xs">{labels.invoices.deleting}</span>
@@ -69,7 +70,21 @@ export default function InvoiceActions({ invoice }: Props) {
           <Trash2 className="size-4 text-destructive" />
         )}
       </Button>
-      {error && <span className="sr-only" role="alert">{error}</span>}
+      <ConfirmActionDialog
+        open={deleteOpen}
+        onOpenChange={(open) => {
+          setDeleteOpen(open);
+          if (!open) setError(null);
+        }}
+        title={labels.dialogs.deleteInvoice}
+        description={labels.invoices.invoiceForm.deleteInvoiceButton}
+        cancelLabel={labels.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={labels.invoices.invoiceForm.deleteInvoiceButton}
+        isPending={isDeleting}
+        error={error}
+        destructive
+        onConfirm={deleteInvoice}
+      />
     </div>
   );
 }

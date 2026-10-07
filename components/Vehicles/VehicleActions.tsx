@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VehicleDto } from "@/modules/vehicles/schema";
 import CreateVehicleForm from "./CreateVehicleForm";
+import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
 type Props = {
   vehicle: VehicleDto;
@@ -24,18 +25,11 @@ export default function VehicleActions({
   const router = useRouter();
   const labels = useLocaleData().ru;
   const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const deleteVehicle = async () => {
-    if (
-      !window.confirm(
-        `${labels.vehicles.deleteBtn}? ${labels.vehicles.deleteDescription}`
-      )
-    ) {
-      return;
-    }
-
     setIsDeleting(true);
     setError(null);
     const result = await deleteVehicleAction(vehicle.id);
@@ -47,12 +41,14 @@ export default function VehicleActions({
     }
 
     if (redirectAfterDelete) {
+      setDeleteOpen(false);
       router.push("/auth/vehicles");
       return;
     }
 
     router.refresh();
     setIsDeleting(false);
+    setDeleteOpen(false);
   };
 
   return (
@@ -93,7 +89,7 @@ export default function VehicleActions({
           title={iconOnly ? labels.vehicles.deleteBtn : undefined}
         aria-label={labels.vehicles.deleteBtn}
         disabled={isDeleting}
-        onClick={deleteVehicle}
+        onClick={() => setDeleteOpen(true)}
       >
         {isDeleting ? (
           <span className="text-xs">{labels.vehicles.deleting}</span>
@@ -103,7 +99,21 @@ export default function VehicleActions({
           labels.vehicles.deleteBtn
         )}
       </Button>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      <ConfirmActionDialog
+        open={deleteOpen}
+        onOpenChange={(open) => {
+          setDeleteOpen(open);
+          if (!open) setError(null);
+        }}
+        title={labels.vehicles.deleteBtn}
+        description={labels.vehicles.deleteDescription}
+        cancelLabel={labels.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={labels.vehicles.deleteBtn}
+        isPending={isDeleting}
+        error={error}
+        destructive
+        onConfirm={deleteVehicle}
+      />
     </div>
   );
 }

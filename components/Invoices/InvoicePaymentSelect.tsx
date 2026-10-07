@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { InvoiceDto } from "@/modules/invoices/schema";
+import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
 type Props = {
   invoice: Pick<InvoiceDto, "id" | "status">;
@@ -23,23 +24,19 @@ export default function InvoicePaymentSelect({ invoice, canManage }: Props) {
   const labels = useLocaleData().ru;
   const [status, setStatus] = useState(invoice.status);
   const [loading, setLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setStatus(invoice.status);
   }, [invoice.status]);
 
-  const handleStatusChange = async (nextStatus: InvoiceDto["status"]) => {
+  const handleStatusChange = (nextStatus: InvoiceDto["status"]) => {
     if (nextStatus === status || nextStatus !== "Paid") return;
+    setConfirmOpen(true);
+  };
 
-    if (
-      !window.confirm(
-        `${labels.dialogs.payInvoice} ${labels.dialogs.payInvoiceDescription}`
-      )
-    ) {
-      return;
-    }
-
+  const markPaid = async () => {
     setLoading(true);
     setError(null);
     const result = await markInvoicePaidAction(invoice.id);
@@ -52,6 +49,7 @@ export default function InvoicePaymentSelect({ invoice, canManage }: Props) {
 
     setStatus("Paid");
     setLoading(false);
+    setConfirmOpen(false);
     router.refresh();
   };
 
@@ -76,7 +74,20 @@ export default function InvoicePaymentSelect({ invoice, canManage }: Props) {
         </SelectContent>
       </Select>
       {loading && <span className="text-xs text-muted-foreground">{labels.invoices.sending}</span>}
-      {error && <span className="text-xs text-red-500">{error}</span>}
+      <ConfirmActionDialog
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          setConfirmOpen(open);
+          if (!open) setError(null);
+        }}
+        title={labels.dialogs.payInvoice}
+        description={labels.dialogs.payInvoiceDescription}
+        cancelLabel={labels.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={labels.invoices.paidBtn}
+        isPending={loading}
+        error={error}
+        onConfirm={markPaid}
+      />
     </div>
   );
 }

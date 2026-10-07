@@ -5,22 +5,16 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useLocaleData } from "@/components/General/I18nProvider";
 import { markRepairPaidAction } from "@/app/actions/repairs";
+import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
 export default function RepairPaymentButton({ repairId }: { repairId: number }) {
   const router = useRouter();
   const labels = useLocaleData().ru;
   const [loading, setLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const markPaid = async () => {
-    if (
-      !window.confirm(
-        `${labels.dialogs.payRepair} ${labels.dialogs.payRepairDescription}`
-      )
-    ) {
-      return;
-    }
-
     setLoading(true);
     setError(null);
     const result = await markRepairPaidAction(repairId);
@@ -29,15 +23,29 @@ export default function RepairPaymentButton({ repairId }: { repairId: number }) 
       setLoading(false);
       return;
     }
+    setConfirmOpen(false);
     router.refresh();
   };
 
   return (
-    <div className="space-y-2">
-      <Button type="button" variant="outline" disabled={loading} onClick={markPaid}>
+    <>
+      <Button type="button" variant="outline" disabled={loading} onClick={() => setConfirmOpen(true)}>
         {loading ? labels.repairs.loading : labels.invoices.paidBtn}
       </Button>
-      {error && <p className="text-sm text-red-500">{error}</p>}
-    </div>
+      <ConfirmActionDialog
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          setConfirmOpen(open);
+          if (!open) setError(null);
+        }}
+        title={labels.dialogs.payRepair}
+        description={labels.dialogs.payRepairDescription}
+        cancelLabel={labels.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={labels.invoices.paidBtn}
+        isPending={loading}
+        error={error}
+        onConfirm={markPaid}
+      />
+    </>
   );
 }

@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RepairDto } from "@/modules/repairs/schema";
+import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
 type Props = {
   repair: Pick<RepairDto, "id" | "paymentStatus" | "invoiceId">;
@@ -26,25 +27,21 @@ export default function RepairPaymentSelect({
   const labels = useLocaleData().ru;
   const [paymentStatus, setPaymentStatus] = useState(repair.paymentStatus);
   const [loading, setLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setPaymentStatus(repair.paymentStatus);
   }, [repair.paymentStatus]);
 
-  const handlePaymentChange = async (
+  const handlePaymentChange = (
     nextStatus: RepairDto["paymentStatus"],
   ) => {
     if (nextStatus === paymentStatus || nextStatus !== "Paid") return;
+    setConfirmOpen(true);
+  };
 
-    if (
-      !window.confirm(
-        `${labels.dialogs.payRepair} ${labels.dialogs.payRepairDescription}`,
-      )
-    ) {
-      return;
-    }
-
+  const markPaid = async () => {
     setLoading(true);
     setError(null);
     const result = await markRepairPaidAction(repair.id);
@@ -57,6 +54,7 @@ export default function RepairPaymentSelect({
 
     setPaymentStatus("Paid");
     setLoading(false);
+    setConfirmOpen(false);
     router.refresh();
   };
 
@@ -90,7 +88,20 @@ export default function RepairPaymentSelect({
           {labels.repairs.loading}
         </span>
       )}
-      {error && <span className="text-xs text-red-500">{error}</span>}
+      <ConfirmActionDialog
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          setConfirmOpen(open);
+          if (!open) setError(null);
+        }}
+        title={labels.dialogs.payRepair}
+        description={labels.dialogs.payRepairDescription}
+        cancelLabel={labels.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={labels.invoices.paidBtn}
+        isPending={loading}
+        error={error}
+        onConfirm={markPaid}
+      />
     </div>
   );
 }

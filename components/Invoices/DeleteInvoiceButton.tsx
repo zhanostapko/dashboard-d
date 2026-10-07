@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { InvoiceWithDetails } from "@/types/invoice";
 import { useLocaleData } from "@/components/General/I18nProvider";
 import { deleteInvoiceAction } from "@/app/actions/invoices";
+import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
 type Props = {
   invoice: InvoiceWithDetails;
@@ -13,6 +14,7 @@ type Props = {
 const DeleteInvoiceButton = ({ invoice }: Props) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const data = useLocaleData();
   const deleteLabel = data.ru.invoices.invoiceForm.deleteInvoiceButton;
@@ -29,21 +31,34 @@ const DeleteInvoiceButton = ({ invoice }: Props) => {
     }
     setError(null);
     setIsLoading(false);
+    setIsOpen(false);
     router.push("/auth/invoices");
   };
   return (
-    <div className="space-y-2">
+    <>
       <Button
         disabled={isLoading || invoice.status === "Paid"}
         variant="destructive"
-        onClick={() => {
-          deleteInvoice(invoice.id);
-        }}
+        onClick={() => setIsOpen(true)}
       >
         {isLoading ? deletingLabel : `${deleteLabel}`}
       </Button>
-      {error && <p className="text-sm text-red-500">{error}</p>}
-    </div>
+      <ConfirmActionDialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+          if (!open) setError(null);
+        }}
+        title={data.ru.dialogs.deleteInvoice}
+        description={deleteLabel}
+        cancelLabel={data.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={deleteLabel}
+        isPending={isLoading}
+        error={error}
+        destructive
+        onConfirm={() => deleteInvoice(invoice.id)}
+      />
+    </>
   );
 };
 

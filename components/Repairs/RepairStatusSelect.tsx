@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RepairDto } from "@/modules/repairs/schema";
+import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
 type Props = {
   repair: RepairDto;
@@ -23,6 +24,7 @@ export default function RepairStatusSelect({ repair, canReopen }: Props) {
   const labelsData = useLocaleData();
   const [status, setStatus] = useState<RepairDto["status"]>(repair.status);
   const [loading, setLoading] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<RepairDto["status"] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { closed, loading: loadingLabel, open } = labelsData.ru.repairs;
 
@@ -30,38 +32,27 @@ export default function RepairStatusSelect({ repair, canReopen }: Props) {
     setStatus(repair.status);
   }, [repair.status]);
 
-  const handleStatusChange = async (nextStatus: RepairDto["status"]) => {
+  const handleStatusChange = (nextStatus: RepairDto["status"]) => {
     if (nextStatus === status) return;
     if (nextStatus === "Open" && !canReopen) return;
+    setPendingStatus(nextStatus);
+  };
 
-    const { dialogs } = labelsData.ru;
-    const invoiceWarning =
-      nextStatus === "Open" && repair.invoiceId
-        ? `\n\n${dialogs.reopenRepairInvoiceWarning.replace(
-            "{invoiceId}",
-            String(repair.invoiceId),
-          )}`
-        : "";
-    const confirmed = window.confirm(
-      nextStatus === "Closed"
-        ? `${dialogs.closeRepair} ${dialogs.closeRepairDescription}`
-        : `${dialogs.reopenRepair} ${dialogs.reopenRepairDescription}${invoiceWarning}`,
-    );
-
-    if (!confirmed) return;
+  const confirmStatusChange = async () => {
+    if (!pendingStatus) return;
 
     setLoading(true);
     setError(null);
 
     const result =
-      nextStatus === "Closed"
+      pendingStatus === "Closed"
         ? await closeRepairAction(repair.id)
         : await reopenRepairAction(repair.id);
 
     if (!result.success) {
       setError(
         result.error ??
-          (nextStatus === "Closed"
+          (pendingStatus === "Closed"
             ? labelsData.ru.errors.closeRepair
             : labelsData.ru.errors.reopenRepair),
       );
@@ -69,10 +60,33 @@ export default function RepairStatusSelect({ repair, canReopen }: Props) {
       return;
     }
 
-    setStatus(nextStatus);
+    setStatus(pendingStatus);
     setLoading(false);
+    setPendingStatus(null);
     router.refresh();
   };
+
+  const dialogTitle =
+    pendingStatus === "Closed"
+      ? labelsData.ru.dialogs.closeRepair
+      : labelsData.ru.dialogs.reopenRepair;
+  const dialogDescription = (
+    <>
+      <p>
+        {pendingStatus === "Closed"
+          ? labelsData.ru.dialogs.closeRepairDescription
+          : labelsData.ru.dialogs.reopenRepairDescription}
+      </p>
+      {pendingStatus === "Open" && repair.invoiceId && (
+        <p className="mt-2">
+          {labelsData.ru.dialogs.reopenRepairInvoiceWarning.replace(
+            "{invoiceId}",
+            String(repair.invoiceId),
+          )}
+        </p>
+      )}
+    </>
+  );
 
   return (
     <div
@@ -100,7 +114,26 @@ export default function RepairStatusSelect({ repair, canReopen }: Props) {
       {loading && (
         <span className="text-xs text-muted-foreground">{loadingLabel}</span>
       )}
-      {error && <span className="text-xs text-red-500">{error}</span>}
+      <ConfirmActionDialog
+        open={pendingStatus !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingStatus(null);
+            setError(null);
+          }
+        }}
+        title={dialogTitle}
+        description={dialogDescription}
+        cancelLabel={labelsData.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={
+          pendingStatus === "Closed"
+            ? labelsData.ru.repairs.closeRepairBtn
+            : labelsData.ru.common.reopenRepair
+        }
+        isPending={loading}
+        error={error}
+        onConfirm={confirmStatusChange}
+      />
     </div>
   );
 }
