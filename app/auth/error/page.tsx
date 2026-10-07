@@ -1,23 +1,26 @@
 "use client";
+
+import { getAuthErrorMessage } from "@/lib/auth-messages";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
+import { useI18n } from "@/components/General/I18nProvider";
 
 export default function AuthError() {
-  const router = useRouter();
-  const { error } = router.query;
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error");
+  const { labels } = useI18n();
+
   useEffect(() => {
-    signOut({ callbackUrl: "/" });
+    void signOut({ callbackUrl: "/login" });
   }, []);
 
   return (
-    <div>
-      <h1>Ошибка входа</h1>
-      {error === "AccessDenied" ? (
-        <p>У вас нет доступа. Обратитесь к администратору.</p>
-      ) : (
-        <p>Что-то пошло не так. Попробуйте снова.</p>
-      )}
+    <div className="flex min-h-screen items-center justify-center px-4 text-center">
+      <div className="max-w-md space-y-3">
+        <h1 className="text-2xl font-semibold">{labels.errors.auth}</h1>
+        <p>{getAuthErrorMessage(error)}</p>
+      </div>
     </div>
   );
 }

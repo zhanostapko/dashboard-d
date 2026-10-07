@@ -1,68 +1,182 @@
 "use server";
-
-import { User } from "@prisma/client";
-import prisma from "@/lib/db";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { getCurrentUser } from "@/lib/authz";
+import {
+  userCreateSchema,
+  UserDto,
+  userUpdateSchema,
+} from "@/modules/users/schema";
+import {
+  UserServiceConflictError,
+  userService,
+} from "@/modules/users/service";
+import { authMessages } from "@/lib/auth-messages";
+import { getServerLabels } from "@/lib/i18n";
 
 type SaveUserState = {
   error: string | null;
   success: string | null;
-  user: Partial<User> | null;
+  user: Partial<UserDto> | null;
 };
 
-const userSchema = z.object({
-  email: z
-    .string()
-    .email("Invalid email format")
-    .refine(async (email) => {
-      const existingUser = await prisma.user.findUnique({ where: { email } });
-      return !existingUser;
-    }, "Email must be unique"),
-  name: z.string().min(1, "Name is required"),
-  role: z.enum(["USER", "ADMIN"], {
-    errorMap: () => ({ message: "Invalid role" }),
-  }),
-});
+type DeleteUserState = {
+  error: string | null;
+  success: boolean;
+};
 
 export async function saveUserAction(
-  prevState: SaveUserState,
+  _prevState: SaveUserState,
   payload: FormData
 ): Promise<SaveUserState> {
+  const labels = await getServerLabels();
+  const currentUser = await getCurrentUser();
   const id = payload.get("id") ? Number(payload.get("id")) : null;
   const email = payload.get("email") as string;
   const name = payload.get("name") as string;
   const surname = payload.get("surname") as string;
   const role = (payload.get("role") as "USER" | "ADMIN") || "USER";
+  const baseRate = Number(payload.get("baseRate") ?? 0);
 
-  const parsed = await userSchema.safeParseAsync({ email, name, role });
-
-  if (!parsed.success) {
+  if (!currentUser) {
     return {
-      error: parsed.error.issues.map((issue) => issue.message).join(", "),
+      error: authMessages.authenticationRequired,
       success: null,
-      user: { email, name, surname, role },
+      user: { email, name, surname, role, baseRate },
+    };
+  }
+
+  if (currentUser.role !== "ADMIN") {
+    return {
+      error: authMessages.forbidden,
+      success: null,
+      user: { email, name, surname, role, baseRate },
     };
   }
 
   try {
     if (id) {
-      await prisma.user.update({
-        where: { id },
-        data: { email, name, surname, role },
-      });
+      if (id === currentUser.id && role !== "ADMIN") {
+        return {
+          error: labels.errors.selfAdmin,
+          success: null,
+          user: { email, name, surname, role, baseRate },
+        };
+      }
+
+      const user = { id, name, surname, role, baseRate };
+      const parsed = await userUpdateSchema.safeParseAsync(user);
+      if (parsed && !parsed.success) {
+        return {
+          error: parsed.error.issues.map((issue) => issue.message).join(", "),
+          success: null,
+          user: { email, name, surname, role, baseRate },
+        };
+      }
+
+      try {
+        const updatedUser = await userService.updateUser(id, user);
+        if (!updatedUser) {
+          return {
+            error: labels.errors.notFound,
+            success: null,
+            user: { email, name, surname, role, baseRate },
+          };
+        }
+      } catch (error) {
+        return {
+          error: (error as Error).message,
+          success: null,
+          user: { email, name, surname, role, baseRate },
+        };
+      }
     } else {
-      await prisma.user.create({
-        data: { email, name, surname, role },
-      });
+      const user = { email, name, surname, role, baseRate };
+      const parsed = await userCreateSchema.safeParseAsync(user);
+      if (parsed && !parsed.success) {
+        return {
+          error: parsed.error.issues.map((issue) => issue.message).join(", "),
+          success: null,
+          user: { email, name, surname, role, baseRate },
+        };
+      }
+      const createdUser = await userService.createUser(user);
+      if (!createdUser) {
+        return {
+          error: labels.errors.duplicateEmail,
+          success: null,
+          user: { email, name, surname, role, baseRate },
+        };
+      }
     }
-    revalidatePath("/users");
-    return { error: null, success: "User saved!", user: null };
+
+    revalidatePath("/auth/users");
+    return { error: null, success: labels.common.saved, user: null };
   } catch (error) {
     return {
-      error: `Database error: ${(error as Error).message}`,
+      error: `Ошибка базы данных: ${(error as Error).message}`,
       success: null,
-      user: { email, name, surname, role },
+      user: { email, name, surname, role, baseRate },
+    };
+  }
+}
+
+export async function deleteUserAction(id: number): Promise<DeleteUserState> {
+  const labels = await getServerLabels();
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return {
+      error: authMessages.authenticationRequired,
+      success: false,
+    };
+  }
+
+  if (currentUser.role !== "ADMIN") {
+    return {
+      error: authMessages.forbidden,
+      success: false,
+    };
+  }
+
+  if (!Number.isInteger(id)) {
+    return {
+      error: labels.errors.invalid,
+      success: false,
+    };
+  }
+
+  if (currentUser.id === id) {
+    return {
+      error: labels.errors.selfDelete,
+      success: false,
+    };
+  }
+
+  try {
+    const deletedUser = await userService.deleteUser(id);
+
+    if (!deletedUser) {
+      return {
+        error: labels.errors.notFound,
+        success: false,
+      };
+    }
+
+    revalidatePath("/auth/users");
+    return { error: null, success: true };
+  } catch (error) {
+    if (error instanceof UserServiceConflictError) {
+      return {
+        error: error.message.includes("назначенного")
+          ? error.message
+          : labels.errors.lastAdmin,
+        success: false,
+      };
+    }
+
+    return {
+      error: `Ошибка базы данных: ${(error as Error).message}`,
+      success: false,
     };
   }
 }

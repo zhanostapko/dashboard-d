@@ -11,17 +11,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Role, User } from "@prisma/client";
-import data from "@/data/labels.json";
+import { Role } from "@prisma/client";
+import { useLocaleData } from "@/components/General/I18nProvider";
+import { UserDto } from "@/modules/users/schema";
 
 type Props = {
-  selectedUser?: User | null;
+  selectedUser?: UserDto | null;
   onClose?: () => void;
 };
 
 export default function CreateUserForm({ selectedUser, onClose }: Props) {
+  const data = useLocaleData();
   const [role, setRole] = useState<Role>(selectedUser?.role || Role.USER);
-  const [state, formAction] = useActionState(saveUserAction, {
+  const [state, formAction, isPending] = useActionState(saveUserAction, {
     error: null,
     success: null,
     user: selectedUser || null,
@@ -39,6 +41,8 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
     addUserBtn,
     admin,
     user,
+    selectRole,
+    loading,
   } = data.ru.user;
 
   const handleSubmit = (formData: FormData) => {
@@ -47,9 +51,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
   };
 
   useEffect(() => {
-    console.log("success in effect");
     if (state.success) {
-      console.log("inside conditions");
       onClose?.();
     }
   }, [state.success, onClose]);
@@ -76,6 +78,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
             name="email"
             defaultValue={state?.user?.email || ""}
             required
+            disabled={!!selectedUser}
           />
         </div>
 
@@ -105,7 +108,7 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
             onValueChange={(value) => setRole(value as Role)}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select a role" />
+              <SelectValue placeholder={selectRole} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ADMIN">{admin}</SelectItem>
@@ -113,10 +116,32 @@ export default function CreateUserForm({ selectedUser, onClose }: Props) {
             </SelectContent>
           </Select>
         </div>
+        <div>
+          <Label className="mb-2" htmlFor="baseRate">
+            {data.ru.user.baseRate}%
+          </Label>
+          <Input
+            name="baseRate"
+            type="number"
+            min="0"
+            max="100"
+            step="0.01"
+            defaultValue={state?.user?.baseRate ?? selectedUser?.baseRate ?? 0}
+            required
+          />
+        </div>
         <p className="text-sm text-gray-400">* - {requiredField}</p>
 
-        <Button type="submit" className="w-full bg-green-500 text-white">
-          {selectedUser ? `${saveBtn}` : `${addUserBtn}`}
+        <Button
+          disabled={isPending}
+          type="submit"
+          className="w-full bg-green-500 text-white"
+        >
+          {isPending
+            ? loading
+            : selectedUser
+            ? `${saveBtn}`
+            : `${addUserBtn}`}
         </Button>
       </form>
     </>

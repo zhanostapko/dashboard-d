@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.npm-cache/
 /.pnp
 .pnp.*
 .yarn/*
@@ -12,6 +13,9 @@
 
 # testing
 /coverage
+
+# local Codex workflow state
+/.work-plans/
 
 # next.js
 /.next/
@@ -39,3 +43,24 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local database runtime data
+/.data/
+/pgdata/
+/postgres-data/
+
+# local database files and backups
+# Keep prisma/schema.prisma and prisma/migrations/** tracked.
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+*.dump
+*.dump.gz
+*.backup
+*.sql.gz

@@ -1,54 +1,33 @@
-import EditInvoiceButton from "@/components/invoices/EditInvoiceButton";
-import GeneratePDFButton from "@/components/invoices/GeneratePDFButton";
+import EditInvoiceButton from "@/components/Invoices/EditInvoiceButton";
+import GeneratePDFButtonLazy from "@/components/Invoices/GeneratePDFButtonLazy";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getInvoiceDetails } from "@/lib/invoices";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
 import { format } from "date-fns";
-import DeleteInvoiceButton from "@/components/invoices/DeleteInvoiceButton";
+import DeleteInvoiceButton from "@/components/Invoices/DeleteInvoiceButton";
 import Error from "@/components/Error";
-import data from "@/data/labels.json";
-
-const { total, invoiceForm, date } = data.ru.invoices;
-
-const { formInvoiceNumber, clientInformation, carInformation, invoiceItems } =
-  invoiceForm;
-
-const {
-  clientName,
-  account,
-  address,
-  phone,
-  email,
-  bank,
-  bankCode,
-  cash,
-  clientRegistrationNumber,
-  nonCash,
-  paymentType,
-  title,
-} = clientInformation;
-
-const { brand, mileage, model, plate, title: carTitle } = carInformation;
-
-const {
-  name,
-  price,
-  quantity,
-  sum,
-  title: invoiceItemsTitle,
-  type,
-} = invoiceItems;
+import { getServerLabels } from "@/lib/i18n";
+import { invoiceService } from "@/modules/invoices/service";
+import Link from "next/link";
+import { requirePageUser } from "@/lib/authz";
 
 const InvoiceDetailPage = async ({
   params,
 }: {
   params: Promise<{ invoiceId: string }>;
 }) => {
+  const currentUser = await requirePageUser();
+  const data = await getServerLabels();
+  const { total, invoiceForm, date, notFound, noItems, backToInvoices } = data.invoices;
+  const { formInvoiceNumber, clientInformation, carInformation, invoiceItems } = invoiceForm;
+  const { clientName, account, address, phone, email, bank, bankCode, cash, clientRegistrationNumber, nonCash, paymentType, title } = clientInformation;
+  const { brand, mileage, model, plate, title: carTitle } = carInformation;
+  const { name, price, quantity, sum, title: invoiceItemsTitle, type } = invoiceItems;
   let invoice;
   const { invoiceId } = await params;
   try {
-    invoice = await getInvoiceDetails(Number(invoiceId));
+    invoice = await invoiceService.getInvoice(Number(invoiceId));
   } catch (error) {
     console.log(error);
     return <Error />;
@@ -57,35 +36,50 @@ const InvoiceDetailPage = async ({
   if (!invoice)
     return (
       <div className="text-center text-2xl font-semibold">
-        Invoice not found
+        {notFound}
       </div>
     );
 
   return (
-    <Card className="max-w-4xl mx-auto p-6">
-      <CardContent className="space-y-6">
-        <div className="flex items-start justify-between">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-2xl font-bold mb-1">
+    <div className="mx-auto max-w-4xl space-y-4">
+      <div className="flex justify-end">
+        <Button asChild variant="outline">
+          <Link href="/auth/invoices">{backToInvoices}</Link>
+        </Button>
+      </div>
+      <Card className="p-6">
+        <CardContent className="space-y-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold">
               {formInvoiceNumber} {invoice.number}
             </h2>
-            <div className="flex gap-2 justify-between">
-              <GeneratePDFButton invoice={invoice} />
-              <div className="flex gap-2">
-                <EditInvoiceButton invoice={invoice} />
-                <DeleteInvoiceButton invoice={invoice} />
+            {invoice.repairId && (
+              <Link
+                className="text-sm text-primary underline-offset-4 hover:underline"
+                href={`/auth/repairs/${invoice.repairId}`}
+              >
+                Ремонт #{invoice.repairId}
+              </Link>
+            )}
+            <div>
+              <label className="mb-1 block text-sm font-semibold">{date}*</label>
+              <div className="flex min-w-[250px] items-center rounded-md border bg-white px-3 py-2 shadow-sm">
+                <span className="font-medium text-gray-800">
+                  {format(new Date(invoice.date), "MM/dd/yyyy")}
+                </span>
+                <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
               </div>
             </div>
           </div>
-
-          <div className="flex flex-col">
-            <label className="font-semibold text-sm mb-1">{date}*</label>
-            <div className="flex items-center border rounded-md px-3 py-2 min-w-[250px] bg-white shadow-sm">
-              <span className="text-gray-800 font-medium">
-                {format(new Date(invoice.date), "MM/dd/yyyy")}
-              </span>
-              <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
-            </div>
+          <div className="flex flex-wrap justify-end gap-2">
+            <GeneratePDFButtonLazy invoice={invoice} />
+            {currentUser.role === "ADMIN" && (
+              <>
+                <EditInvoiceButton invoice={invoice} />
+                <DeleteInvoiceButton invoice={invoice} />
+              </>
+            )}
           </div>
         </div>
 
@@ -163,7 +157,7 @@ const InvoiceDetailPage = async ({
                       colSpan={5}
                       className="py-4 text-center text-muted-foreground"
                     >
-                      No items added.
+                      {noItems}
                     </td>
                   </tr>
                 )}
@@ -175,8 +169,9 @@ const InvoiceDetailPage = async ({
         <div className="flex justify-end">
           <h2 className="font-bold text-2xl py-2">{`${total}: ${invoice.total}`}</h2>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

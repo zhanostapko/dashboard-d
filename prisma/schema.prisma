@@ -19,6 +19,16 @@ enum PaymentType  {
   NonCash
 }
 
+enum RepairStatus {
+  Open
+  Closed
+}
+
+enum PaymentStatus {
+  Paid
+  Unpaid
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -26,53 +36,34 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // Add directUrl = env("DIRECT_URL") when a managed database provider
+  // requires a separate direct connection for Prisma migrations.
 }
 
 model User {
   id         Int   @id @default(autoincrement()) 
   email      String   @unique                                    
-  name       String?                       
+  name       String
   surname    String?                        
   role       Role     @default(USER)       
+  baseRate   Decimal  @db.Decimal(5, 2) @default(0)
+  repairWorkers RepairWorker[]
   createdAt  DateTime @default(now())       
   updatedAt  DateTime @updatedAt            
 }
 
-
-
-// model Invoice {
-//   id         Int      @id @default(autoincrement())
-//   number     String   @unique
-//   date       DateTime @default(now())
-//   total      Float
-//   supplierId Int
-//   supplier   Supplier @relation(fields: [supplierId], references: [id])
-//   clientId   Int? 
-//   client     Client?  @relation(fields: [clientId], references: [id])
-//   clientName  String? 
-//   clientPhone String? 
-//   items      InvoiceItem[]
-//   createdAt  DateTime @default(now())
-//   updatedAt  DateTime @updatedAt
-// }
-
-
-//
 model Invoice {
   id         Int     @id @default(autoincrement())
   number     String?   @unique
   date       DateTime @default(now())
-  total      Float
+  total      Decimal @db.Decimal(12, 2)
   paymentType PaymentType @default(NonCash)
   supplierId Int
   supplier   Supplier @relation(fields: [supplierId], references: [id])
-
+  repairId   Int?     @unique
+  repair     Repair?  @relation(fields: [repairId], references: [id], onDelete: SetNull)
   clientId   Int? 
   client     Client?  @relation(fields: [clientId], references: [id])
-
-
- 
   clientName    String?
   clientRegNr   String?
   clientAddress String?
@@ -81,20 +72,16 @@ model Invoice {
   clientBank    String?
   clientBankCode String?
   clientAccount String?
-
   carBrand     String @default("")
   carModel     String @default("")
   carPlate     String @default("")
   carMileage   String @default("")
-
   status       InvoiceStatus @default(Unpaid)
-  
+  paidAt       DateTime?
   items      InvoiceItem[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
-
-//
 
 model InvoiceItem {
   id         Int      @id @default(autoincrement())
@@ -103,8 +90,8 @@ model InvoiceItem {
   name       String   
   unit       String   
   quantity   Int      
-  price      Float    
-  total      Float    
+  price      Decimal  @db.Decimal(12, 2)
+  total      Decimal  @db.Decimal(12, 2)
 }
 
 model Supplier { 
@@ -129,8 +116,22 @@ model Client {
   phone    String? 
   email    String? 
   isDeleted  Boolean @default(false)
+  vehicles Vehicle[] @relation("ClientVehicles")
   repairs  Repair[]  
   invoices Invoice[] 
+}
+
+model Vehicle {
+  id        Int      @id @default(autoincrement())
+  brand     String
+  model     String
+  plate     String?
+  vin       String?
+  isDeleted Boolean  @default(false)
+  clients   Client[] @relation("ClientVehicles")
+  repairs   Repair[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Repair {
@@ -138,21 +139,48 @@ model Repair {
   date       DateTime @default(now())
   clientId   Int?    
   client     Client?  @relation(fields: [clientId], references: [id])
+  vehicleId  Int?
+  vehicle    Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  invoice    Invoice?
+  status     RepairStatus @default(Open)
+  paymentStatus PaymentStatus @default(Unpaid)
+  paidAt     DateTime?
+  closedAt   DateTime?
   clientName  String? 
   clientPhone String? 
+  carBrand   String   @default("")
+  carModel   String   @default("")
+  carPlate   String   @default("")
+  carMileage String   @default("")
   items      RepairItem[]
+  workers    RepairWorker[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt @default(now()) 
+}
+
+model RepairWorker {
+  id        Int      @id @default(autoincrement())
+  repairId  Int
+  userId    Int
+  rate      Decimal  @db.Decimal(5, 2)
+  repair    Repair   @relation(fields: [repairId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([repairId, userId])
+  @@index([userId])
+  @@index([repairId])
 }
 
 model RepairItem { 
   id       Int     @id @default(autoincrement())
   repairId Int
-  repair   Repair  @relation(fields: [repairId], references: [id])
+  repair   Repair  @relation(fields: [repairId], references: [id], onDelete: Cascade)
   name     String
   unit     String
   quantity Int 
-  price    Float
+  price    Decimal @db.Decimal(12, 2)
 }
 
 

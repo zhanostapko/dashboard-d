@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Repair" ADD COLUMN     "carBrand" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "carMileage" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "carModel" TEXT NOT NULL DEFAULT '',
+ADD COLUMN     "carPlate" TEXT NOT NULL DEFAULT '';
