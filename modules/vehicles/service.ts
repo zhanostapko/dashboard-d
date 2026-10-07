@@ -79,6 +79,16 @@ export const vehicleService = {
     );
     return toVehicleDto(attachedVehicle);
   },
+  detachVehicleFromClient: async (
+    vehicleId: number,
+    clientId: number
+  ): Promise<VehicleDto | null> => {
+    const detachedVehicle = await vehicleRepository.detachVehicleFromClient(
+      vehicleId,
+      clientId
+    );
+    return detachedVehicle ? toVehicleDto(detachedVehicle) : null;
+  },
   findOrCreateClientVehicle: async (
     clientId: number,
     vehicle: VehicleCreateDto

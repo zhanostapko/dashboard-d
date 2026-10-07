@@ -157,3 +157,41 @@ export async function attachVehicleToClientAction(
     };
   }
 }
+
+export async function detachVehicleFromClientAction(
+  vehicleId: number,
+  clientId: number
+): Promise<AttachVehicleState> {
+  const labels = await getServerLabels();
+  const currentUser = await getCurrentUser();
+
+  if (!currentUser) {
+    return { error: authMessages.authenticationRequired, success: false };
+  }
+
+  if (!Number.isInteger(vehicleId) || !Number.isInteger(clientId)) {
+    return { error: labels.errors.invalid, success: false };
+  }
+
+  try {
+    const detachedVehicle = await vehicleService.detachVehicleFromClient(
+      vehicleId,
+      clientId
+    );
+
+    if (!detachedVehicle) {
+      return { error: labels.errors.notFound, success: false };
+    }
+
+    revalidatePath(`/auth/clients/${clientId}`);
+    revalidatePath("/auth/clients");
+    revalidatePath("/auth/repairs/new");
+    revalidatePath(`/auth/vehicles/${vehicleId}`);
+    return { error: null, success: true };
+  } catch (error) {
+    return {
+      error: labels.errors.database ?? `Database error: ${(error as Error).message}`,
+      success: false,
+    };
+  }
+}

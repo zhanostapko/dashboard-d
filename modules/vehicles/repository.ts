@@ -114,4 +114,27 @@ export const vehicleRepository = {
       },
     });
   },
+  detachVehicleFromClient: async (
+    vehicleId: number,
+    clientId: number
+  ): Promise<Vehicle | null> => {
+    const vehicle = await prisma.vehicle.findFirst({
+      where: {
+        id: vehicleId,
+        isDeleted: false,
+        clients: { some: { id: clientId, isDeleted: false } },
+      },
+    });
+
+    if (!vehicle) return null;
+
+    return prisma.vehicle.update({
+      where: { id: vehicleId },
+      data: {
+        clients: {
+          disconnect: { id: clientId },
+        },
+      },
+    });
+  },
 };

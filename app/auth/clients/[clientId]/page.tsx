@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import AttachVehicleToClient from "@/components/Clients/AttachVehicleToClient";
+import DetachVehicleFromClientButton from "@/components/Clients/DetachVehicleFromClientButton";
 import ClientDetailsCard from "@/components/Clients/ClientDetailsCard";
 import ClickableTableRow from "@/components/General/ClickableTableRow";
 import { getServerLabels } from "@/lib/i18n";
@@ -37,6 +38,7 @@ const ClientDetailPage = async ({
     noVehicles,
     repairsTitle,
     vehiclesTitle,
+    actions,
   } = data.clients;
   const { brand, model, plate, vin } = data.repairs.repairForm.carInformation;
   const { carPlate, date, nr, open, closed, status } = data.repairs;
@@ -76,6 +78,7 @@ const ClientDetailPage = async ({
                     <th className="px-3 py-2 text-left">{model}</th>
                     <th className="px-3 py-2 text-left">{plate}</th>
                     <th className="px-3 py-2 text-left">{vin}</th>
+                    <th className="px-3 py-2 text-right">{actions}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -88,6 +91,12 @@ const ClientDetailPage = async ({
                       <td className="px-3 py-2">{vehicle.model}</td>
                       <td className="px-3 py-2">{vehicle.plate || "-"}</td>
                       <td className="px-3 py-2">{vehicle.vin || "-"}</td>
+                      <td className="px-3 py-2 text-right">
+                        <DetachVehicleFromClientButton
+                          clientId={client.id}
+                          vehicleId={vehicle.id}
+                        />
+                      </td>
                     </ClickableTableRow>
                   ))}
                 </tbody>

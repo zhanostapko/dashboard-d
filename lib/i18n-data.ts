@@ -5,6 +5,7 @@ export type Locale = (typeof locales)[number];
 
 export type Labels = typeof source.ru & {
   user: typeof source.ru.user & { baseRate: string };
+  clients: typeof source.ru.clients & { detachVehicle: string; detachVehicleDescription: string; detaching: string };
   menu: { users: string; invoices: string; clients: string; vehicles: string; repairs: string; earnings: string };
   earnings: { title: string; from: string; to: string; worker: string; selectWorker: string; addWorker: string; allWorkers: string; show: string; totalWork: string; totalCommission: string; workerSummary: string; repairDetails: string; closedAt: string; rate: string; commission: string; noResults: string; loading: string; unknownWorker: string };
   vehicles: { createTitle: string; editTitle: string; addBtn: string; editBtn: string; deleteBtn: string; deleteDescription: string; deleting: string; loading: string; noVehicles: string; detailsTitle: string; ownersTitle: string; noOwners: string; backToVehicles: string };
@@ -17,6 +18,12 @@ const user = {
   ru: { baseRate: "Базовая ставка" },
   en: { baseRate: "Base rate" },
   lv: { baseRate: "Pamatlikme" },
+} as const;
+
+const clientActions = {
+  ru: { detachVehicle: "Отвязать", detachVehicleDescription: "Машина будет отвязана от клиента. История ремонтов сохранится.", detaching: "Отвязка..." },
+  en: { detachVehicle: "Detach", detachVehicleDescription: "The vehicle will be detached from the client. Repair history will be preserved.", detaching: "Detaching..." },
+  lv: { detachVehicle: "Atvienot", detachVehicleDescription: "Transportlīdzeklis tiks atvienots no klienta. Remontu vēsture tiks saglabāta.", detaching: "Atvieno..." },
 } as const;
 
 const en: Record<string, string> = {
@@ -68,9 +75,9 @@ const errors = {
 } as const;
 
 export const labels = {
-  ru: { ...source.ru, user: { ...source.ru.user, ...user.ru }, menu: menu.ru, earnings: earnings.ru, vehicles: vehicles.ru, common: common.ru, dialogs: dialogs.ru, errors: errors.ru },
-  en: { ...translate(source.ru, en) as typeof source.ru, user: { ...translate(source.ru.user, en) as typeof source.ru.user, ...user.en }, menu: menu.en, earnings: earnings.en, vehicles: vehicles.en, common: common.en, dialogs: dialogs.en, errors: errors.en },
-  lv: { ...translate(source.ru, lv) as typeof source.ru, user: { ...translate(source.ru.user, lv) as typeof source.ru.user, ...user.lv }, menu: menu.lv, earnings: earnings.lv, vehicles: vehicles.lv, common: common.lv, dialogs: dialogs.lv, errors: errors.lv },
+  ru: { ...source.ru, user: { ...source.ru.user, ...user.ru }, clients: { ...source.ru.clients, ...clientActions.ru }, menu: menu.ru, earnings: earnings.ru, vehicles: vehicles.ru, common: common.ru, dialogs: dialogs.ru, errors: errors.ru },
+  en: { ...translate(source.ru, en) as typeof source.ru, user: { ...translate(source.ru.user, en) as typeof source.ru.user, ...user.en }, clients: { ...translate(source.ru.clients, en) as typeof source.ru.clients, ...clientActions.en }, menu: menu.en, earnings: earnings.en, vehicles: vehicles.en, common: common.en, dialogs: dialogs.en, errors: errors.en },
+  lv: { ...translate(source.ru, lv) as typeof source.ru, user: { ...translate(source.ru.user, lv) as typeof source.ru.user, ...user.lv }, clients: { ...translate(source.ru.clients, lv) as typeof source.ru.clients, ...clientActions.lv }, menu: menu.lv, earnings: earnings.lv, vehicles: vehicles.lv, common: common.lv, dialogs: dialogs.lv, errors: errors.lv },
 } as Record<Locale, Labels>;
 
 export function getLabels(locale: Locale): Labels { return labels[locale]; }
