@@ -81,7 +81,9 @@ const RepairDetailPage = async ({
                   )}
                   <CloseRepairButton repairId={repair.id} />
                   <EditRepairButton repairId={repair.id} />
-                  {!repair.invoiceId && <DeleteRepairButton repairId={repair.id} />}
+                  {repair.paymentStatus === "Unpaid" && !repair.invoiceId && (
+                    <DeleteRepairButton repairId={repair.id} />
+                  )}
                 </>
               )}
               {repair.paymentStatus === "Unpaid" && !repair.invoiceId && (

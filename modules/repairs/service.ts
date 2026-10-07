@@ -13,6 +13,7 @@ import { validateWorkerRateSum } from "./commission";
 const CLOSED_REPAIR_ERROR = "Закрытый ремонт нельзя изменить или удалить.";
 const REPAIR_WITH_INVOICE_ERROR =
   "Ремонт с привязанным счетом нельзя удалить.";
+const PAID_REPAIR_ERROR = "Оплаченный ремонт нельзя удалить.";
 const WORKER_RATE_SUM_ERROR =
   "Сумма ставок работников не может превышать 100%.";
 const DUPLICATE_WORKER_ERROR = "Один пользователь не может быть назначен дважды.";
@@ -96,6 +97,9 @@ export const repairService = {
     }
     if (existingRepair.status === "Closed") {
       throw new RepairServiceConflictError(CLOSED_REPAIR_ERROR);
+    }
+    if (existingRepair.paymentStatus === "Paid") {
+      throw new RepairServiceConflictError(PAID_REPAIR_ERROR);
     }
     if (existingRepair.invoice) {
       throw new RepairServiceConflictError(REPAIR_WITH_INVOICE_ERROR);

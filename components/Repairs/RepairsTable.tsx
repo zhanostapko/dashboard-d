@@ -204,28 +204,28 @@ const RepairsTable = ({ repairs, canManagePayment, canReopen }: Props) => {
                     {repair.status === "Open" && (
                       <EditRepairButton repairId={repair.id} iconOnly />
                     )}
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      title={deleteRepairBtn}
-                      aria-label={`${deleteRepairBtn}: ${repair.clientName}`}
-                      disabled={
-                        repair.status === "Closed" ||
-                        repair.invoiceId !== null ||
-                        deletingRepairId === repair.id
-                      }
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setRepairToDelete(repair);
-                      }}
-                    >
-                      {deletingRepairId === repair.id ? (
-                        <span className="text-xs">{loading}</span>
-                      ) : (
-                        <Trash2 className="size-4 text-destructive" />
+                    {repair.status === "Open" &&
+                      repair.paymentStatus === "Unpaid" &&
+                      repair.invoiceId === null && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          title={deleteRepairBtn}
+                          aria-label={`${deleteRepairBtn}: ${repair.clientName}`}
+                          disabled={deletingRepairId === repair.id}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setRepairToDelete(repair);
+                          }}
+                        >
+                          {deletingRepairId === repair.id ? (
+                            <span className="text-xs">{loading}</span>
+                          ) : (
+                            <Trash2 className="size-4 text-destructive" />
+                          )}
+                        </Button>
                       )}
-                    </Button>
                   </div>
                 </TableCell>
               </TableRow>

@@ -176,6 +176,8 @@ export async function deleteRepairAction(
       return {
         error: error.message.includes("привязанным счетом")
           ? labels.errors.linkedInvoiceRepair
+          : error.message.includes("Оплаченный")
+            ? labels.errors.paidInvoice
           : error.message.includes("неоплачен")
             ? labels.errors.unpaidClose
             : labels.errors.closedRepair,
