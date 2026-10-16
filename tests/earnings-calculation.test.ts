@@ -7,6 +7,7 @@ import {
   sumWorkerRates,
   validateWorkerRateSum,
 } from "../modules/repairs/commission.ts";
+import { repairItemCreateSchema } from "../modules/repairs/schema.ts";
 
 test("calculates the commission base from work items only", () => {
   const items = [
@@ -31,4 +32,15 @@ test("accepts exactly 100 percent and rejects overflow", () => {
 
 test("rounds calculated commission to cents", () => {
   assert.equal(calculateCommission(123.45, 33.33), 41.15);
+});
+
+test("accepts repair items with a zero price", () => {
+  const result = repairItemCreateSchema.safeParse({
+    name: "Стоимость уточняется",
+    unit: "work",
+    quantity: 1,
+    price: 0,
+  });
+
+  assert.equal(result.success, true);
 });

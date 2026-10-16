@@ -80,7 +80,12 @@ const RepairDetailPage = async ({
                       </Link>
                     </Button>
                   )}
-                  <CloseRepairButton repairId={repair.id} />
+                  <CloseRepairButton
+                    repairId={repair.id}
+                    hasZeroPriceItem={repair.items.some(
+                      (item) => item.quantity * item.price === 0
+                    )}
+                  />
                   <EditRepairButton repairId={repair.id} />
                   {repair.paymentStatus === "Unpaid" && !repair.invoiceId && (
                     <DeleteRepairButton repairId={repair.id} />
