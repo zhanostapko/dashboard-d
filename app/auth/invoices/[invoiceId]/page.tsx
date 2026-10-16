@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon } from "lucide-react";
 import React from "react";
-import { format } from "date-fns";
 import DeleteInvoiceButton from "@/components/Invoices/DeleteInvoiceButton";
 import Error from "@/components/Error";
 import { getServerLabels } from "@/lib/i18n";
 import { invoiceService } from "@/modules/invoices/service";
 import Link from "next/link";
 import { requirePageUser } from "@/lib/authz";
+import { formatDisplayDate } from "@/lib/utils";
 
 const InvoiceDetailPage = async ({
   params,
@@ -66,7 +66,7 @@ const InvoiceDetailPage = async ({
               <label className="mb-1 block text-sm font-semibold">{date}*</label>
               <div className="flex min-w-[250px] items-center rounded-md border bg-white px-3 py-2 shadow-sm">
                 <span className="font-medium text-gray-800">
-                  {format(new Date(invoice.date), "MM/dd/yyyy")}
+                  {formatDisplayDate(invoice.date)}
                 </span>
                 <CalendarIcon className="ml-auto h-4 w-4 text-gray-400" />
               </div>

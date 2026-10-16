@@ -29,6 +29,7 @@ import RepairStatusSelect from "./RepairStatusSelect";
 import RepairPaymentSelect from "./RepairPaymentSelect";
 import EditRepairButton from "./EditRepairButton";
 import { useNavigationProgress } from "@/components/General/NavigationProgress";
+import { formatDisplayDate } from "@/lib/utils";
 
 type Props = {
   repairs: RepairDto[];
@@ -187,7 +188,7 @@ const RepairsTable = ({ repairs, canManagePayment, canReopen }: Props) => {
                 <TableCell>{repair.clientName}</TableCell>
                 <TableCell>{repair.carPlate}</TableCell>
                 <TableCell>
-                  {new Date(repair.date).toLocaleDateString("en-US")}
+                  {formatDisplayDate(repair.date)}
                 </TableCell>
                 <TableCell>
                   <div className="inline-flex w-full gap-2">

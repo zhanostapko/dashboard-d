@@ -11,6 +11,7 @@ import { requirePageUser } from "@/lib/authz";
 import { clientService } from "@/modules/clients/service";
 import { repairService } from "@/modules/repairs/service";
 import { vehicleService } from "@/modules/vehicles/service";
+import { formatDisplayDate } from "@/lib/utils";
 
 const ClientDetailPage = async ({
   params,
@@ -133,7 +134,7 @@ const ClientDetailPage = async ({
                       <td className="px-3 py-2 font-medium">#{repair.id}</td>
                       <td className="px-3 py-2">{repair.carPlate || "-"}</td>
                       <td className="px-3 py-2">
-                        {new Date(repair.date).toLocaleDateString("en-US")}
+                        {formatDisplayDate(repair.date)}
                       </td>
                       <td className="px-3 py-2">
                         {repair.status === "Closed" ? closed : open}

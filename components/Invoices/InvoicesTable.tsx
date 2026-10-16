@@ -16,6 +16,7 @@ import { InvoiceDto } from "@/modules/invoices/schema";
 import InvoicePaymentSelect from "./InvoicePaymentSelect";
 import InvoiceActions from "./InvoiceActions";
 import { useNavigationProgress } from "@/components/General/NavigationProgress";
+import { formatDisplayDate } from "@/lib/utils";
 
 type Props = {
   data: InvoiceDto[];
@@ -106,13 +107,7 @@ const InvoicesTable = ({ data, canManage }: Props) => {
               <TableCell>{invoice.number}</TableCell>
               <TableCell>{invoice.clientName}</TableCell>
               <TableCell>{invoice.carPlate}</TableCell>
-              <TableCell>
-                {
-                  new Date(invoice.date).toLocaleDateString(
-                    "en-US"
-                  ) /* or any format */
-                }
-              </TableCell>
+              <TableCell>{formatDisplayDate(invoice.date)}</TableCell>
               <TableCell>
                 <InvoicePaymentSelect invoice={invoice} canManage={canManage} />
               </TableCell>

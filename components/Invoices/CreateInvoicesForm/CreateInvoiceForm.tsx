@@ -85,7 +85,7 @@ const CreateInvoiceForm = ({ invoice, editMode = false, prefill }: Props) => {
         ? format(new Date(invoice.date), "yyyy-MM-dd")
         : prefill?.date
           ? format(new Date(prefill.date), "yyyy-MM-dd")
-          : "",
+          : format(new Date(), "yyyy-MM-dd"),
       clientName: invoice?.clientName || prefill?.clientName || "",
       clientRegNr: invoice?.clientRegNr || prefill?.clientRegNr || "",
       clientAddress: invoice?.clientAddress || prefill?.clientAddress || "",

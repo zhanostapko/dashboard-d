@@ -14,6 +14,7 @@ import { requirePageUser } from "@/lib/authz";
 import { userService } from "@/modules/users/service";
 import { RepairItemDto } from "@/modules/repairs/schema";
 import { repairService } from "@/modules/repairs/service";
+import { formatDisplayDate } from "@/lib/utils";
 
 const RepairDetailPage = async ({
   params,
@@ -132,15 +133,15 @@ const RepairDetailPage = async ({
               />
               <DisplayField
                 label={date}
-                value={new Date(repair.date).toLocaleDateString("en-US")}
+                value={formatDisplayDate(repair.date)}
               />
               <DisplayField
                 label={labelsData.earnings.closedAt}
-                value={repair.closedAt ? new Date(repair.closedAt).toLocaleDateString("en-US") : "-"}
+                value={repair.closedAt ? formatDisplayDate(repair.closedAt) : "-"}
               />
               <DisplayField
                 label={labelsData.invoices.paid}
-                value={repair.paidAt ? new Date(repair.paidAt).toLocaleDateString("en-US") : "-"}
+                value={repair.paidAt ? formatDisplayDate(repair.paidAt) : "-"}
               />
             </div>
             {repair.invoiceId && (
