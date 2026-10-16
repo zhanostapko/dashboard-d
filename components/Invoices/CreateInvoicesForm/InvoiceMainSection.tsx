@@ -65,7 +65,17 @@ export default function InvoiceMainSection({
             <FormItem>
               <FormLabel>{dateLabel}*</FormLabel>
               <FormControl>
-                <Input type="date" {...field} />
+                <div
+                  className="cursor-pointer"
+                  onClick={(event) => {
+                    const input = event.currentTarget.querySelector<HTMLInputElement>(
+                      'input[type="date"]'
+                    );
+                    input?.showPicker?.();
+                  }}
+                >
+                  <Input lang="ru-RU" type="date" {...field} />
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>

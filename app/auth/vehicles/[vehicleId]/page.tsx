@@ -7,6 +7,7 @@ import { getServerLabels } from "@/lib/i18n";
 import { requirePageUser } from "@/lib/authz";
 import { vehicleService } from "@/modules/vehicles/service";
 import VehicleActions from "@/components/Vehicles/VehicleActions";
+import { formatDisplayDate } from "@/lib/utils";
 
 const VehicleDetailPage = async ({
   params,
@@ -103,7 +104,7 @@ const VehicleDetailPage = async ({
                       <td className="px-3 py-2">{repair.clientName || "-"}</td>
                       <td className="px-3 py-2">{repair.carPlate || "-"}</td>
                       <td className="px-3 py-2">
-                        {new Date(repair.date).toLocaleDateString("en-US")}
+                        {formatDisplayDate(repair.date)}
                       </td>
                       <td className="px-3 py-2">
                         {repair.status === "Closed" ? closed : open}

@@ -25,6 +25,7 @@ export default function RepairStatusSelect({ repair, canReopen }: Props) {
   const [status, setStatus] = useState<RepairDto["status"]>(repair.status);
   const [loading, setLoading] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<RepairDto["status"] | null>(null);
+  const [zeroPriceConfirmOpen, setZeroPriceConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { closed, loading: loadingLabel, open } = labelsData.ru.repairs;
 
@@ -35,7 +36,22 @@ export default function RepairStatusSelect({ repair, canReopen }: Props) {
   const handleStatusChange = (nextStatus: RepairDto["status"]) => {
     if (nextStatus === status) return;
     if (nextStatus === "Open" && !canReopen) return;
+
+    if (
+      nextStatus === "Closed" &&
+      repair.items.some((item) => item.quantity * item.price === 0)
+    ) {
+      setError(null);
+      setZeroPriceConfirmOpen(true);
+      return;
+    }
+
     setPendingStatus(nextStatus);
+  };
+
+  const confirmZeroPriceItems = () => {
+    setZeroPriceConfirmOpen(false);
+    setPendingStatus("Closed");
   };
 
   const confirmStatusChange = async () => {
@@ -114,6 +130,15 @@ export default function RepairStatusSelect({ repair, canReopen }: Props) {
       {loading && (
         <span className="text-xs text-muted-foreground">{loadingLabel}</span>
       )}
+      <ConfirmActionDialog
+        open={zeroPriceConfirmOpen}
+        onOpenChange={setZeroPriceConfirmOpen}
+        title={labelsData.ru.dialogs.zeroPriceRepair}
+        description={labelsData.ru.dialogs.zeroPriceRepairDescription}
+        cancelLabel={labelsData.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={labelsData.ru.dialogs.keepZeroPriceItems}
+        onConfirm={confirmZeroPriceItems}
+      />
       <ConfirmActionDialog
         open={pendingStatus !== null}
         onOpenChange={(open) => {

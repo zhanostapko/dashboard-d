@@ -62,7 +62,9 @@ const CreateRepairForm = ({
       id: repair?.id || 0,
       clientId: repair?.clientId ?? undefined,
       vehicleId: repair?.vehicleId ?? undefined,
-      date: repair?.date ? format(new Date(repair.date), "yyyy-MM-dd") : "",
+      date: repair?.date
+        ? format(new Date(repair.date), "yyyy-MM-dd")
+        : format(new Date(), "yyyy-MM-dd"),
       clientName: repair?.clientName || "",
       clientPhone: repair?.clientPhone || "",
       carBrand: repair?.carBrand || "",

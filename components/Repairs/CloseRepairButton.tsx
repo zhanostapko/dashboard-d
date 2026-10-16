@@ -7,12 +7,16 @@ import { useLocaleData } from "@/components/General/I18nProvider";
 import { closeRepairAction } from "@/app/actions/repairs";
 import ConfirmActionDialog from "@/components/General/ConfirmActionDialog";
 
-type Props = { repairId: number };
+type Props = {
+  repairId: number;
+  hasZeroPriceItem: boolean;
+};
 
-export default function CloseRepairButton({ repairId }: Props) {
+export default function CloseRepairButton({ repairId, hasZeroPriceItem }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [zeroPriceConfirmOpen, setZeroPriceConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const labelsData = useLocaleData();
 
@@ -30,11 +34,35 @@ export default function CloseRepairButton({ repairId }: Props) {
     router.refresh();
   };
 
+  const requestClose = () => {
+    setError(null);
+    if (hasZeroPriceItem) {
+      setZeroPriceConfirmOpen(true);
+      return;
+    }
+
+    setConfirmOpen(true);
+  };
+
+  const confirmZeroPriceItems = () => {
+    setZeroPriceConfirmOpen(false);
+    setConfirmOpen(true);
+  };
+
   return (
     <>
-      <Button disabled={loading} onClick={() => setConfirmOpen(true)} variant="outline">
+      <Button disabled={loading} onClick={requestClose} variant="outline">
         {loading ? labelsData.ru.repairs.loading : labelsData.ru.repairs.closeRepairBtn}
       </Button>
+      <ConfirmActionDialog
+        open={zeroPriceConfirmOpen}
+        onOpenChange={setZeroPriceConfirmOpen}
+        title={labelsData.ru.dialogs.zeroPriceRepair}
+        description={labelsData.ru.dialogs.zeroPriceRepairDescription}
+        cancelLabel={labelsData.ru.invoices.invoiceForm.invoiceItems.cancelEdit}
+        confirmLabel={labelsData.ru.dialogs.keepZeroPriceItems}
+        onConfirm={confirmZeroPriceItems}
+      />
       <ConfirmActionDialog
         open={confirmOpen}
         onOpenChange={(open) => {

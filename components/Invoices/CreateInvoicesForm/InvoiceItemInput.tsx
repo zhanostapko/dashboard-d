@@ -16,6 +16,7 @@ type Props = {
     value: InvoiceItemDto[Field]
   ) => void;
   onClear: () => void;
+  onSave: () => void;
 };
 
 export default function InvoiceItemInput({
@@ -23,13 +24,27 @@ export default function InvoiceItemInput({
   item,
   onChange,
   onClear,
+  onSave,
 }: Props) {
   const { name, price, quantity, sum, type } = useLocaleData().ru.invoices.invoiceForm.invoiceItems;
   const hasErrors = Object.keys(errors).length > 0;
 
   return (
     <>
-      <TableRow>
+      <TableRow
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
+
+          const target = event.target as HTMLElement;
+          const isItemField =
+            target instanceof HTMLInputElement ||
+            target.getAttribute("role") === "combobox";
+          if (!isItemField) return;
+
+          event.preventDefault();
+          onSave();
+        }}
+      >
         <TableCell>
           <Input
             aria-label={name}

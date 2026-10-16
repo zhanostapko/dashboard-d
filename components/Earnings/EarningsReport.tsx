@@ -1,6 +1,7 @@
 import { EarningsReportDto } from "@/modules/earnings/schema";
 import { UserDto } from "@/modules/users/schema";
 import { Labels } from "@/lib/i18n-data";
+import { formatDisplayDate } from "@/lib/utils";
 
 type Props = {
   report: EarningsReportDto;
@@ -59,7 +60,7 @@ export default function EarningsReport({ report, users, from = "", to = "", work
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse text-sm">
               <thead><tr className="border-b"><th className="px-3 py-2 text-left">№</th><th className="px-3 py-2 text-left">{labels.closedAt}</th><th className="px-3 py-2 text-left">{allLabels.repairs.clientName}</th><th className="px-3 py-2 text-left">{labels.totalWork}</th><th className="px-3 py-2 text-left">{labels.worker}</th><th className="px-3 py-2 text-left">{labels.rate}</th><th className="px-3 py-2 text-left">{labels.commission}</th></tr></thead>
-              <tbody>{report.repairs.flatMap((repair) => (repair.workers.length > 0 ? repair.workers : [null]).map((worker) => <tr className="border-b" key={`${repair.id}-${worker?.userId ?? "none"}`}><td className="px-3 py-2">{repair.id}</td><td className="px-3 py-2">{new Date(repair.closedAt).toLocaleDateString()}</td><td className="px-3 py-2">{repair.clientName || "-"}</td><td className="px-3 py-2">{repair.workTotal.toFixed(2)}</td><td className="px-3 py-2">{worker ? `${worker.name} ${worker.surname ?? ""}` : "-"}</td><td className="px-3 py-2">{worker ? `${worker.rate.toFixed(2)}%` : "-"}</td><td className="px-3 py-2">{worker ? worker.commission.toFixed(2) : "0.00"}</td></tr>))}</tbody>
+              <tbody>{report.repairs.flatMap((repair) => (repair.workers.length > 0 ? repair.workers : [null]).map((worker) => <tr className="border-b" key={`${repair.id}-${worker?.userId ?? "none"}`}><td className="px-3 py-2">{repair.id}</td><td className="px-3 py-2">{formatDisplayDate(repair.closedAt)}</td><td className="px-3 py-2">{repair.clientName || "-"}</td><td className="px-3 py-2">{repair.workTotal.toFixed(2)}</td><td className="px-3 py-2">{worker ? `${worker.name} ${worker.surname ?? ""}` : "-"}</td><td className="px-3 py-2">{worker ? `${worker.rate.toFixed(2)}%` : "-"}</td><td className="px-3 py-2">{worker ? worker.commission.toFixed(2) : "0.00"}</td></tr>))}</tbody>
             </table>
           </div>
         )}

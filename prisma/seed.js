@@ -2,6 +2,16 @@ const { PrismaClient, Role } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
+function requiredEnv(name) {
+  const value = process.env[name]?.trim();
+
+  if (!value) {
+    throw new Error(`${name} must be set before seeding the default supplier.`);
+  }
+
+  return value;
+}
+
 async function seedSupplier() {
   const existingSupplier = await prisma.supplier.findFirst({
     orderBy: { id: "asc" },
@@ -13,12 +23,12 @@ async function seedSupplier() {
 
   return prisma.supplier.create({
     data: {
-      name: process.env.DEFAULT_SUPPLIER_NAME || "MVP Supplier",
-      regNr: process.env.DEFAULT_SUPPLIER_REG_NR || "00000000000",
-      bank: process.env.DEFAULT_SUPPLIER_BANK || "MVP Bank",
-      code: process.env.DEFAULT_SUPPLIER_BANK_CODE || "MVPBANK",
-      account: process.env.DEFAULT_SUPPLIER_ACCOUNT || "LV00MVP0000000000000",
-      phone: process.env.DEFAULT_SUPPLIER_PHONE || null,
+      name: requiredEnv("DEFAULT_SUPPLIER_NAME"),
+      regNr: requiredEnv("DEFAULT_SUPPLIER_REG_NR"),
+      bank: requiredEnv("DEFAULT_SUPPLIER_BANK"),
+      code: requiredEnv("DEFAULT_SUPPLIER_BANK_CODE"),
+      account: requiredEnv("DEFAULT_SUPPLIER_ACCOUNT"),
+      phone: process.env.DEFAULT_SUPPLIER_PHONE?.trim() || null,
     },
   });
 }

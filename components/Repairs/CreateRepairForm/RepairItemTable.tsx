@@ -130,6 +130,7 @@ export default function RepairItemTable({
             item={draftItem}
             onChange={handleDraftChange}
             onClear={handleClear}
+            onSave={handleSaveItem}
           />
         </TableBody>
       </Table>
