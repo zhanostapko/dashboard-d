@@ -20,7 +20,8 @@ Clients and users remain in the codebase, but they are not part of the main MVP 
 
 ## Environment
 
-Create `.env.local` or `.env` with these values:
+Copy `.env.example` to `.env.local` for local development, then fill the values.
+In production, configure the same variables in the hosting provider's environment settings.
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:55432/app?schema=public"
@@ -33,12 +34,12 @@ SEED_ADMIN_EMAIL="admin@example.com"
 SEED_ADMIN_NAME="Admin"
 SEED_ADMIN_SURNAME="User"
 
-DEFAULT_SUPPLIER_NAME="MVP Supplier"
-DEFAULT_SUPPLIER_REG_NR="00000000000"
-DEFAULT_SUPPLIER_BANK="MVP Bank"
-DEFAULT_SUPPLIER_BANK_CODE="MVPBANK"
-DEFAULT_SUPPLIER_ACCOUNT="LV00MVP0000000000000"
-DEFAULT_SUPPLIER_PHONE="+00000000000"
+DEFAULT_SUPPLIER_NAME=""
+DEFAULT_SUPPLIER_REG_NR=""
+DEFAULT_SUPPLIER_BANK=""
+DEFAULT_SUPPLIER_BANK_CODE=""
+DEFAULT_SUPPLIER_ACCOUNT=""
+DEFAULT_SUPPLIER_PHONE=""
 ```
 
 `SEED_ADMIN_EMAIL` is important. Login only works for emails that already exist in the `User` table.
@@ -63,7 +64,7 @@ docker-compose up -d
 npm run db:migrate
 ```
 
-4. Seed the default supplier and first admin user.
+4. Fill `DEFAULT_SUPPLIER_*`, then seed the default supplier and first admin user.
 
 ```bash
 npm run db:seed
@@ -88,6 +89,6 @@ Open `http://localhost:3000` and sign in with the seeded admin email.
 
 ## Notes
 
-- If invoice creation fails with a supplier error, run `npm run db:seed`.
+- Before the first production deployment, fill `DEFAULT_SUPPLIER_*` in the production environment. Run `npm run db:seed` after migrations. The seed creates the supplier only when the `Supplier` table is empty; later runs leave the existing supplier unchanged.
 - API routes now return JSON `401/403` errors instead of redirecting to `/login`.
 - If this branch cannot stay build-green and smoke-test clean after hardening, the fallback plan is to reduce the app to a login shell and rebuild the domain UI from there.
