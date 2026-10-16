@@ -28,6 +28,7 @@ type Props = {
     value: RepairItemDraft[Field]
   ) => void;
   onClear: () => void;
+  onSave: () => void;
 };
 
 export default function RepairItemInput({
@@ -35,6 +36,7 @@ export default function RepairItemInput({
   item,
   onChange,
   onClear,
+  onSave,
 }: Props) {
   const { materials, name, price, quantity, sum, type, work } = useLocaleData().ru.repairs.repairForm.repairItems;
   const visibleErrors = Object.entries(errors).filter(([, error]) => Boolean(error));
@@ -44,7 +46,20 @@ export default function RepairItemInput({
 
   return (
     <>
-      <TableRow>
+      <TableRow
+        onKeyDown={(event) => {
+          if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
+
+          const target = event.target as HTMLElement;
+          const isItemField =
+            target instanceof HTMLInputElement ||
+            target.getAttribute("role") === "combobox";
+          if (!isItemField) return;
+
+          event.preventDefault();
+          onSave();
+        }}
+      >
         <TableCell>
           <Input
             aria-label={name}
